@@ -47,22 +47,22 @@ try {
             // Wir speichern dieses Ereignis in einer temporären Tabelle
             handleKeyRemoved($pdo, $data);
             break;
-            
+
         case 'key_returned':
             // Schlüssel wurde zurückgegeben
             handleKeyReturned($pdo, $data);
             break;
-            
+
         case 'rfid_scan':
             // RFID/NFC-Scan wurde durchgeführt
             handleRfidScan($pdo, $data);
             break;
-            
+
         default:
             echo json_encode(["status" => "error", "message" => "Unbekannter Ereignistyp: $eventType"]);
             exit;
     }
-    
+
 } catch (Exception $e) {
     echo json_encode([
         "status" => "error",
@@ -73,17 +73,17 @@ try {
 // Funktion zum Verarbeiten des Ereignisses "Schlüssel entfernt"
 function handleKeyRemoved($pdo, $data) {
     $seriennummer = $data['seriennummer'];
-    
+
     // Speichern des Ereignisses in der temporären Tabelle
     $stmt = $pdo->prepare("
-        INSERT INTO pending_key_actions 
-            (seriennummer, action_type, timestamp, status) 
-        VALUES 
+        INSERT INTO pending_key_actions
+            (seriennummer, action_type, timestamp, status)
+        VALUES
             (:seriennummer, 'remove', NOW(), 'pending')
     ");
-    
+
     $stmt->execute([':seriennummer' => $seriennummer]);
-    
+
     echo json_encode([
         "status" => "success",
         "message" => "Schlüsselentnahme registriert. Warte auf RFID/NFC-Bestätigung.",
@@ -94,28 +94,28 @@ function handleKeyRemoved($pdo, $data) {
 // Funktion zum Verarbeiten des Ereignisses "Schlüssel zurückgegeben"
 function handleKeyReturned($pdo, $data) {
     $seriennummer = $data['seriennummer'];
-    
+
     // Suchen des letzten offenen Eintrags für diese Seriennummer
     $stmt = $pdo->prepare("
-        SELECT 
+        SELECT
             kl.box_id,
             kl.timestamp_take,
             kl.benutzername
-        FROM 
+        FROM
             key_logs kl
-        JOIN 
+        JOIN
             benutzer b ON kl.benutzername = b.benutzername
-        WHERE 
+        WHERE
             b.seriennummer = :seriennummer
             AND kl.timestamp_return IS NULL
-        ORDER BY 
+        ORDER BY
             kl.timestamp_take DESC
         LIMIT 1
     ");
-    
+
     $stmt->execute([':seriennummer' => $seriennummer]);
     $lastLog = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     if (!$lastLog) {
         echo json_encode([
             "status" => "error",
@@ -123,23 +123,23 @@ function handleKeyReturned($pdo, $data) {
         ]);
         return;
     }
-    
+
     // Aktualisieren des Eintrags mit der Rückgabezeit
     $stmt = $pdo->prepare("
-        UPDATE key_logs 
-        SET timestamp_return = NOW() 
-        WHERE box_id = :box_id 
-        AND benutzername = :benutzername 
+        UPDATE key_logs
+        SET timestamp_return = NOW()
+        WHERE box_id = :box_id
+        AND benutzername = :benutzername
         AND timestamp_take = :timestamp_take
         AND timestamp_return IS NULL
     ");
-    
+
     $stmt->execute([
         ':box_id' => $lastLog['box_id'],
         ':benutzername' => $lastLog['benutzername'],
         ':timestamp_take' => $lastLog['timestamp_take']
     ]);
-    
+
     echo json_encode([
         "status" => "success",
         "message" => "Schlüssel erfolgreich zurückgegeben"
@@ -152,31 +152,31 @@ function handleRfidScan($pdo, $data) {
         echo json_encode(["status" => "error", "message" => "RFID/NFC UID fehlt"]);
         return;
     }
-    
+
     $seriennummer = $data['seriennummer'];
     $rfidUid = $data['rfid_uid'];
-    
+
     // Suchen des Benutzers anhand der RFID/NFC UID
     $stmt = $pdo->prepare("
-        SELECT 
+        SELECT
             user_id,
             benutzername,
             vorname,
             nachname
-        FROM 
+        FROM
             benutzer
-        WHERE 
+        WHERE
             rfid_uid = :rfid_uid
             AND seriennummer = :seriennummer
     ");
-    
+
     $stmt->execute([
         ':rfid_uid' => $rfidUid,
         ':seriennummer' => $seriennummer
     ]);
-    
+
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     if (!$user) {
         echo json_encode([
             "status" => "error",
@@ -184,26 +184,26 @@ function handleRfidScan($pdo, $data) {
         ]);
         return;
     }
-    
+
     // Suchen des letzten ausstehenden Ereignisses für diese Seriennummer
     $stmt = $pdo->prepare("
-        SELECT 
+        SELECT
             id,
             action_type,
             timestamp
-        FROM 
+        FROM
             pending_key_actions
-        WHERE 
+        WHERE
             seriennummer = :seriennummer
             AND status = 'pending'
-        ORDER BY 
+        ORDER BY
             timestamp DESC
         LIMIT 1
     ");
-    
+
     $stmt->execute([':seriennummer' => $seriennummer]);
     $pendingAction = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     if (!$pendingAction) {
         echo json_encode([
             "status" => "error",
@@ -211,56 +211,57 @@ function handleRfidScan($pdo, $data) {
         ]);
         return;
     }
-    
+
     // Aktualisieren des Status der ausstehenden Aktion
     $stmt = $pdo->prepare("
-        UPDATE pending_key_actions 
-        SET status = 'completed', 
+        UPDATE pending_key_actions
+        SET status = 'completed',
             completed_by = :benutzername,
             completed_at = NOW()
         WHERE id = :id
     ");
-    
+
     $stmt->execute([
         ':id' => $pendingAction['id'],
         ':benutzername' => $user['benutzername']
     ]);
-    
+
     // Wenn es sich um eine Entnahme handelt, einen neuen Eintrag in key_logs erstellen
     if ($pendingAction['action_type'] === 'remove') {
         // Box-ID ermitteln oder generieren
         $stmt = $pdo->prepare("
-            SELECT 
+            SELECT
                 kl.box_id
-            FROM 
+            FROM
                 key_logs kl
-            JOIN 
+            JOIN
                 benutzer b ON kl.benutzername = b.benutzername
-            WHERE 
+            WHERE
                 b.seriennummer = :seriennummer
-            ORDER BY 
+            ORDER BY
                 kl.timestamp_take DESC
             LIMIT 1
         ");
-        
+
         $stmt->execute([':seriennummer' => $seriennummer]);
         $lastLog = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        $boxId = $lastLog ? $lastLog['box_id'] : mt_rand(1000, 9999);
-        
+
+        // Immer eine neue Box-ID generieren, um Primärschlüsselkonflikte zu vermeiden
+        $boxId = mt_rand(1000, 9999);
+
         // Neuen Eintrag für die Entnahme erstellen
         $stmt = $pdo->prepare("
-            INSERT INTO key_logs 
-                (box_id, timestamp_take, benutzername) 
-            VALUES 
+            INSERT INTO key_logs
+                (box_id, timestamp_take, benutzername)
+            VALUES
                 (:box_id, NOW(), :benutzername)
         ");
-        
+
         $stmt->execute([
             ':box_id' => $boxId,
             ':benutzername' => $user['benutzername']
         ]);
-        
+
         echo json_encode([
             "status" => "success",
             "message" => "Schlüsselentnahme durch " . $user['vorname'] . " " . $user['nachname'] . " bestätigt",
