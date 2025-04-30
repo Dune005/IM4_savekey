@@ -16,9 +16,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $mail = trim($_POST['mail'] ?? '');
     $password = trim($_POST['password'] ?? '');
     $phone = trim($_POST['phone'] ?? null);
+    $seriennummer = trim($_POST['seriennummer'] ?? '');
 
     // Validate required fields
-    if (!$mail || !$password || !$vorname || !$nachname || !$benutzername) {
+    if (!$mail || !$password || !$vorname || !$nachname || !$benutzername || !$seriennummer) {
         echo json_encode(["status" => "error", "message" => "Alle Felder außer Telefonnummer sind erforderlich"]);
         exit;
     }
@@ -43,16 +44,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
     try {
-        // Insert the new user with all fields
-        $insert = $pdo->prepare("INSERT INTO benutzer (vorname, nachname, benutzername, mail, passwort, phone)
-                                VALUES (:vorname, :nachname, :benutzername, :mail, :passwort, :phone)");
+        // Insert the new user with all fields including seriennummer
+        $insert = $pdo->prepare("INSERT INTO benutzer (vorname, nachname, benutzername, mail, passwort, phone, seriennummer)
+                                VALUES (:vorname, :nachname, :benutzername, :mail, :passwort, :phone, :seriennummer)");
         $insert->execute([
             ':vorname' => $vorname,
             ':nachname' => $nachname,
             ':benutzername' => $benutzername,
             ':mail' => $mail,
             ':passwort' => $hashedPassword,
-            ':phone' => $phone
+            ':phone' => $phone,
+            ':seriennummer' => $seriennummer
         ]);
 
         echo json_encode(["status" => "success"]);

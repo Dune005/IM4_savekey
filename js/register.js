@@ -11,9 +11,10 @@ document
     const mail = document.getElementById("mail").value.trim();
     const password = document.getElementById("password").value.trim();
     const phone = document.getElementById("phone")?.value.trim() || null;
+    const seriennummer = document.getElementById("seriennummer").value.trim();
 
     try {
-      console.log("Sende Registrierungsdaten:", { vorname, nachname, benutzername, mail, password: "***", phone });
+      console.log("Sende Registrierungsdaten:", { vorname, nachname, benutzername, mail, password: "***", phone, seriennummer });
 
       const response = await fetch("api/register.php", {
         method: "POST",
@@ -24,7 +25,8 @@ document
           benutzername,
           mail,
           password,
-          phone
+          phone,
+          seriennummer
         }),
       });
 

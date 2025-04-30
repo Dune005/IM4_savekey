@@ -17,5 +17,6 @@ echo json_encode([
     "mail" => $_SESSION['mail'],
     "vorname" => $_SESSION['vorname'] ?? '',
     "nachname" => $_SESSION['nachname'] ?? '',
-    "benutzername" => $_SESSION['benutzername'] ?? ''
+    "benutzername" => $_SESSION['benutzername'] ?? '',
+    "seriennummer" => $_SESSION['seriennummer'] ?? ''
 ]);
