@@ -1,5 +1,5 @@
 <?php
-// index.php (API that returns JSON about the logged-in user)
+// protected.php (API that returns JSON about the logged-in user)
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
@@ -10,9 +10,12 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// If they are logged in, return user data
+// If they are logged in, return user data with all available fields
 echo json_encode([
     "status" => "success",
     "user_id" => $_SESSION['user_id'],
-    "email" => $_SESSION['email']
+    "mail" => $_SESSION['mail'],
+    "vorname" => $_SESSION['vorname'] ?? '',
+    "nachname" => $_SESSION['nachname'] ?? '',
+    "benutzername" => $_SESSION['benutzername'] ?? ''
 ]);

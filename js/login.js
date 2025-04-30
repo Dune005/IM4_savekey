@@ -2,7 +2,7 @@
 document.getElementById("loginForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const email = document.getElementById("email").value.trim();
+  const mail = document.getElementById("mail").value.trim();
   const password = document.getElementById("password").value.trim();
 
   try {
@@ -10,7 +10,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
       method: "POST",
       // credentials: 'include', // uncomment if front-end & back-end are on different domains
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ email, password }),
+      body: new URLSearchParams({ mail, password }),
     });
     const result = await response.json();
 
