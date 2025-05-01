@@ -56,8 +56,11 @@ async function checkAuth() {
     `;
 
     // Lade den Schlüsselstatus und die Historie
-    loadKeyStatus(seriennummer);
-    loadKeyHistory(seriennummer);
+    loadKeyStatus();
+    loadKeyHistory();
+
+    // Starte die automatische Aktualisierung des Schlüsselstatus (alle 5 Sekunden)
+    setStatusUpdateInterval(5000);
 
     // Benutzernamen als Datenelement zum Button hinzufügen
     const takeKeyBtn = document.getElementById('takeKeyBtn');
@@ -82,15 +85,23 @@ async function checkAuth() {
   }
 }
 
+// Globale Variable für den Aktualisierungsintervall
+let statusUpdateInterval = null;
+
 // Funktion zum Laden des Schlüsselstatus
 async function loadKeyStatus() {
   try {
     const keyStatusElement = document.getElementById("keyStatus");
-    keyStatusElement.innerHTML = "Lade Status...";
+
+    // Nur beim ersten Laden die "Lade Status..." Nachricht anzeigen
+    if (!keyStatusElement.classList.contains('loaded')) {
+      keyStatusElement.innerHTML = "Lade Status...";
+    }
 
     // API-Anfrage senden, um den Status des Schlüssels zu laden
     const response = await fetch('api/key_status.php', {
-      credentials: "include" // Wichtig, um die Session-Cookies zu senden
+      credentials: "include", // Wichtig, um die Session-Cookies zu senden
+      cache: 'no-store' // Verhindert Caching der Antwort
     });
 
     if (!response.ok) {
@@ -100,13 +111,16 @@ async function loadKeyStatus() {
     const data = await response.json();
 
     if (data.status === "success") {
+      keyStatusElement.classList.add('loaded');
       const keyStatus = data.key_status;
       const isAvailable = keyStatus.is_available;
+      const pendingRemoval = keyStatus.pending_removal;
 
       // Buttons aktivieren/deaktivieren basierend auf dem Status
       const takeKeyBtn = document.getElementById('takeKeyBtn');
       const returnKeyBtn = document.getElementById('returnKeyBtn');
 
+      // Wenn der Schlüssel verfügbar ist
       if (isAvailable) {
         takeKeyBtn.disabled = false;
         returnKeyBtn.disabled = true;
@@ -120,9 +134,44 @@ async function loadKeyStatus() {
             </div>
           </div>
         `;
-      } else {
+
+        // Wenn der Schlüssel verfügbar ist, können wir das Aktualisierungsintervall auf einen längeren Zeitraum setzen
+        setStatusUpdateInterval(5000); // Alle 5 Sekunden aktualisieren
+      }
+      // Wenn es eine ausstehende Entnahme gibt
+      else if (pendingRemoval) {
         takeKeyBtn.disabled = true;
-        returnKeyBtn.disabled = false;
+        returnKeyBtn.disabled = true;
+
+        // Berechne die verbleibende Zeit bis zum Ablauf
+        const expirationDate = new Date(keyStatus.pending_expiration);
+        const now = new Date();
+        const remainingTimeMs = expirationDate - now;
+        const remainingMinutes = Math.floor(remainingTimeMs / 60000);
+        const remainingSeconds = Math.floor((remainingTimeMs % 60000) / 1000);
+
+        // Formatiere das Datum der Entnahme
+        const pendingDate = new Date(keyStatus.pending_timestamp);
+        const formattedDate = pendingDate.toLocaleDateString('de-DE') + ' ' + pendingDate.toLocaleTimeString('de-DE');
+
+        keyStatusElement.innerHTML = `
+          <div class="key-pending">
+            <i class="key-icon pending"></i>
+            <div class="status-text">
+              <h4>Schlüssel wurde entnommen - Verifizierung ausstehend</h4>
+              <p>Der Schlüssel wurde am ${formattedDate} aus der Box entnommen.</p>
+              <p>Verbleibende Zeit für die Verifizierung: <span class="countdown">${remainingMinutes}:${remainingSeconds.toString().padStart(2, '0')}</span></p>
+              <p class="warning">Wenn sich niemand innerhalb von 5 Minuten mit einem RFID-Chip verifiziert, wird der Schlüssel als unrechtmäßig entnommen markiert!</p>
+            </div>
+          </div>
+        `;
+
+        // Bei ausstehender Entnahme häufiger aktualisieren
+        setStatusUpdateInterval(5000); // Alle 5 Sekunden aktualisieren
+      }
+      // Wenn der Schlüssel von jemandem entnommen wurde
+      else {
+        takeKeyBtn.disabled = true;
 
         // Formatiere das Datum
         const takeDate = new Date(keyStatus.take_time);
@@ -131,11 +180,7 @@ async function loadKeyStatus() {
         const currentUser = keyStatus.current_user;
         const isCurrentUser = currentUser && currentUser.benutzername === document.getElementById('takeKeyBtn').dataset.username;
 
-        if (isCurrentUser) {
-          returnKeyBtn.disabled = false;
-        } else {
-          returnKeyBtn.disabled = true;
-        }
+        returnKeyBtn.disabled = !isCurrentUser;
 
         keyStatusElement.innerHTML = `
           <div class="key-unavailable">
@@ -147,6 +192,9 @@ async function loadKeyStatus() {
             </div>
           </div>
         `;
+
+        // Wenn der Schlüssel entnommen wurde, können wir das Aktualisierungsintervall auf einen mittleren Zeitraum setzen
+        setStatusUpdateInterval(15000); // Alle 15 Sekunden aktualisieren
       }
     } else {
       throw new Error(data.message || "Unbekannter Fehler beim Laden des Status");
@@ -159,7 +207,21 @@ async function loadKeyStatus() {
         <button onclick="loadKeyStatus()">Erneut versuchen</button>
       </div>
     `;
+
+    // Bei Fehlern trotzdem weiter versuchen zu aktualisieren
+    setStatusUpdateInterval(30000); // Alle 30 Sekunden erneut versuchen
   }
+}
+
+// Funktion zum Setzen des Aktualisierungsintervalls
+function setStatusUpdateInterval(interval) {
+  // Bestehenden Intervall löschen, falls vorhanden
+  if (statusUpdateInterval) {
+    clearInterval(statusUpdateInterval);
+  }
+
+  // Neuen Intervall setzen
+  statusUpdateInterval = setInterval(loadKeyStatus, interval);
 }
 
 // Funktion zum Laden der Schlüsselhistorie
@@ -521,3 +583,10 @@ async function removeRfid() {
 
 // Check auth when page loads
 window.addEventListener("load", checkAuth);
+
+// Stoppe die automatische Aktualisierung, wenn die Seite verlassen wird
+window.addEventListener("beforeunload", () => {
+  if (statusUpdateInterval) {
+    clearInterval(statusUpdateInterval);
+  }
+});

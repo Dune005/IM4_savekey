@@ -25,58 +25,90 @@ if (empty($seriennummer)) {
 }
 
 try {
-    // Abfrage, um den letzten Eintrag für diese Seriennummer zu finden
-    // Wir nehmen an, dass die Tabelle "key_logs" heißt und die Spalte "seriennummer" enthält
+    // 1. Zuerst prüfen, ob es eine ausstehende Schlüsselaktion gibt
+    $pendingStmt = $pdo->prepare("
+        SELECT
+            id,
+            action_type,
+            timestamp,
+            status
+        FROM
+            pending_key_actions
+        WHERE
+            seriennummer = :seriennummer
+            AND action_type = 'remove'
+            AND status = 'pending'
+            AND timestamp >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)
+        ORDER BY
+            timestamp DESC
+        LIMIT 1
+    ");
+
+    $pendingStmt->execute([':seriennummer' => $seriennummer]);
+    $pendingAction = $pendingStmt->fetch(PDO::FETCH_ASSOC);
+
+    // 2. Dann den letzten Eintrag in key_logs prüfen
     $stmt = $pdo->prepare("
-        SELECT 
+        SELECT
             kl.box_id,
             kl.timestamp_take,
             kl.timestamp_return,
             kl.benutzername,
             b.vorname,
             b.nachname
-        FROM 
+        FROM
             key_logs kl
-        LEFT JOIN 
+        LEFT JOIN
             benutzer b ON kl.benutzername = b.benutzername
-        WHERE 
+        WHERE
             b.seriennummer = :seriennummer
-        ORDER BY 
+        ORDER BY
             kl.timestamp_take DESC
         LIMIT 1
     ");
-    
+
     $stmt->execute([':seriennummer' => $seriennummer]);
     $lastLog = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     // Bestimmen, ob der Schlüssel verfügbar ist
     $isAvailable = true;
     $currentUser = null;
     $takeTime = null;
-    
-    if ($lastLog) {
-        // Wenn es einen letzten Eintrag gibt und timestamp_return NULL ist, ist der Schlüssel nicht verfügbar
-        if ($lastLog['timestamp_return'] === null) {
-            $isAvailable = false;
-            $currentUser = [
-                'benutzername' => $lastLog['benutzername'],
-                'vorname' => $lastLog['vorname'],
-                'nachname' => $lastLog['nachname']
-            ];
-            $takeTime = $lastLog['timestamp_take'];
-        }
+    $pendingRemoval = false;
+    $pendingTimestamp = null;
+    $pendingExpiration = null;
+
+    // Wenn es eine ausstehende Entnahme gibt, ist der Schlüssel nicht verfügbar
+    if ($pendingAction && $pendingAction['action_type'] === 'remove' && $pendingAction['status'] === 'pending') {
+        $isAvailable = false;
+        $pendingRemoval = true;
+        $pendingTimestamp = $pendingAction['timestamp'];
+        $pendingExpiration = date('Y-m-d H:i:s', strtotime($pendingAction['timestamp'] . ' + 5 minutes'));
     }
-    
+    // Wenn es einen letzten Eintrag gibt und timestamp_return NULL ist, ist der Schlüssel nicht verfügbar
+    elseif ($lastLog && $lastLog['timestamp_return'] === null) {
+        $isAvailable = false;
+        $currentUser = [
+            'benutzername' => $lastLog['benutzername'],
+            'vorname' => $lastLog['vorname'],
+            'nachname' => $lastLog['nachname']
+        ];
+        $takeTime = $lastLog['timestamp_take'];
+    }
+
     echo json_encode([
         "status" => "success",
         "key_status" => [
             "is_available" => $isAvailable,
             "current_user" => $currentUser,
             "take_time" => $takeTime,
-            "box_id" => $lastLog ? $lastLog['box_id'] : null
+            "box_id" => $lastLog ? $lastLog['box_id'] : null,
+            "pending_removal" => $pendingRemoval,
+            "pending_timestamp" => $pendingTimestamp,
+            "pending_expiration" => $pendingExpiration
         ]
     ]);
-    
+
 } catch (PDOException $e) {
     echo json_encode([
         "status" => "error",
