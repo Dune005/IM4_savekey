@@ -94,6 +94,7 @@ function handleKeyRemoved($pdo, $data) {
 // Funktion zum Verarbeiten des Ereignisses "Schlüssel zurückgegeben"
 function handleKeyReturned($pdo, $data) {
     $seriennummer = $data['seriennummer'];
+    $timestamp = date('Y-m-d H:i:s');
 
     // Suchen des letzten offenen Eintrags für diese Seriennummer
     $stmt = $pdo->prepare("
@@ -116,34 +117,72 @@ function handleKeyReturned($pdo, $data) {
     $stmt->execute([':seriennummer' => $seriennummer]);
     $lastLog = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!$lastLog) {
+    // Prüfen, ob es eine ausstehende Schlüsselentnahme gibt, die nicht verifiziert wurde
+    $pendingStmt = $pdo->prepare("
+        SELECT id, timestamp
+        FROM pending_key_actions
+        WHERE seriennummer = :seriennummer
+        AND action_type = 'remove'
+        AND status = 'pending'
+        ORDER BY timestamp DESC
+        LIMIT 1
+    ");
+
+    $pendingStmt->execute([':seriennummer' => $seriennummer]);
+    $pendingAction = $pendingStmt->fetch(PDO::FETCH_ASSOC);
+
+    // Wenn es eine ausstehende Aktion gibt, diese als abgeschlossen markieren mit 'unknown_user'
+    if ($pendingAction) {
+        $updatePendingStmt = $pdo->prepare("
+            UPDATE pending_key_actions
+            SET status = 'completed',
+                completed_by = 'unknown_user',
+                completed_at = :completed_at
+            WHERE id = :id
+        ");
+
+        $updatePendingStmt->execute([
+            ':completed_at' => $timestamp,
+            ':id' => $pendingAction['id']
+        ]);
+    }
+
+    // Wenn es einen offenen key_logs Eintrag gibt, diesen aktualisieren
+    if ($lastLog) {
+        // Aktualisieren des Eintrags mit der Rückgabezeit
+        $stmt = $pdo->prepare("
+            UPDATE key_logs
+            SET timestamp_return = NOW()
+            WHERE box_id = :box_id
+            AND benutzername = :benutzername
+            AND timestamp_take = :timestamp_take
+            AND timestamp_return IS NULL
+        ");
+
+        $stmt->execute([
+            ':box_id' => $lastLog['box_id'],
+            ':benutzername' => $lastLog['benutzername'],
+            ':timestamp_take' => $lastLog['timestamp_take']
+        ]);
+
+        echo json_encode([
+            "status" => "success",
+            "message" => "Schlüssel erfolgreich zurückgegeben"
+        ]);
+    } else if ($pendingAction) {
+        // Wenn es keinen offenen key_logs Eintrag gibt, aber eine ausstehende Aktion,
+        // haben wir die ausstehende Aktion erfolgreich abgeschlossen
+        echo json_encode([
+            "status" => "success",
+            "message" => "Nicht verifizierte Schlüsselrückgabe erfolgreich registriert"
+        ]);
+    } else {
+        // Kein offener Eintrag und keine ausstehende Aktion
         echo json_encode([
             "status" => "error",
             "message" => "Kein offener Eintrag für diese Seriennummer gefunden"
         ]);
-        return;
     }
-
-    // Aktualisieren des Eintrags mit der Rückgabezeit
-    $stmt = $pdo->prepare("
-        UPDATE key_logs
-        SET timestamp_return = NOW()
-        WHERE box_id = :box_id
-        AND benutzername = :benutzername
-        AND timestamp_take = :timestamp_take
-        AND timestamp_return IS NULL
-    ");
-
-    $stmt->execute([
-        ':box_id' => $lastLog['box_id'],
-        ':benutzername' => $lastLog['benutzername'],
-        ':timestamp_take' => $lastLog['timestamp_take']
-    ]);
-
-    echo json_encode([
-        "status" => "success",
-        "message" => "Schlüssel erfolgreich zurückgegeben"
-    ]);
 }
 
 // Funktion zum Verarbeiten des Ereignisses "RFID/NFC-Scan"
