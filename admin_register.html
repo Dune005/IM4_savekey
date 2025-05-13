@@ -9,9 +9,9 @@
     <div class="login-container">
       <img src="images/logo_safekey.svg" alt="Logo" class="logo" style="display: block; margin: 0 auto 40px; max-width: 250px;">
       <h1>Admin-Registrierung</h1>
-      
+
       <div class="info-box">
-        <p><strong>Hinweis:</strong> Diese Seite ist nur für die Registrierung von Administratoren vorgesehen. 
+        <p><strong>Hinweis:</strong> Diese Seite ist nur für die Registrierung von Administratoren vorgesehen.
         Als Administrator haben Sie erweiterte Rechte zur Verwaltung der Schlüsselbox.</p>
         <p>Die Seriennummer Ihrer Schlüsselbox wurde automatisch aus dem QR-Code übernommen und kann nicht geändert werden.</p>
       </div>
@@ -45,6 +45,8 @@
           <label>Seriennummer der Schlüsselbox</label>
           <input type="text" id="seriennummer" readonly />
         </div>
+        <!-- Verstecktes Feld für den Token -->
+        <input type="hidden" id="token" />
         <button type="submit">Als Administrator registrieren</button>
       </form>
 

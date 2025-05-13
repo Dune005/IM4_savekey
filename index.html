@@ -40,8 +40,11 @@
       <h3>Admin Registration</h3>
       <p>
         Administrators can register by scanning a QR code that comes with the SafeKey box.
-        The QR code contains a link to a special registration page with the box's serial number.
-        <a href="admin_register.html?seriennummer=DEMO001">Try the admin registration</a> with a demo serial number.
+        The QR code contains a link to a special registration page with an encrypted token that includes the box's serial number.
+        <a href="admin_register.html?token=eyJzZXJpZW5udW1tZXIiOiJERU1PMDAxIiwidGltZXN0YW1wIjoxNjM0NTY3ODkwLCJleHBpcmVzIjoxOTM0NTY3ODkwfQ">Try the admin registration</a> with a demo token.
+      </p>
+      <p>
+        <small>For testing purposes, you can also use <a href="admin_register.html?seriennummer=DEMO001">direct serial number registration</a>.</small>
       </p>
     </div>
   </body>

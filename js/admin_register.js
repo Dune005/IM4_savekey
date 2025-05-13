@@ -8,19 +8,45 @@ document.addEventListener("DOMContentLoaded", function() {
     return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
   }
 
-  // Seriennummer aus der URL extrahieren
-  const seriennummer = getUrlParameter('seriennummer');
-  
-  // Wenn keine Seriennummer in der URL vorhanden ist, zur Startseite umleiten
-  if (!seriennummer) {
-    alert("Keine gültige Seriennummer gefunden. Bitte scannen Sie den QR-Code erneut.");
-    window.location.href = "index.html";
-    return;
+  // Token aus der URL extrahieren
+  const token = getUrlParameter('token');
+
+  // Wenn kein Token in der URL vorhanden ist, prüfen ob eine direkte Seriennummer angegeben wurde (für Testzwecke)
+  if (!token) {
+    const seriennummer = getUrlParameter('seriennummer');
+
+    if (!seriennummer) {
+      alert("Kein gültiger Token gefunden. Bitte scannen Sie den QR-Code erneut.");
+      window.location.href = "index.html";
+      return;
+    }
+
+    // Seriennummer in das Formularfeld eintragen (nur für Testzwecke)
+    document.getElementById("seriennummer").value = seriennummer;
+    document.getElementById("token").value = "";
+  } else {
+    // Token im versteckten Feld speichern
+    document.getElementById("token").value = token;
+
+    // Seriennummer vom Server abrufen
+    fetch("api/verify_token.php?token=" + encodeURIComponent(token))
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === "success") {
+          // Seriennummer in das Formularfeld eintragen
+          document.getElementById("seriennummer").value = data.seriennummer;
+        } else {
+          alert("Ungültiger oder abgelaufener Token. Bitte scannen Sie den QR-Code erneut.");
+          window.location.href = "index.html";
+        }
+      })
+      .catch(error => {
+        console.error("Fehler beim Verifizieren des Tokens:", error);
+        alert("Fehler beim Verifizieren des Tokens. Bitte versuchen Sie es später erneut.");
+        window.location.href = "index.html";
+      });
   }
-  
-  // Seriennummer in das Formularfeld eintragen
-  document.getElementById("seriennummer").value = seriennummer;
-  
+
   // Event-Listener für das Formular
   document.getElementById("adminRegisterForm").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -32,31 +58,42 @@ document.addEventListener("DOMContentLoaded", function() {
     const mail = document.getElementById("mail").value.trim();
     const password = document.getElementById("password").value.trim();
     const phone = document.getElementById("phone")?.value.trim() || null;
-    // Seriennummer ist bereits gesetzt und readonly
+    const seriennummer = document.getElementById("seriennummer").value.trim();
+    const token = document.getElementById("token").value.trim();
 
     try {
-      console.log("Sende Admin-Registrierungsdaten:", { 
-        vorname, 
-        nachname, 
-        benutzername, 
-        mail, 
-        password: "***", 
-        phone, 
-        seriennummer 
+      console.log("Sende Admin-Registrierungsdaten:", {
+        vorname,
+        nachname,
+        benutzername,
+        mail,
+        password: "***",
+        phone,
+        seriennummer,
+        token: token ? "***" : ""
       });
+
+      // Entweder Token oder Seriennummer senden, je nachdem was verfügbar ist
+      const formData = {
+        vorname,
+        nachname,
+        benutzername,
+        mail,
+        password,
+        phone
+      };
+
+      // Wenn ein Token vorhanden ist, diesen verwenden, sonst die Seriennummer
+      if (token) {
+        formData.token = token;
+      } else {
+        formData.seriennummer = seriennummer;
+      }
 
       const response = await fetch("api/admin_register.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          vorname,
-          nachname,
-          benutzername,
-          mail,
-          password,
-          phone,
-          seriennummer
-        }),
+        body: new URLSearchParams(formData),
       });
 
       // Überprüfen, ob die Antwort gültiges JSON enthält

@@ -8,6 +8,7 @@ session_start();
 header('Content-Type: application/json');
 
 require_once '../system/config.php';
+require_once '../system/token_utils.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $vorname = trim($_POST['vorname'] ?? '');
@@ -16,7 +17,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $mail = trim($_POST['mail'] ?? '');
     $password = trim($_POST['password'] ?? '');
     $phone = trim($_POST['phone'] ?? null);
+    $token = trim($_POST['token'] ?? '');
     $seriennummer = trim($_POST['seriennummer'] ?? '');
+
+    // Wenn ein Token vorhanden ist, diesen entschlüsseln
+    if (!empty($token)) {
+        $decodedSeriennummer = decodeSerialToken($token);
+
+        if ($decodedSeriennummer === false) {
+            echo json_encode(["status" => "error", "message" => "Ungültiger oder abgelaufener Token"]);
+            exit;
+        }
+
+        // Entschlüsselte Seriennummer verwenden
+        $seriennummer = $decodedSeriennummer;
+    }
 
     // Validate required fields
     if (!$mail || !$password || !$vorname || !$nachname || !$benutzername || !$seriennummer) {
@@ -49,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Check if the serial number exists in the database
     // This is optional - if you want to validate that the serial number is valid
     // If you don't have a separate table for serial numbers, you can skip this check
-    
+
     // Hash the password
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 

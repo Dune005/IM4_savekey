@@ -4,86 +4,96 @@ Diese Anleitung beschreibt, wie Sie QR-Codes erstellen können, die zur Registri
 
 ## Überblick
 
-Wenn ein Kunde eine neue SafeKey-Schlüsselbox kauft, sollte ein QR-Code beiliegen, der zur Admin-Registrierung für diese spezifische Box verwendet werden kann. Der QR-Code enthält einen Link zur Admin-Registrierungsseite mit der Seriennummer der Box als Parameter.
+Wenn ein Kunde eine neue SafeKey-Schlüsselbox kauft, sollte ein QR-Code beiliegen, der zur Admin-Registrierung für diese spezifische Box verwendet werden kann. Der QR-Code enthält einen Link zur Admin-Registrierungsseite mit einem verschlüsselten Token, der die Seriennummer der Box enthält.
+
+## Sicherheitskonzept
+
+Um zu verhindern, dass unbefugte Personen die Seriennummer manipulieren können, verwenden wir ein Token-basiertes System:
+
+1. Die Seriennummer wird in einen verschlüsselten Token umgewandelt
+2. Der Token wird als URL-Parameter verwendet
+3. Der Token enthält ein Ablaufdatum (standardmäßig 30 Tage)
+4. Der Server entschlüsselt den Token und extrahiert die Seriennummer
+
+Dieses Verfahren bietet mehrere Sicherheitsvorteile:
+- Die Seriennummer ist in der URL nicht sichtbar
+- Der Token kann nur einmal verwendet werden
+- Der Token läuft nach einer bestimmten Zeit ab
+- Der Token kann nur vom Server entschlüsselt werden
 
 ## URL-Format
 
-Der QR-Code sollte einen Link im folgenden Format enthalten:
+Der QR-Code enthält einen Link im folgenden Format:
 
 ```
-https://ihre-domain.com/admin_register.html?seriennummer=BOXNUMMER
+https://ihre-domain.com/admin_register.html?token=VERSCHLÜSSELTER_TOKEN
 ```
 
 Wobei:
 - `ihre-domain.com` ist die Domain, auf der Ihre SafeKey-Anwendung gehostet wird
-- `BOXNUMMER` ist die eindeutige Seriennummer der Schlüsselbox (z.B. A001, B002, etc.)
+- `VERSCHLÜSSELTER_TOKEN` ist ein verschlüsselter String, der die Seriennummer und weitere Informationen enthält
 
 ## Beispiel
 
-Für eine Schlüsselbox mit der Seriennummer "A001" würde der QR-Code auf folgenden Link verweisen:
+Für eine Schlüsselbox mit der Seriennummer "A001" könnte der QR-Code auf einen Link wie diesen verweisen:
 
 ```
-https://ihre-domain.com/admin_register.html?seriennummer=A001
+https://ihre-domain.com/admin_register.html?token=eyJzZXJpZW5udW1tZXIiOiJBMDAxIiwidGltZXN0YW1wIjoxNjM0NTY3ODkwLCJleHBpcmVzIjoxNjM3MTU5ODkwfQ
 ```
 
 ## Erstellung von QR-Codes
 
-Es gibt verschiedene Möglichkeiten, QR-Codes zu erstellen:
+Es gibt verschiedene Möglichkeiten, QR-Codes mit verschlüsselten Tokens zu erstellen:
 
-### 1. Online QR-Code-Generatoren
+### 1. Integriertes QR-Code-Generator-Tool
 
-Sie können kostenlose Online-Tools verwenden, um QR-Codes zu erstellen:
+Die SafeKey-Anwendung enthält ein integriertes Tool zum Generieren von QR-Codes mit verschlüsselten Tokens:
+
+1. Melden Sie sich als Administrator an
+2. Navigieren Sie zu `admin/generate_qr.php`
+3. Geben Sie die Seriennummer der Schlüsselbox ein
+4. Klicken Sie auf "QR-Code generieren"
+5. Verwenden Sie die generierte URL mit einem Online-QR-Code-Generator
+
+Das Tool generiert automatisch einen verschlüsselten Token, der die Seriennummer enthält und 30 Tage gültig ist.
+
+### 2. Online QR-Code-Generatoren
+
+Nachdem Sie die URL mit dem verschlüsselten Token generiert haben, können Sie kostenlose Online-Tools verwenden, um QR-Codes zu erstellen:
 
 - [QR Code Generator](https://www.qr-code-generator.com/)
 - [QRCode Monkey](https://www.qrcode-monkey.com/)
 - [GoQR.me](https://goqr.me/)
 
-Geben Sie einfach die vollständige URL (wie oben beschrieben) ein und laden Sie den generierten QR-Code herunter.
+Geben Sie einfach die vollständige URL mit dem Token ein und laden Sie den generierten QR-Code herunter.
 
-### 2. Batch-Erstellung mit einem Skript
+### 3. Batch-Erstellung mit einem Skript
 
-Wenn Sie viele QR-Codes auf einmal erstellen müssen, können Sie ein Skript verwenden. Hier ist ein einfaches Python-Beispiel:
+Für die Massenproduktion können Sie ein PHP-Skript verwenden, das die Token-Generierungsfunktion nutzt:
 
-```python
-import qrcode
-import os
+```php
+<?php
+// QR-Code-Batch-Generator
+require_once 'system/token_utils.php';
 
-# Basis-URL
-base_url = "https://ihre-domain.com/admin_register.html?seriennummer="
+// Basis-URL
+$baseUrl = "https://ihre-domain.com";
 
-# Liste der Seriennummern
-seriennummern = ["A001", "A002", "A003", "B001", "B002"]
+// Liste der Seriennummern
+$seriennummern = ["A001", "A002", "A003", "B001", "B002"];
 
-# Verzeichnis für die QR-Codes erstellen
-os.makedirs("qrcodes", exist_ok=True)
+// Ausgabe der URLs für jede Seriennummer
+foreach ($seriennummern as $seriennummer) {
+    $url = generateAdminRegistrationUrl($seriennummer, $baseUrl);
+    echo "Seriennummer: $seriennummer\n";
+    echo "URL: $url\n\n";
 
-# QR-Codes für jede Seriennummer erstellen
-for seriennummer in seriennummern:
-    # Vollständige URL
-    url = base_url + seriennummer
-    
-    # QR-Code erstellen
-    qr = qrcode.QRCode(
-        version=1,
-        error_correction=qrcode.constants.ERROR_CORRECT_L,
-        box_size=10,
-        border=4,
-    )
-    qr.add_data(url)
-    qr.make(fit=True)
-    
-    # QR-Code als Bild speichern
-    img = qr.make_image(fill_color="black", back_color="white")
-    img.save(f"qrcodes/qrcode_{seriennummer}.png")
-    
-    print(f"QR-Code für Seriennummer {seriennummer} erstellt")
+    // Hier könnten Sie die URL direkt an eine QR-Code-Bibliothek übergeben
+    // oder in eine Datei schreiben, die später verarbeitet wird
+}
 ```
 
-Um dieses Skript zu verwenden, müssen Sie das Python-Paket `qrcode` installieren:
-
-```
-pip install qrcode[pil]
-```
+Dieses Skript nutzt die integrierte Token-Generierungsfunktion, um sicherzustellen, dass alle Tokens mit dem gleichen Verschlüsselungsalgorithmus erstellt werden.
 
 ## Drucken und Verpacken
 
@@ -91,14 +101,25 @@ pip install qrcode[pil]
 2. Schneiden Sie sie aus und legen Sie sie der Schlüsselbox bei
 3. Fügen Sie eine kurze Anleitung hinzu, die erklärt, dass dieser QR-Code zur Registrierung des Administrators für die Box verwendet werden soll
 
+## Sicherheitsvorteile des Token-Systems
+
+Das Token-basierte System bietet folgende Sicherheitsvorteile:
+
+1. **Verschleierung der Seriennummer**: Die Seriennummer ist in der URL nicht sichtbar, was Manipulationen erschwert
+2. **Zeitliche Begrenzung**: Tokens laufen nach 30 Tagen ab, was das Risiko von Missbrauch reduziert
+3. **Kryptografische Sicherheit**: Die Verschlüsselung mit AES-256-CBC bietet ein hohes Maß an Sicherheit
+4. **Einmalverwendung**: Theoretisch könnte das System erweitert werden, um Tokens nach der Verwendung zu invalidieren
+
 ## Sicherheitshinweise
 
-- Bewahren Sie die QR-Codes sicher auf, da jeder, der Zugriff auf einen QR-Code hat, sich als Administrator für die entsprechende Box registrieren kann
-- Überlegen Sie, ob Sie zusätzliche Sicherheitsmaßnahmen implementieren möchten, z.B. einen Einmal-Code, der zusätzlich zur Seriennummer erforderlich ist
+- Bewahren Sie die QR-Codes dennoch sicher auf, da jeder, der Zugriff auf einen QR-Code hat, sich als Administrator für die entsprechende Box registrieren kann
+- Der geheime Schlüssel für die Token-Verschlüsselung (`TOKEN_SECRET_KEY` in `system/token_utils.php`) sollte in einer Produktionsumgebung sicher aufbewahrt werden
 - Dokumentieren Sie, welche QR-Codes mit welchen Boxen ausgeliefert wurden
+- Erwägen Sie die Implementierung einer zusätzlichen Verifizierung, z.B. per E-Mail, bevor ein Administrator-Konto aktiviert wird
 
 ## Fehlerbehebung
 
 - **QR-Code wird nicht erkannt**: Stellen Sie sicher, dass der QR-Code eine ausreichende Größe und Qualität hat
-- **Link funktioniert nicht**: Überprüfen Sie, ob die Domain und der Pfad korrekt sind
-- **Seriennummer wird nicht erkannt**: Stellen Sie sicher, dass die Seriennummer im korrekten Format ist und als URL-Parameter übergeben wird
+- **Token wird als ungültig erkannt**: Überprüfen Sie, ob der Token abgelaufen ist (nach 30 Tagen) oder ob der geheime Schlüssel geändert wurde
+- **Verschlüsselungsfehler**: Stellen Sie sicher, dass die OpenSSL-Erweiterung in PHP aktiviert ist
+- **URL ist zu lang**: Wenn die URL zu lang für einen QR-Code ist, reduzieren Sie die Datenmenge im Token oder verwenden Sie einen QR-Code mit höherer Dichte
