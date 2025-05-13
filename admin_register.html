@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin-Registrierung</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="login-container">
+      <img src="images/logo_safekey.svg" alt="Logo" class="logo" style="display: block; margin: 0 auto 40px; max-width: 250px;">
+      <h1>Admin-Registrierung</h1>
+      
+      <div class="info-box">
+        <p><strong>Hinweis:</strong> Diese Seite ist nur für die Registrierung von Administratoren vorgesehen. 
+        Als Administrator haben Sie erweiterte Rechte zur Verwaltung der Schlüsselbox.</p>
+        <p>Die Seriennummer Ihrer Schlüsselbox wurde automatisch aus dem QR-Code übernommen und kann nicht geändert werden.</p>
+      </div>
+
+      <form id="adminRegisterForm">
+        <div>
+          <label>Vorname</label>
+          <input type="text" id="vorname" required />
+        </div>
+        <div>
+          <label>Nachname</label>
+          <input type="text" id="nachname" required />
+        </div>
+        <div>
+          <label>Benutzername</label>
+          <input type="text" id="benutzername" required />
+        </div>
+        <div>
+          <label>E-Mail</label>
+          <input type="email" id="mail" required />
+        </div>
+        <div>
+          <label>Passwort</label>
+          <input type="password" id="password" required />
+        </div>
+        <div>
+          <label>Telefon (optional)</label>
+          <input type="tel" id="phone" />
+        </div>
+        <div>
+          <label>Seriennummer der Schlüsselbox</label>
+          <input type="text" id="seriennummer" readonly />
+        </div>
+        <button type="submit">Als Administrator registrieren</button>
+      </form>
+
+      <p>Bereits ein Konto? <a href="login.html">Hier einloggen</a>.</p>
+    </div>
+
+    <script src="js/admin_register.js"></script>
+  </body>
+</html>

@@ -422,3 +422,21 @@ code {
   font-family: monospace;
   font-size: 0.9em;
 }
+
+/* Info Box für Admin-Registrierung */
+.info-box {
+  margin: 1em 0 2em;
+  padding: 1em;
+  background-color: #e3f2fd;
+  border-left: 4px solid #2196F3;
+  border-radius: 4px;
+}
+
+.info-box p {
+  margin: 0.5em 0;
+  font-size: 0.95em;
+}
+
+.info-box strong {
+  color: #0d47a1;
+}

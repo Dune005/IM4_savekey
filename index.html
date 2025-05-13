@@ -16,6 +16,9 @@
           <a href="protected.html">Protected Page</a> (only visible when logged
           in)
         </li>
+        <li>
+          <a href="Anleitungen/ANLEITUNG_QR_CODE_ADMIN.md">QR Code Admin Documentation</a>
+        </li>
       </ul>
     </div>
 
@@ -24,12 +27,21 @@
       <p>This is a simple authentication demo that shows:</p>
       <ul>
         <li>User registration</li>
+        <li>Admin registration via QR code</li>
         <li>User login</li>
         <li>Protected content that's only visible to logged-in users</li>
+        <li>Different access levels for admins and regular users</li>
       </ul>
       <p>
         If you try to access the protected page without being logged in, you'll
         be redirected to the login page.
+      </p>
+
+      <h3>Admin Registration</h3>
+      <p>
+        Administrators can register by scanning a QR code that comes with the SafeKey box.
+        The QR code contains a link to a special registration page with the box's serial number.
+        <a href="admin_register.html?seriennummer=DEMO001">Try the admin registration</a> with a demo serial number.
       </p>
     </div>
   </body>
