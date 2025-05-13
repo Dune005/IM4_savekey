@@ -17,6 +17,9 @@ async function checkAuth() {
     // Speichere die Seriennummer für spätere Verwendung
     const seriennummer = result.seriennummer;
 
+    // Prüfen, ob der Benutzer ein Administrator ist
+    const isAdmin = result.is_admin === true;
+
     // Zeige Benutzerinformationen an
     protectedContent.innerHTML = `
       <h2>Willkommen, ${result.vorname} ${result.nachname}!</h2>
@@ -24,15 +27,18 @@ async function checkAuth() {
         <p><strong>Benutzername:</strong> ${result.benutzername}</p>
         <p><strong>E-Mail:</strong> ${result.mail}</p>
         <p><strong>Seriennummer Ihrer Schlüsselbox:</strong> ${seriennummer}</p>
+        <p><strong>Benutzerrolle:</strong> ${isAdmin ? 'Administrator' : 'Normaler Benutzer'}</p>
       </div>
 
       <div class="key-status-container">
         <h3>Status Ihres Schlüssels</h3>
         <div id="keyStatus" class="key-status">Lade Status...</div>
+        ${isAdmin ? `
         <div class="key-actions">
           <button id="takeKeyBtn" class="action-btn take-btn">Schlüssel entnehmen</button>
           <button id="returnKeyBtn" class="action-btn return-btn">Schlüssel zurückgeben</button>
         </div>
+        ` : ''}
       </div>
 
       <div class="key-history-container">
@@ -40,6 +46,7 @@ async function checkAuth() {
         <div id="keyHistory" class="key-history">Lade Historie...</div>
       </div>
 
+      ${isAdmin ? `
       <div class="rfid-management-container">
         <h3>RFID/NFC-Verwaltung</h3>
         <p>Hier können Sie Ihren RFID/NFC-Chip mit Ihrem Konto verknüpfen, um die Schlüsselbox zu nutzen.</p>
@@ -53,6 +60,7 @@ async function checkAuth() {
           <p><strong>Hinweis:</strong> Um Ihren RFID/NFC-Chip zu verknüpfen, scannen Sie ihn an der Schlüsselbox und geben Sie die angezeigte UID hier ein.</p>
         </div>
       </div>
+      ` : ''}
     `;
 
     // Lade den Schlüsselstatus und die Historie
@@ -62,20 +70,35 @@ async function checkAuth() {
     // Starte die automatische Aktualisierung des Schlüsselstatus (alle 5 Sekunden)
     setStatusUpdateInterval(5000);
 
-    // Benutzernamen als Datenelement zum Button hinzufügen
-    const takeKeyBtn = document.getElementById('takeKeyBtn');
-    takeKeyBtn.dataset.username = result.benutzername;
+    // Nur für Administratoren die Aktionsbuttons und RFID-Verwaltung einrichten
+    if (result.is_admin === true) {
+      // Benutzernamen als Datenelement zum Button hinzufügen
+      const takeKeyBtn = document.getElementById('takeKeyBtn');
+      if (takeKeyBtn) {
+        takeKeyBtn.dataset.username = result.benutzername;
+        // Event-Listener für die Schlüsselaktionen hinzufügen
+        takeKeyBtn.addEventListener('click', () => takeKey());
+      }
 
-    // Event-Listener für die Schlüsselaktionen hinzufügen
-    takeKeyBtn.addEventListener('click', () => takeKey());
-    document.getElementById('returnKeyBtn').addEventListener('click', () => returnKey());
+      const returnKeyBtn = document.getElementById('returnKeyBtn');
+      if (returnKeyBtn) {
+        returnKeyBtn.addEventListener('click', () => returnKey());
+      }
 
-    // Event-Listener für die RFID/NFC-Verwaltung hinzufügen
-    document.getElementById('assignRfidBtn').addEventListener('click', () => assignRfid());
-    document.getElementById('removeRfidBtn').addEventListener('click', () => removeRfid());
+      // Event-Listener für die RFID/NFC-Verwaltung hinzufügen
+      const assignRfidBtn = document.getElementById('assignRfidBtn');
+      if (assignRfidBtn) {
+        assignRfidBtn.addEventListener('click', () => assignRfid());
+      }
 
-    // RFID/NFC-Status laden
-    loadRfidStatus();
+      const removeRfidBtn = document.getElementById('removeRfidBtn');
+      if (removeRfidBtn) {
+        removeRfidBtn.addEventListener('click', () => removeRfid());
+      }
+
+      // RFID/NFC-Status laden
+      loadRfidStatus();
+    }
 
     return true;
   } catch (error) {
@@ -116,14 +139,15 @@ async function loadKeyStatus() {
       const isAvailable = keyStatus.is_available;
       const pendingRemoval = keyStatus.pending_removal;
 
-      // Buttons aktivieren/deaktivieren basierend auf dem Status
+      // Buttons aktivieren/deaktivieren basierend auf dem Status (nur für Admins)
       const takeKeyBtn = document.getElementById('takeKeyBtn');
       const returnKeyBtn = document.getElementById('returnKeyBtn');
 
       // Wenn der Schlüssel verfügbar ist
       if (isAvailable) {
-        takeKeyBtn.disabled = false;
-        returnKeyBtn.disabled = true;
+        // Nur Button-Eigenschaften ändern, wenn die Buttons existieren (für Admins)
+        if (takeKeyBtn) takeKeyBtn.disabled = false;
+        if (returnKeyBtn) returnKeyBtn.disabled = true;
 
         keyStatusElement.innerHTML = `
           <div class="key-available">
@@ -140,8 +164,9 @@ async function loadKeyStatus() {
       }
       // Wenn es eine ausstehende Entnahme gibt
       else if (pendingRemoval) {
-        takeKeyBtn.disabled = true;
-        returnKeyBtn.disabled = true;
+        // Nur Button-Eigenschaften ändern, wenn die Buttons existieren (für Admins)
+        if (takeKeyBtn) takeKeyBtn.disabled = true;
+        if (returnKeyBtn) returnKeyBtn.disabled = true;
 
         // Berechne die verbleibende Zeit bis zum Ablauf
         const expirationDate = new Date(keyStatus.pending_expiration);
@@ -171,16 +196,22 @@ async function loadKeyStatus() {
       }
       // Wenn der Schlüssel von jemandem entnommen wurde
       else {
-        takeKeyBtn.disabled = true;
+        // Nur Button-Eigenschaften ändern, wenn die Buttons existieren (für Admins)
+        if (takeKeyBtn) takeKeyBtn.disabled = true;
 
         // Formatiere das Datum
         const takeDate = new Date(keyStatus.take_time);
         const formattedDate = takeDate.toLocaleDateString('de-DE') + ' ' + takeDate.toLocaleTimeString('de-DE');
 
         const currentUser = keyStatus.current_user;
-        const isCurrentUser = currentUser && currentUser.benutzername === document.getElementById('takeKeyBtn').dataset.username;
+        // Prüfen, ob der takeKeyBtn existiert, bevor auf seine Eigenschaften zugegriffen wird
+        const isCurrentUser = currentUser && takeKeyBtn && currentUser.benutzername === takeKeyBtn.dataset.username;
 
-        returnKeyBtn.disabled = !isCurrentUser;
+        // Nur Button-Eigenschaften ändern, wenn die Buttons existieren (für Admins)
+        if (returnKeyBtn) returnKeyBtn.disabled = !isCurrentUser;
+
+        // Prüfen, ob der Benutzer ein Admin ist (ob die Buttons existieren)
+        const isAdmin = !!takeKeyBtn;
 
         keyStatusElement.innerHTML = `
           <div class="key-unavailable">
@@ -188,7 +219,7 @@ async function loadKeyStatus() {
             <div class="status-text">
               <h4>Schlüssel ist nicht verfügbar</h4>
               <p>Der Schlüssel wurde am ${formattedDate} von ${currentUser.vorname} ${currentUser.nachname} entnommen.</p>
-              ${isCurrentUser ? '<p class="user-action">Sie können den Schlüssel zurückgeben.</p>' : '<p class="user-action">Sie können den Schlüssel nicht zurückgeben, da Sie ihn nicht entnommen haben.</p>'}
+              ${isAdmin ? (isCurrentUser ? '<p class="user-action">Sie können den Schlüssel zurückgeben.</p>' : '<p class="user-action">Sie können den Schlüssel nicht zurückgeben, da Sie ihn nicht entnommen haben.</p>') : ''}
             </div>
           </div>
         `;

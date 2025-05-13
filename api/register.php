@@ -44,9 +44,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
     try {
-        // Insert the new user with all fields including seriennummer
-        $insert = $pdo->prepare("INSERT INTO benutzer (vorname, nachname, benutzername, mail, passwort, phone, seriennummer)
-                                VALUES (:vorname, :nachname, :benutzername, :mail, :passwort, :phone, :seriennummer)");
+        // Insert the new user with all fields including seriennummer and is_admin (default: FALSE)
+        $insert = $pdo->prepare("INSERT INTO benutzer (vorname, nachname, benutzername, mail, passwort, phone, seriennummer, is_admin)
+                                VALUES (:vorname, :nachname, :benutzername, :mail, :passwort, :phone, :seriennummer, FALSE)");
         $insert->execute([
             ':vorname' => $vorname,
             ':nachname' => $nachname,

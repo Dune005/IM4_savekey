@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Check user in DB - using the new field names
-    $stmt = $pdo->prepare("SELECT user_id, passwort, vorname, nachname, benutzername, mail, seriennummer FROM benutzer WHERE benutzername = :benutzername");
+    $stmt = $pdo->prepare("SELECT user_id, passwort, vorname, nachname, benutzername, mail, seriennummer, is_admin FROM benutzer WHERE benutzername = :benutzername");
     $stmt->execute([':benutzername' => $benutzername]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -34,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['nachname'] = $user['nachname'];
         $_SESSION['benutzername'] = $user['benutzername'];
         $_SESSION['seriennummer'] = $user['seriennummer'];
+        $_SESSION['is_admin'] = $user['is_admin'] ? true : false;
 
         echo json_encode(["status" => "success"]);
     } else {

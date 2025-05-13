@@ -18,5 +18,6 @@ echo json_encode([
     "vorname" => $_SESSION['vorname'] ?? '',
     "nachname" => $_SESSION['nachname'] ?? '',
     "benutzername" => $_SESSION['benutzername'] ?? '',
-    "seriennummer" => $_SESSION['seriennummer'] ?? ''
+    "seriennummer" => $_SESSION['seriennummer'] ?? '',
+    "is_admin" => $_SESSION['is_admin'] ?? false
 ]);

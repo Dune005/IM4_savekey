@@ -16,6 +16,13 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Überprüfen, ob der Benutzer ein Administrator ist
+if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
+    http_response_code(403);
+    echo json_encode(["status" => "error", "message" => "Nur Administratoren können Schlüssel entnehmen oder zurückgeben"]);
+    exit;
+}
+
 // Überprüfen, ob die Aktion angegeben wurde
 if (!isset($_POST['action'])) {
     echo json_encode(["status" => "error", "message" => "Keine Aktion angegeben"]);
