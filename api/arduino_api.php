@@ -222,6 +222,36 @@ function handleRfidScan($pdo, $data) {
         return;
     }
 
+    // Speichern der zuletzt gescannten RFID-UID für die Live-Anzeige
+    try {
+        // Prüfen, ob die Tabelle last_rfid_scans existiert
+        $tableCheckStmt = $pdo->prepare("
+            SELECT 1 FROM information_schema.tables
+            WHERE table_schema = DATABASE()
+            AND table_name = 'last_rfid_scans'
+        ");
+        $tableCheckStmt->execute();
+
+        if ($tableCheckStmt->fetch()) {
+            // Tabelle existiert, RFID-UID speichern
+            $saveRfidStmt = $pdo->prepare("
+                INSERT INTO last_rfid_scans
+                (seriennummer, rfid_uid, timestamp)
+                VALUES
+                (:seriennummer, :rfid_uid, :timestamp)
+            ");
+
+            $saveRfidStmt->execute([
+                ':seriennummer' => $seriennummer,
+                ':rfid_uid' => $rfidUid,
+                ':timestamp' => $timestamp
+            ]);
+        }
+    } catch (Exception $e) {
+        // Fehler beim Speichern der RFID-UID ignorieren, da dies nicht kritisch ist
+        // und den Hauptprozess nicht beeinträchtigen soll
+    }
+
     // Find user with this RFID UID
     $stmt = $pdo->prepare("
         SELECT benutzername, user_id

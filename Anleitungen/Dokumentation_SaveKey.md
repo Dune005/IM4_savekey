@@ -1,4 +1,4 @@
-# SafeKey - Digitales Schlüsselüberwachungssystem
+# SaveKey - Digitales Schlüsselüberwachungssystem
 
 ## Inhaltsverzeichnis
 1. [Projektübersicht](#projektübersicht)
@@ -14,7 +14,7 @@
 
 ## Projektübersicht
 
-SafeKey ist ein digitales Überwachungssystem für Schlüsselboxen, das eine klassische Schlüsselbox um moderne IoT-Funktionalitäten erweitert. Das System erkennt automatisch, wenn ein Schlüssel entnommen wird, fordert eine Benutzerauthentifizierung an und protokolliert alle Aktionen in einer Datenbank. Bei unbestätigten Entnahmen werden Warnmeldungen ausgelöst.
+SaveKey ist ein digitales Überwachungssystem für Schlüsselboxen, das eine klassische Schlüsselbox um moderne IoT-Funktionalitäten erweitert. Das System erkennt automatisch, wenn ein Schlüssel entnommen wird, fordert eine Benutzerauthentifizierung an und protokolliert alle Aktionen in einer Datenbank. Bei unbestätigten Entnahmen werden Warnmeldungen ausgelöst.
 
 ### Hauptfunktionen
 - Automatische Erkennung von Schlüsselentnahmen mittels Magnetsensor
@@ -26,7 +26,7 @@ SafeKey ist ein digitales Überwachungssystem für Schlüsselboxen, das eine kla
 
 ## Funktionsweise
 
-Das SafeKey-System arbeitet in fünf definierten Zuständen:
+Das SaveKey-System arbeitet in fünf definierten Zuständen:
 
 ### 1. Ruhezustand
 - Der Schlüssel befindet sich in der Box
@@ -59,7 +59,7 @@ Zusätzlich wird bei einem Stromausfall eine eigene Warnung ausgelöst, um Manip
 
 ## Systemarchitektur
 
-Das SafeKey-System besteht aus drei Hauptkomponenten:
+Das SaveKey-System besteht aus drei Hauptkomponenten:
 
 1. **Hardware (Arduino)**
    - Erfasst physische Ereignisse (Schlüsselentnahme, RFID-Scans)
@@ -156,7 +156,7 @@ Die Datenbank besteht aus drei Haupttabellen:
 
 ## Benutzerrollen
 
-Das SafeKey-System unterscheidet zwischen zwei Benutzerrollen:
+Das SaveKey-System unterscheidet zwischen zwei Benutzerrollen:
 
 ### 1. Normale Benutzer
 - Können den Status ihres Schlüssels einsehen
@@ -201,7 +201,7 @@ Das SafeKey-System unterscheidet zwischen zwei Benutzerrollen:
 
    // --- API-Konfiguration ---
    const char* API_ENDPOINT = "http://deine-domain.com/api/arduino_api.php";
-   const char* API_KEY = "sk_hardware_safekey_12345";
+   const char* API_KEY = "sk_hardware_savekey_12345";
 
    // --- Seriennummer der Box ---
    const char* seriennummer = "A001"; // Muss mit der Seriennummer in der Datenbank übereinstimmen

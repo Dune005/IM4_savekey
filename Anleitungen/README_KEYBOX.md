@@ -1,4 +1,4 @@
-# SafeKey Box System
+# SaveKey Box System
 
 Dieses System besteht aus einer Arduino-basierten Schlüsselbox mit Magnetsensor und RFID/NFC-Leser sowie einer PHP-API, die die Kommunikation mit der Datenbank ermöglicht.
 

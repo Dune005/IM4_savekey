@@ -1,4 +1,4 @@
-# **safekey | Digitales Schlüssel­überwachungs­system** 
+# **SaveKey | Digitales Schlüssel­überwachungs­system**
 
 ### **Zielsetzung**
 

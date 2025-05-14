@@ -1,10 +1,10 @@
 # Anleitung zur Einrichtung von Administrator-Benutzern
 
-Diese Anleitung beschreibt, wie Sie Administrator-Benutzer im SafeKey-System einrichten können.
+Diese Anleitung beschreibt, wie Sie Administrator-Benutzer im SaveKey-System einrichten können.
 
 ## Über Benutzerrollen
 
-Das SafeKey-System unterscheidet zwischen zwei Benutzerrollen:
+Das SaveKey-System unterscheidet zwischen zwei Benutzerrollen:
 
 1. **Normale Benutzer**:
    - Können den Status ihres Schlüssels einsehen
@@ -45,8 +45,8 @@ Alternativ können Sie auch direkt einen SQL-Befehl ausführen:
 UPDATE benutzer SET is_admin = TRUE WHERE benutzername = 'admin';
 
 -- Überprüfen, ob der Benutzer als Administrator gesetzt wurde
-SELECT user_id, benutzername, vorname, nachname, mail, is_admin 
-FROM benutzer 
+SELECT user_id, benutzername, vorname, nachname, mail, is_admin
+FROM benutzer
 WHERE is_admin = TRUE;
 ```
 
@@ -65,8 +65,8 @@ Neue Benutzer, die sich über die Registrierungsseite anmelden, werden automatis
 Um zu überprüfen, welche Benutzer Administrator-Rechte haben, führen Sie den folgenden SQL-Befehl aus:
 
 ```sql
-SELECT user_id, benutzername, vorname, nachname, mail, is_admin 
-FROM benutzer 
+SELECT user_id, benutzername, vorname, nachname, mail, is_admin
+FROM benutzer
 ORDER BY is_admin DESC, benutzername ASC;
 ```
 

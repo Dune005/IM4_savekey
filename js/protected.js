@@ -51,13 +51,20 @@ async function checkAuth() {
         <h3>RFID/NFC-Verwaltung</h3>
         <p>Hier können Sie Ihren RFID/NFC-Chip mit Ihrem Konto verknüpfen, um die Schlüsselbox zu nutzen.</p>
         <div id="rfidStatus" class="rfid-status">Lade RFID/NFC-Status...</div>
+        <div id="lastScannedRfid" class="last-scanned-rfid" style="display: none;">
+          <div class="alert alert-info">
+            <h4>Zuletzt gescannter RFID-Chip:</h4>
+            <p>UID: <code id="lastScannedRfidUid"></code></p>
+            <button id="useScannedRfidBtn" class="action-btn">Diese UID verwenden</button>
+          </div>
+        </div>
         <div class="rfid-form">
           <input type="text" id="rfidUid" placeholder="RFID/NFC UID eingeben" class="rfid-input" />
           <button id="assignRfidBtn" class="action-btn rfid-btn">RFID/NFC zuweisen</button>
           <button id="removeRfidBtn" class="action-btn rfid-remove-btn">RFID/NFC entfernen</button>
         </div>
         <div class="rfid-info">
-          <p><strong>Hinweis:</strong> Um Ihren RFID/NFC-Chip zu verknüpfen, scannen Sie ihn an der Schlüsselbox und geben Sie die angezeigte UID hier ein.</p>
+          <p><strong>Hinweis:</strong> Um Ihren RFID/NFC-Chip zu verknüpfen, scannen Sie ihn an der Schlüsselbox. Die UID wird automatisch angezeigt und kann mit einem Klick übernommen werden.</p>
         </div>
       </div>
       ` : ''}
@@ -98,6 +105,15 @@ async function checkAuth() {
 
       // RFID/NFC-Status laden
       loadRfidStatus();
+
+      // Event-Listener für den "Diese UID verwenden"-Button hinzufügen
+      const useScannedRfidBtn = document.getElementById('useScannedRfidBtn');
+      if (useScannedRfidBtn) {
+        useScannedRfidBtn.addEventListener('click', useScannedRfid);
+      }
+
+      // Starte die Abfrage nach neuen RFID-Scans
+      startRfidScanPolling();
     }
 
     return true;
@@ -615,9 +631,116 @@ async function removeRfid() {
 // Check auth when page loads
 window.addEventListener("load", checkAuth);
 
+// Globale Variable für das RFID-Scan-Polling-Intervall
+let rfidScanPollingInterval = null;
+
+// Funktion zum Starten des RFID-Scan-Pollings
+function startRfidScanPolling() {
+  // Sofort beim Start einmal ausführen
+  checkForNewRfidScans();
+
+  // Dann alle 2 Sekunden wiederholen
+  rfidScanPollingInterval = setInterval(checkForNewRfidScans, 2000);
+}
+
+// Globale Variable für den Timer zum Ausblenden der RFID-Anzeige
+let rfidDisplayTimer = null;
+
+// Funktion zum Überprüfen, ob neue RFID-Scans vorliegen
+async function checkForNewRfidScans() {
+  try {
+    // API-Anfrage senden, um die zuletzt gescannte RFID-UID abzurufen
+    const response = await fetch('api/last_rfid_scan.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        action: 'get'
+      }),
+      credentials: "include",
+      cache: 'no-store' // Verhindert Caching der Antwort
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP-Fehler: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (data.status === "success") {
+      const lastScannedRfidElement = document.getElementById('lastScannedRfid');
+      const lastScannedRfidUidElement = document.getElementById('lastScannedRfidUid');
+
+      if (data.has_recent_scan) {
+        // Prüfen, ob es sich um eine neue UID handelt oder die Anzeige bereits sichtbar ist
+        const currentUid = lastScannedRfidUidElement.textContent;
+        const newUid = data.rfid_uid;
+        const isVisible = lastScannedRfidElement.style.display === 'block';
+
+        // Nur aktualisieren, wenn es eine neue UID ist oder die Anzeige nicht sichtbar ist
+        if (currentUid !== newUid || !isVisible) {
+          console.log("Neue RFID-UID erkannt:", newUid);
+
+          // Zeige die zuletzt gescannte RFID-UID an
+          lastScannedRfidUidElement.textContent = newUid;
+          lastScannedRfidElement.style.display = 'block';
+
+          // Bestehenden Timer löschen, falls vorhanden
+          if (rfidDisplayTimer) {
+            clearTimeout(rfidDisplayTimer);
+          }
+
+          // Neuen Timer setzen - Automatisch nach 10 Sekunden ausblenden
+          rfidDisplayTimer = setTimeout(() => {
+            console.log("Timer abgelaufen, blende RFID-Anzeige aus");
+            lastScannedRfidElement.style.display = 'none';
+            rfidDisplayTimer = null;
+          }, 10000);
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Fehler beim Abrufen der zuletzt gescannten RFID-UID:", error);
+    // Fehler still behandeln, da dies im Hintergrund läuft und den Benutzer nicht stören soll
+  }
+}
+
+// Funktion zum Verwenden der zuletzt gescannten RFID-UID
+function useScannedRfid() {
+  const lastScannedRfidUidElement = document.getElementById('lastScannedRfidUid');
+  const rfidUidInput = document.getElementById('rfidUid');
+
+  if (lastScannedRfidUidElement && rfidUidInput) {
+    rfidUidInput.value = lastScannedRfidUidElement.textContent;
+
+    // Ausblenden der Anzeige
+    const lastScannedRfidElement = document.getElementById('lastScannedRfid');
+    if (lastScannedRfidElement) {
+      lastScannedRfidElement.style.display = 'none';
+
+      // Timer löschen, da die Anzeige manuell ausgeblendet wurde
+      if (rfidDisplayTimer) {
+        clearTimeout(rfidDisplayTimer);
+        rfidDisplayTimer = null;
+      }
+    }
+  }
+}
+
 // Stoppe die automatische Aktualisierung, wenn die Seite verlassen wird
 window.addEventListener("beforeunload", () => {
+  // Intervalle löschen
   if (statusUpdateInterval) {
     clearInterval(statusUpdateInterval);
+  }
+
+  if (rfidScanPollingInterval) {
+    clearInterval(rfidScanPollingInterval);
+  }
+
+  // Timer löschen
+  if (rfidDisplayTimer) {
+    clearTimeout(rfidDisplayTimer);
   }
 });

@@ -1,10 +1,10 @@
 # Anleitung zur Erstellung von QR-Codes für die Admin-Registrierung
 
-Diese Anleitung beschreibt, wie Sie QR-Codes erstellen können, die zur Registrierung von Administratoren für Ihre SafeKey-Schlüsselboxen verwendet werden können.
+Diese Anleitung beschreibt, wie Sie QR-Codes erstellen können, die zur Registrierung von Administratoren für Ihre SaveKey-Schlüsselboxen verwendet werden können.
 
 ## Überblick
 
-Wenn ein Kunde eine neue SafeKey-Schlüsselbox kauft, sollte ein QR-Code beiliegen, der zur Admin-Registrierung für diese spezifische Box verwendet werden kann. Der QR-Code enthält einen Link zur Admin-Registrierungsseite mit einem verschlüsselten Token, der die Seriennummer der Box enthält.
+Wenn ein Kunde eine neue SaveKey-Schlüsselbox kauft, sollte ein QR-Code beiliegen, der zur Admin-Registrierung für diese spezifische Box verwendet werden kann. Der QR-Code enthält einen Link zur Admin-Registrierungsseite mit einem verschlüsselten Token, der die Seriennummer der Box enthält.
 
 ## Sicherheitskonzept
 
@@ -30,7 +30,7 @@ https://ihre-domain.com/admin_register.html?token=VERSCHLÜSSELTER_TOKEN
 ```
 
 Wobei:
-- `ihre-domain.com` ist die Domain, auf der Ihre SafeKey-Anwendung gehostet wird
+- `ihre-domain.com` ist die Domain, auf der Ihre SaveKey-Anwendung gehostet wird
 - `VERSCHLÜSSELTER_TOKEN` ist ein verschlüsselter String, der die Seriennummer und weitere Informationen enthält
 
 ## Beispiel
@@ -47,7 +47,7 @@ Es gibt verschiedene Möglichkeiten, QR-Codes mit verschlüsselten Tokens zu ers
 
 ### 1. Integriertes QR-Code-Generator-Tool
 
-Die SafeKey-Anwendung enthält ein integriertes Tool zum Generieren von QR-Codes mit verschlüsselten Tokens:
+Die SaveKey-Anwendung enthält ein integriertes Tool zum Generieren von QR-Codes mit verschlüsselten Tokens:
 
 1. Melden Sie sich als Administrator an
 2. Navigieren Sie zu `admin/generate_qr.php`

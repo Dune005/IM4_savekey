@@ -1,4 +1,4 @@
-# safekey | Digitales Schlüsselüberwachungssystem
+# SaveKey | Digitales Schlüsselüberwachungssystem
 
 **Kurzbeschreibung**
 Dieses Projekt erweitert eine klassische Schlüsselbox um ein digitales Überwachungssystem. Es erkennt Entnahmen, fordert eine Bestätigung an und dokumentiert automatisch Zeitstempel und Nutzer:innen. Unbestätigte Entnahmen lösen Warnmeldungen aus.
