@@ -1,14 +1,177 @@
 /* style.css */
+:root {
+  --primary-color: #3498db; /* Blauton */
+  --secondary-color: #2c3e50; /* Dunkelblau/Grau */
+  --accent-color: #e74c3c; /* Akzentfarbe Rot */
+  --light-gray: #ecf0f1;
+  --dark-gray: #7f8c8d;
+  --text-color: #34495e;
+  --card-bg: #ffffff;
+  --font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Moderne Schriftart */
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+
 body {
-  font-family: Arial, sans-serif;
-  margin: 20px;
-  max-width: 600px;
-  line-height: 1.5;
+  font-family: var(--font-family);
+  margin: 0;
+  line-height: 1.7; /* Etwas mehr Zeilenabstand */
+  color: var(--text-color);
+  background-color: var(--light-gray); /* Hellerer Hintergrund */
+}
+
+.container {
+  max-width: 900px; /* Etwas schmaler für bessere Lesbarkeit */
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+header {
+  background: var(--secondary-color);
+  color: #fff;
+  padding: 15px 0; /* Mehr Padding */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtiler Schatten */
+}
+
+header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+header .logo {
+  height: 45px; /* Etwas grösser */
+  filter: brightness(0) invert(1); /* Macht das SVG Logo weiss, falls es schwarz ist */
+}
+
+header nav ul {
+  padding: 0;
+  list-style: none;
+  display: flex;
+  gap: 10px; /* Abstand zwischen Buttons */
+}
+
+header nav ul li {
+  margin-left: 0; /* Entfernt, da gap verwendet wird */
+}
+
+header nav a {
+  color: #fff;
+  text-decoration: none;
+  text-transform: none; /* Kein Uppercase für moderneren Look */
+  font-size: 15px; /* Etwas grösser */
+  font-weight: 500; /* Mittlere Schriftstärke */
+  padding: 10px 20px; /* Mehr Padding für Button-Optik */
+  border: 1px solid transparent; /* Transparenter Rand initial */
+  border-radius: 25px; /* Stärker abgerundete Ecken */
+  transition: all 0.3s ease;
+  background-color: var(--primary-color); /* Button Hintergrund */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+header nav a:hover {
+  background-color: #fff;
+  color: var(--primary-color);
+  border-color: var(--primary-color); /* Rand beim Hover */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  transform: translateY(-2px); /* Leichter Anhebe-Effekt */
+}
+
+main {
+  padding: 40px 0; /* Mehr Abstand oben/unten */
+}
+
+h1, h2, h3 {
+  color: var(--secondary-color); /* Dunklere Überschriften */
+  font-weight: 500; /* Etwas leichter */
 }
 
 h1 {
-  margin-bottom: 1em;
+  text-align: center;
+  margin-bottom: 30px; /* Mehr Abstand */
+  font-size: 2.2em; /* Grössere Hauptüberschrift */
 }
+
+.info-section {
+  background: var(--card-bg);
+  padding: 30px; /* Mehr Padding */
+  margin-bottom: 30px;
+  border-radius: 12px; /* Stärker abgerundet */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); /* Weicherer, moderner Schatten */
+}
+
+.info-section h2 {
+  margin-top: 0;
+  color: var(--primary-color);
+  border-bottom: none; /* Keine Linie unter H2 */
+  padding-bottom: 0;
+  margin-bottom: 20px; /* Mehr Abstand nach H2 */
+  font-size: 1.8em;
+}
+
+.info-section p { /* Gezieltes Styling für Absätze in der Info-Sektion */
+  font-size: 1.05em; /* Etwas grössere Schrift für bessere Lesbarkeit */
+  margin-bottom: 15px; /* Abstand zwischen Absätzen */
+}
+
+.info-section ul {
+  list-style: none; /* Keine Standard-Aufzählungszeichen */
+  padding-left: 0;
+}
+
+.info-section ul li {
+  margin-bottom: 12px; /* Mehr Abstand */
+  padding-left: 25px; /* Platz für Icon */
+  position: relative;
+}
+
+.info-section ul li::before { /* Modernes Aufzählungszeichen */
+  content: "\f00c"; /* FontAwesome Check Icon */
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  position: absolute;
+  left: 0;
+  top: 2px;
+  color: var(--primary-color);
+}
+
+
+.admin-info { /* Nicht mehr verwendet, aber falls doch */
+  border-left: 5px solid var(--accent-color);
+}
+
+.action-link {
+  margin-top: 15px;
+  font-weight: bold;
+}
+
+.action-link i {
+  margin-right: 5px;
+  color: var(--accent-color);
+}
+
+.small-info {
+  margin-top: 10px;
+  font-size: 0.9em;
+  color: var(--dark-gray);
+}
+
+footer {
+  background: var(--secondary-color);
+  color: var(--light-gray); /* Hellerer Text im Footer */
+  text-align: center;
+  padding: 20px 0; /* Mehr Padding */
+  margin-top: 40px; /* Mehr Abstand */
+  font-size: 0.9em;
+}
+
+footer p {
+  margin: 0;
+}
+
+
+/* Vorhandene Styles beibehalten und anpassen */
 
 form > div {
   margin-bottom: 1em;
@@ -24,14 +187,24 @@ input[type="password"],
 input[type="text"],
 input[type="tel"] {
   width: 200px;
-  padding: 4px;
+  padding: 8px; /* Angepasst */
   border: 1px solid #ccc;
   border-radius: 4px;
+  box-sizing: border-box; /* Hinzugefügt */
 }
 
 button {
-  padding: 8px 16px;
+  padding: 10px 20px; /* Angepasst */
   cursor: pointer;
+  background-color: #0779e4; /* Angepasst */
+  color: white; /* Angepasst */
+  border: none; /* Angepasst */
+  border-radius: 4px; /* Angepasst */
+  transition: background-color 0.3s ease; /* Hinzugefügt */
+}
+
+button:hover {
+  background-color: #055bb5; /* Hinzugefügt */
 }
 
 p {
@@ -73,7 +246,8 @@ p {
 
 .key-available,
 .key-unavailable,
-.key-pending {
+.key-pending,
+.key-stolen {
   display: flex;
   align-items: center;
   padding: 1em;
@@ -88,6 +262,12 @@ p {
 .key-unavailable {
   background-color: #ffebee;
   border: 1px solid #ef9a9a;
+}
+
+.key-stolen {
+  background-color: #fdeaeb;
+  border: 1px solid #e53935;
+  border-width: 2px;
 }
 
 .key-pending {
@@ -113,7 +293,11 @@ p {
 }
 
 .key-icon.pending {
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23FFC107"><path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>');
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23FFC107"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg>');
+}
+
+.key-icon.stolen {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23E53935"><path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>');
 }
 
 .status-text {
