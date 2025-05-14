@@ -47,6 +47,28 @@ try {
     $pendingStmt->execute([':seriennummer' => $seriennummer]);
     $pendingAction = $pendingStmt->fetch(PDO::FETCH_ASSOC);
 
+    // 1.1 Prüfen, ob es eine abgelaufene, nicht verifizierte Schlüsselentnahme gibt
+    $expiredPendingStmt = $pdo->prepare("
+        SELECT
+            id,
+            action_type,
+            timestamp,
+            status
+        FROM
+            pending_key_actions
+        WHERE
+            seriennummer = :seriennummer
+            AND action_type = 'remove'
+            AND status = 'pending'
+            AND timestamp < DATE_SUB(NOW(), INTERVAL 5 MINUTE)
+        ORDER BY
+            timestamp DESC
+        LIMIT 1
+    ");
+
+    $expiredPendingStmt->execute([':seriennummer' => $seriennummer]);
+    $expiredPendingAction = $expiredPendingStmt->fetch(PDO::FETCH_ASSOC);
+
     // 2. Dann den letzten Eintrag in key_logs prüfen
     $stmt = $pdo->prepare("
         SELECT
@@ -77,6 +99,8 @@ try {
     $pendingRemoval = false;
     $pendingTimestamp = null;
     $pendingExpiration = null;
+    $unverifiedRemoval = false;
+    $unverifiedTimestamp = null;
 
     // Wenn es eine ausstehende Entnahme gibt, ist der Schlüssel nicht verfügbar
     if ($pendingAction && $pendingAction['action_type'] === 'remove' && $pendingAction['status'] === 'pending') {
@@ -84,6 +108,12 @@ try {
         $pendingRemoval = true;
         $pendingTimestamp = $pendingAction['timestamp'];
         $pendingExpiration = date('Y-m-d H:i:s', strtotime($pendingAction['timestamp'] . ' + 5 minutes'));
+    }
+    // Wenn es eine abgelaufene, nicht verifizierte Entnahme gibt, ist der Schlüssel nicht verfügbar
+    elseif ($expiredPendingAction && $expiredPendingAction['action_type'] === 'remove' && $expiredPendingAction['status'] === 'pending') {
+        $isAvailable = false;
+        $unverifiedRemoval = true;
+        $unverifiedTimestamp = $expiredPendingAction['timestamp'];
     }
     // Wenn es einen letzten Eintrag gibt und timestamp_return NULL ist, ist der Schlüssel nicht verfügbar
     elseif ($lastLog && $lastLog['timestamp_return'] === null) {
@@ -105,7 +135,9 @@ try {
             "box_id" => $lastLog ? $lastLog['box_id'] : null,
             "pending_removal" => $pendingRemoval,
             "pending_timestamp" => $pendingTimestamp,
-            "pending_expiration" => $pendingExpiration
+            "pending_expiration" => $pendingExpiration,
+            "unverified_removal" => $unverifiedRemoval,
+            "unverified_timestamp" => $unverifiedTimestamp
         ]
     ]);
 

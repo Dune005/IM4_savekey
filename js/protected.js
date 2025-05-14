@@ -154,6 +154,7 @@ async function loadKeyStatus() {
       const keyStatus = data.key_status;
       const isAvailable = keyStatus.is_available;
       const pendingRemoval = keyStatus.pending_removal;
+      const unverifiedRemoval = keyStatus.unverified_removal;
 
       // Buttons aktivieren/deaktivieren basierend auf dem Status (nur für Admins)
       const takeKeyBtn = document.getElementById('takeKeyBtn');
@@ -209,6 +210,31 @@ async function loadKeyStatus() {
 
         // Bei ausstehender Entnahme häufiger aktualisieren
         setStatusUpdateInterval(5000); // Alle 5 Sekunden aktualisieren
+      }
+      // Wenn es eine abgelaufene, nicht verifizierte Entnahme gibt
+      else if (unverifiedRemoval) {
+        // Nur Button-Eigenschaften ändern, wenn die Buttons existieren (für Admins)
+        if (takeKeyBtn) takeKeyBtn.disabled = true;
+        if (returnKeyBtn) returnKeyBtn.disabled = true;
+
+        // Formatiere das Datum der Entnahme
+        const unverifiedDate = new Date(keyStatus.unverified_timestamp);
+        const formattedDate = unverifiedDate.toLocaleDateString('de-DE') + ' ' + unverifiedDate.toLocaleTimeString('de-DE');
+
+        keyStatusElement.innerHTML = `
+          <div class="key-stolen">
+            <i class="key-icon stolen"></i>
+            <div class="status-text">
+              <h4>WARNUNG: Schlüssel ohne Verifizierung entnommen!</h4>
+              <p>Der Schlüssel wurde am ${formattedDate} aus der Box entnommen, aber niemand hat sich verifiziert.</p>
+              <p class="warning">Bitte kontaktieren Sie umgehend den Schlüsselbesitzer oder den Administrator!</p>
+              <p class="warning">Der Schlüssel wurde möglicherweise unrechtmäßig entnommen.</p>
+            </div>
+          </div>
+        `;
+
+        // Bei nicht verifizierter Entnahme häufiger aktualisieren
+        setStatusUpdateInterval(10000); // Alle 10 Sekunden aktualisieren
       }
       // Wenn der Schlüssel von jemandem entnommen wurde
       else {

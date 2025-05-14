@@ -1,51 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
   <head>
     <meta charset="UTF-8" />
-    <title>Welcome</title>
+    <title>SaveKey System</title>
     <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   </head>
   <body>
-    <h1>Welcome to IM4 Demo Page</h1>
+    <header>
+      <div class="container">
+        <img src="images/logo_savekey_text_white.svg" alt="SaveKey Logo" class="logo">
+        <nav>
+          <ul>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="register.html">Registrieren</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
 
-    <div class="navigation">
-      <ul>
-        <li><a href="login.html">Login</a></li>
-        <li><a href="register.html">Register</a></li>
-        <li>
-          <a href="protected.html">Protected Page</a> (only visible when logged
-          in)
-        </li>
-        <li>
-          <a href="Anleitungen/ANLEITUNG_QR_CODE_ADMIN.md">QR Code Admin Documentation</a>
-        </li>
-      </ul>
-    </div>
+    <main>
+      <div class="container">
+        <h1>Willkommen beim SaveKey System</h1>
 
-    <div class="info">
-      <h2>About This Site</h2>
-      <p>This is a simple authentication demo that shows:</p>
-      <ul>
-        <li>User registration</li>
-        <li>Admin registration via QR code</li>
-        <li>User login</li>
-        <li>Protected content that's only visible to logged-in users</li>
-        <li>Different access levels for admins and regular users</li>
-      </ul>
-      <p>
-        If you try to access the protected page without being logged in, you'll
-        be redirected to the login page.
-      </p>
+        <section class="info-section">
+          <h2>Was ist SafeKey?</h2>
+          <p>SafeKey ist ein cleveres System, das Ihnen hilft, den Überblick über Ihre Schlüssel zu behalten. Stellen Sie sich eine moderne Schlüsselbox vor, die genau weiss, wer wann einen Schlüssel entnimmt.</p>
+          <p>Wenn jemand einen Schlüssel aus der Box nimmt, erkennt SafeKey das sofort. Um sicherzustellen, dass alles in Ordnung ist, bittet das System um eine kurze Bestätigung. Das kann ganz einfach mit einem kleinen Chip (RFID/NFC) oder über einen Link auf dem Handy geschehen.</p>
+          <p>Jede Entnahme wird automatisch mit Datum, Uhrzeit und dem Namen der Person, die den Schlüssel genommen hat, festgehalten. So haben Sie immer eine genaue Aufzeichnung.</p>
+          <p>Sollte einmal ein Schlüssel entnommen werden und die Bestätigung ausbleiben, sendet SafeKey eine Warnung. Das gibt Ihnen zusätzliche Sicherheit und hilft, schnell zu reagieren, falls etwas Unerwartetes passiert.</p>
+          <p>Mit SafeKey haben Sie weniger Sorgen und mehr Kontrolle über Ihre wichtigen Schlüssel.</p>
+        </section>
+      </div>
+    </main>
 
-      <h3>Admin Registration</h3>
-      <p>
-        Administrators can register by scanning a QR code that comes with the SafeKey box.
-        The QR code contains a link to a special registration page with an encrypted token that includes the box's serial number.
-        <a href="admin_register.html?token=eyJzZXJpZW5udW1tZXIiOiJERU1PMDAxIiwidGltZXN0YW1wIjoxNjM0NTY3ODkwLCJleHBpcmVzIjoxOTM0NTY3ODkwfQ">Try the admin registration</a> with a demo token.
-      </p>
-      <p>
-        <small>For testing purposes, you can also use <a href="admin_register.html?seriennummer=DEMO001">direct serial number registration</a>.</small>
-      </p>
-    </div>
+    <footer>
+      <div class="container">
+        <p>&copy; 2024 IM4 SaveKey System</p>
+      </div>
+    </footer>
   </body>
 </html>
