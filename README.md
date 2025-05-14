@@ -26,3 +26,4 @@ Dieses Projekt erweitert eine klassische Schlüsselbox um ein digitales Überwac
 - Web-Oberfläche starten: `http://<IP-Adresse>/`
 - Entnahme quittieren per RFID-/NFC-Tag oder Link
 - Admin-Einstellungen im Menü anpassen (Timeout, Nutzer:innen, E-Mail)
+
