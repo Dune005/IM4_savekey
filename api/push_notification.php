@@ -11,59 +11,84 @@ use Minishlink\WebPush\WebPush;
 use Minishlink\WebPush\Subscription;
 
 // Überprüfen, ob der Benutzer angemeldet ist
-// session_start();
-// $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+session_start();
+$userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
 
 // Abonnement-Anfrage verarbeiten
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = json_decode(file_get_contents('php://input'), true);
+    try {
+        $data = json_decode(file_get_contents('php://input'), true);
 
-    if (isset($data['subscription'])) {
+        if (!$data) {
+            throw new Exception('Ungültige JSON-Daten empfangen');
+        }
+
+        if (!isset($data['subscription'])) {
+            throw new Exception('Subscription-Daten fehlen');
+        }
+
         $subscription = $data['subscription'];
+
+        if (!isset($subscription['endpoint']) || !isset($subscription['keys']) ||
+            !isset($subscription['keys']['p256dh']) || !isset($subscription['keys']['auth'])) {
+            throw new Exception('Unvollständige Subscription-Daten');
+        }
+
         $endpoint = $subscription['endpoint'];
         $p256dh = $subscription['keys']['p256dh'];
         $auth = $subscription['keys']['auth'];
 
-        try {
-            // Prüfen, ob das Abonnement bereits existiert
-            $stmt = $pdo->prepare("SELECT id FROM push_subscriptions WHERE endpoint = :endpoint");
-            $stmt->execute([':endpoint' => $endpoint]);
-            $existingSubscription = $stmt->fetch(PDO::FETCH_ASSOC);
+        // Prüfen, ob das Abonnement bereits existiert
+        $stmt = $pdo->prepare("SELECT id FROM push_subscriptions WHERE endpoint = :endpoint");
+        $stmt->execute([':endpoint' => $endpoint]);
+        $existingSubscription = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($existingSubscription) {
-                // Abonnement aktualisieren
-                $stmt = $pdo->prepare("
-                    UPDATE push_subscriptions
-                    SET user_id = :user_id, p256dh = :p256dh, auth = :auth
-                    WHERE endpoint = :endpoint
-                ");
-                $stmt->execute([
-                    ':user_id' => $userId,
-                    ':p256dh' => $p256dh,
-                    ':auth' => $auth,
-                    ':endpoint' => $endpoint
-                ]);
-            } else {
-                // Neues Abonnement erstellen
-                $stmt = $pdo->prepare("
-                    INSERT INTO push_subscriptions (user_id, endpoint, p256dh, auth)
-                    VALUES (:user_id, :endpoint, :p256dh, :auth)
-                ");
-                $stmt->execute([
-                    ':user_id' => $userId,
-                    ':endpoint' => $endpoint,
-                    ':p256dh' => $p256dh,
-                    ':auth' => $auth
-                ]);
-            }
+        if ($existingSubscription) {
+            // Abonnement aktualisieren
+            $stmt = $pdo->prepare("
+                UPDATE push_subscriptions
+                SET user_id = :user_id, p256dh = :p256dh, auth = :auth
+                WHERE endpoint = :endpoint
+            ");
+            $stmt->execute([
+                ':user_id' => $userId,
+                ':p256dh' => $p256dh,
+                ':auth' => $auth,
+                ':endpoint' => $endpoint
+            ]);
 
-            echo json_encode(['status' => 'success', 'message' => 'Abonnement erfolgreich gespeichert']);
-        } catch (PDOException $e) {
-            http_response_code(500);
-            echo json_encode(['status' => 'error', 'message' => 'Datenbankfehler: ' . $e->getMessage()]);
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Abonnement erfolgreich aktualisiert',
+                'user_id' => $userId
+            ]);
+        } else {
+            // Neues Abonnement erstellen
+            $stmt = $pdo->prepare("
+                INSERT INTO push_subscriptions (user_id, endpoint, p256dh, auth)
+                VALUES (:user_id, :endpoint, :p256dh, :auth)
+            ");
+            $stmt->execute([
+                ':user_id' => $userId,
+                ':endpoint' => $endpoint,
+                ':p256dh' => $p256dh,
+                ':auth' => $auth
+            ]);
+
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Abonnement erfolgreich gespeichert',
+                'user_id' => $userId
+            ]);
         }
-        exit;
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => 'Datenbankfehler: ' . $e->getMessage()]);
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
     }
+    exit;
 }
 
 // Test-Benachrichtigung senden

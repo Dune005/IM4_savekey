@@ -46,6 +46,15 @@ async function checkAuth() {
         <div id="keyHistory" class="key-history">Lade Historie...</div>
       </div>
 
+      <div class="push-notification-container">
+        <h3>Push-Benachrichtigungen</h3>
+        <p>Bleiben Sie immer auf dem Laufenden! Aktivieren Sie Push-Benachrichtigungen, um sofort informiert zu werden, wenn sich der Status Ihrer Schlüsselbox ändert.</p>
+        <div class="push-notification-controls">
+          <button id="subscribeButton" disabled>Push-Benachrichtigungen aktivieren</button>
+          <p id="pushStatus">Initialisiere Push-Benachrichtigungen...</p>
+        </div>
+      </div>
+
       ${isAdmin ? `
       <div class="rfid-management-container">
         <h3>RFID/NFC-Verwaltung</h3>
