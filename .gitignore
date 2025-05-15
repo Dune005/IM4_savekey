@@ -2,8 +2,8 @@
 sftp.json
 arduino.ino
 config.php
-.DS_Store
 arduino/
 savekey.ino
 vendor/
 composer.lock
+.DS_Store
