@@ -1,9 +1,6 @@
+.DS_Store
 .vscode/
-sftp.json
-arduino.ino
-config.php
 arduino/
-savekey.ino
+config.php
 vendor/
 composer.lock
-.DS_Store
