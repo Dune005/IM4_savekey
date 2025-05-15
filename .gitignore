@@ -1,6 +1,6 @@
-.DS_Store
 .vscode/
 arduino/
 config.php
 vendor/
 composer.lock
+.DS_Store
