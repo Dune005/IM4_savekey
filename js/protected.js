@@ -67,6 +67,14 @@ async function checkAuth() {
           <p><strong>Hinweis:</strong> Um Ihren RFID/NFC-Chip zu verknüpfen, scannen Sie ihn an der Schlüsselbox. Die UID wird automatisch angezeigt und kann mit einem Klick übernommen werden.</p>
         </div>
       </div>
+
+      <div class="admin-container">
+        <h3>Administration</h3>
+        <p>Hier finden Sie administrative Funktionen für das SaveKey-System.</p>
+        <div class="admin-links">
+          <a href="admin/push_notifications.php" class="admin-link">Push-Benachrichtigungen konfigurieren</a>
+        </div>
+      </div>
       ` : ''}
     `;
 

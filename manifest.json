@@ -1,0 +1,20 @@
+{
+    "name": "SaveKey System",
+    "short_name": "SaveKey",
+    "icons": [
+        {
+            "src": "images/logo_savekey_text_white.svg",
+            "sizes": "192x192",
+            "type": "image/svg+xml"
+        },
+        {
+            "src": "images/logo_savekey_text_white.svg",
+            "sizes": "512x512",
+            "type": "image/svg+xml"
+        }
+    ],
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#3498db",
+    "theme_color": "#2c3e50"
+}
