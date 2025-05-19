@@ -3,14 +3,14 @@
     "short_name": "SaveKey",
     "icons": [
         {
-            "src": "images/logo_savekey_text_white.svg",
+            "src": "images/logo_savekey.svg",
             "sizes": "192x192",
             "type": "image/svg+xml"
         },
         {
-            "src": "images/logo_savekey_text_white.svg",
+            "src": "images/logo_savekey.svg",
             "sizes": "512x512",
-            "type": "image/svg+xml"
+            "type": "image/png"
         }
     ],
     "start_url": "/",

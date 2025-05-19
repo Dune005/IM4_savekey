@@ -3,15 +3,77 @@
 
 header('Content-Type: application/json');
 
-require_once '../system/config.php';
-require_once '../system/push_config.php';
-require_once '../vendor/autoload.php';
+// Pfade dynamisch anpassen, je nachdem, von wo die Datei eingebunden wird
+$basePath = '';
+
+// Prüfen, ob die Datei direkt aufgerufen wird oder eingebunden wird
+$scriptPath = isset($_SERVER['SCRIPT_FILENAME']) ? $_SERVER['SCRIPT_FILENAME'] : '';
+$includedPath = __FILE__;
+
+// Wenn die Datei direkt aufgerufen wird (SCRIPT_FILENAME enthält push_notification.php)
+if (strpos($scriptPath, 'push_notification.php') !== false) {
+    $basePath = '../';
+}
+// Wenn die Datei von einer Datei im api-Verzeichnis eingebunden wird
+else if (strpos($scriptPath, '/api/') !== false) {
+    $basePath = '../';
+}
+// Wenn die Datei von einer Datei im Hauptverzeichnis eingebunden wird
+else {
+    $basePath = '';
+}
+
+// Prüfen, ob die Konfigurationsdateien bereits eingebunden wurden
+if (!isset($pdo)) {
+    // Versuche, die Konfigurationsdateien zu laden
+    $configFile = $basePath . 'system/config.php';
+    $pushConfigFile = $basePath . 'system/push_config.php';
+    $autoloadFile = $basePath . 'vendor/autoload.php';
+
+    if (file_exists($configFile)) {
+        require_once $configFile;
+    } else {
+        // Versuche es mit dem alternativen Pfad
+        $altConfigFile = dirname(__FILE__) . '/../system/config.php';
+        if (file_exists($altConfigFile)) {
+            require_once $altConfigFile;
+        } else {
+            throw new Exception("Konfigurationsdatei nicht gefunden: $configFile oder $altConfigFile");
+        }
+    }
+
+    if (file_exists($pushConfigFile)) {
+        require_once $pushConfigFile;
+    } else {
+        // Versuche es mit dem alternativen Pfad
+        $altPushConfigFile = dirname(__FILE__) . '/../system/push_config.php';
+        if (file_exists($altPushConfigFile)) {
+            require_once $altPushConfigFile;
+        } else {
+            throw new Exception("Push-Konfigurationsdatei nicht gefunden: $pushConfigFile oder $altPushConfigFile");
+        }
+    }
+
+    if (file_exists($autoloadFile)) {
+        require_once $autoloadFile;
+    } else {
+        // Versuche es mit dem alternativen Pfad
+        $altAutoloadFile = dirname(__FILE__) . '/../vendor/autoload.php';
+        if (file_exists($altAutoloadFile)) {
+            require_once $altAutoloadFile;
+        } else {
+            throw new Exception("Autoload-Datei nicht gefunden: $autoloadFile oder $altAutoloadFile");
+        }
+    }
+}
 
 use Minishlink\WebPush\WebPush;
 use Minishlink\WebPush\Subscription;
 
 // Überprüfen, ob der Benutzer angemeldet ist
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
 
 // Abonnement-Anfrage verarbeiten
@@ -112,8 +174,13 @@ function sendPushNotifications($pdo, $payload) {
         $subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         if (empty($subscriptions)) {
-            echo json_encode(['status' => 'info', 'message' => 'Keine Abonnements gefunden']);
-            return;
+            // Wenn die Funktion direkt über die API aufgerufen wird, geben wir JSON aus
+            if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['test'])) {
+                echo json_encode(['status' => 'info', 'message' => 'Keine Abonnements gefunden']);
+                return;
+            }
+            // Ansonsten geben wir ein Array zurück
+            return ['status' => 'info', 'message' => 'Keine Abonnements gefunden'];
         }
 
         $auth = [
@@ -159,14 +226,32 @@ function sendPushNotifications($pdo, $payload) {
             }
         }
 
-        echo json_encode([
+        $result = [
             'status' => 'success',
             'message' => "Benachrichtigungen gesendet: $successCount erfolgreich, $failCount fehlgeschlagen",
             'results' => $results
-        ]);
+        ];
+
+        // Wenn die Funktion direkt über die API aufgerufen wird, geben wir JSON aus
+        if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['test'])) {
+            echo json_encode($result);
+            return;
+        }
+
+        // Ansonsten geben wir ein Array zurück
+        return $result;
     } catch (Exception $e) {
-        http_response_code(500);
-        echo json_encode(['status' => 'error', 'message' => 'Fehler beim Senden der Benachrichtigungen: ' . $e->getMessage()]);
+        $error = ['status' => 'error', 'message' => 'Fehler beim Senden der Benachrichtigungen: ' . $e->getMessage()];
+
+        // Wenn die Funktion direkt über die API aufgerufen wird, geben wir JSON aus
+        if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['test'])) {
+            http_response_code(500);
+            echo json_encode($error);
+            return;
+        }
+
+        // Ansonsten geben wir ein Array zurück
+        return $error;
     }
 }
 

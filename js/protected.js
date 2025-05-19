@@ -427,6 +427,8 @@ async function takeKey() {
     takeKeyBtn.textContent = "Wird verarbeitet...";
 
     // API-Anfrage senden, um den Schlüssel zu entnehmen
+    console.log('Sende Anfrage zum Entnehmen des Schlüssels...');
+
     const response = await fetch('api/key_action.php', {
       method: 'POST',
       headers: {
@@ -438,7 +440,17 @@ async function takeKey() {
       credentials: "include"
     });
 
+    // Prüfen, ob die Antwort ein gültiges JSON-Format hat
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      // Wenn die Antwort kein JSON ist, den Text der Antwort anzeigen
+      const text = await response.text();
+      console.error('Ungültige Antwort vom Server:', text);
+      throw new Error('Ungültige Antwort vom Server: ' + text);
+    }
+
     const data = await response.json();
+    console.log('Antwort vom Server:', data);
 
     if (data.status === "success") {
       // Status und Historie neu laden
@@ -474,6 +486,8 @@ async function returnKey() {
     returnKeyBtn.textContent = "Wird verarbeitet...";
 
     // API-Anfrage senden, um den Schlüssel zurückzugeben
+    console.log('Sende Anfrage zum Zurückgeben des Schlüssels...');
+
     const response = await fetch('api/key_action.php', {
       method: 'POST',
       headers: {
@@ -485,7 +499,17 @@ async function returnKey() {
       credentials: "include"
     });
 
+    // Prüfen, ob die Antwort ein gültiges JSON-Format hat
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      // Wenn die Antwort kein JSON ist, den Text der Antwort anzeigen
+      const text = await response.text();
+      console.error('Ungültige Antwort vom Server:', text);
+      throw new Error('Ungültige Antwort vom Server: ' + text);
+    }
+
     const data = await response.json();
+    console.log('Antwort vom Server:', data);
 
     if (data.status === "success") {
       // Status und Historie neu laden

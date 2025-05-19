@@ -13,8 +13,8 @@ self.addEventListener('push', event => {
     const title = data.title || 'SaveKey Benachrichtigung';
     const options = {
         body: data.body || 'Es gibt eine neue Benachrichtigung von SaveKey!',
-        icon: 'images/logo_savekey_text_white.svg',
-        badge: 'images/logo_savekey_text_white.svg',
+        icon: 'images/logo_savekey.svg',
+        badge: 'images/logo_savekey.svg',
         data: data.data || {}
     };
 
@@ -23,7 +23,7 @@ self.addEventListener('push', event => {
 
 self.addEventListener('notificationclick', event => {
     event.notification.close();
-    
+
     // Wenn eine URL in den Daten enthalten ist, diese öffnen
     if (event.notification.data && event.notification.data.url) {
         event.waitUntil(

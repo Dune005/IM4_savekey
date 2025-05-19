@@ -2,11 +2,31 @@
 // arduino_api.php - Endpoint for Arduino to send key and RFID data
 header('Content-Type: application/json');
 
+// Fehlerausgabe aktivieren für Debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+// Fehler in eine Datei protokollieren
+ini_set('log_errors', 1);
+ini_set('error_log', '../system/arduino_errors.log');
+
 // Include database configuration
 require_once '../system/config.php';
 
 // Include hardware authentication
 require_once '../system/hardware_auth.php';
+
+// Include push notification configuration
+require_once '../system/push_notifications_config.php';
+
+// Include push configuration with VAPID keys
+require_once '../system/push_config.php';
+
+// Include WebPush library
+require_once '../vendor/autoload.php';
+
+// Import WebPush classes
+use Minishlink\WebPush\WebPush;
+use Minishlink\WebPush\Subscription;
 
 // Verify API key for hardware authentication
 function verifyApiKey() {
@@ -89,8 +109,86 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo json_encode(["status" => "error", "message" => "Method not allowed"]);
 }
 
+// Funktion zum Senden von Push-Benachrichtigungen an alle Benutzer mit einer bestimmten Seriennummer
+function sendPushNotificationsForSeriennummer($pdo, $seriennummer, $payload) {
+    try {
+        // Alle Benutzer mit dieser Seriennummer finden
+        $stmt = $pdo->prepare("
+            SELECT ps.*
+            FROM push_subscriptions ps
+            JOIN benutzer b ON ps.user_id = b.user_id
+            WHERE b.seriennummer = :seriennummer
+        ");
+        $stmt->execute([':seriennummer' => $seriennummer]);
+        $subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (empty($subscriptions)) {
+            error_log("Keine Abonnements für Benutzer mit der Seriennummer $seriennummer gefunden");
+            return ['status' => 'info', 'message' => 'Keine Abonnements für Benutzer mit dieser Seriennummer gefunden'];
+        }
+
+        $auth = [
+            'VAPID' => [
+                'subject' => VAPID_SUBJECT,
+                'publicKey' => VAPID_PUBLIC_KEY,
+                'privateKey' => VAPID_PRIVATE_KEY,
+            ],
+        ];
+
+        $webPush = new WebPush($auth);
+        $successCount = 0;
+        $failCount = 0;
+
+        foreach ($subscriptions as $sub) {
+            $subscription = Subscription::create([
+                'endpoint' => $sub['endpoint'],
+                'keys' => [
+                    'p256dh' => $sub['p256dh'],
+                    'auth' => $sub['auth'],
+                ],
+            ]);
+
+            $webPush->queueNotification($subscription, json_encode($payload));
+        }
+
+        $results = [];
+        foreach ($webPush->flush() as $report) {
+            $endpoint = $report->getRequest()->getUri()->__toString();
+
+            if ($report->isSuccess()) {
+                $successCount++;
+                $results[] = ['endpoint' => $endpoint, 'status' => 'success'];
+                error_log("Push-Benachrichtigung erfolgreich gesendet an $endpoint");
+            } else {
+                $failCount++;
+                $reason = $report->getReason();
+                $results[] = ['endpoint' => $endpoint, 'status' => 'failed', 'reason' => $reason];
+                error_log("Fehler beim Senden der Push-Benachrichtigung an $endpoint: $reason");
+
+                // Entferne fehlgeschlagene Abonnements
+                if (in_array($reason, ['410 Gone', '404 Not Found'])) {
+                    $stmt = $pdo->prepare("DELETE FROM push_subscriptions WHERE endpoint = :endpoint");
+                    $stmt->execute([':endpoint' => $endpoint]);
+                    error_log("Fehlgeschlagenes Abonnement gelöscht: $endpoint");
+                }
+            }
+        }
+
+        return [
+            'status' => 'success',
+            'message' => "Benachrichtigungen gesendet: $successCount erfolgreich, $failCount fehlgeschlagen",
+            'results' => $results
+        ];
+    } catch (Exception $e) {
+        error_log("Fehler beim Senden der Push-Benachrichtigungen: " . $e->getMessage());
+        return ['status' => 'error', 'message' => 'Fehler beim Senden der Benachrichtigungen: ' . $e->getMessage()];
+    }
+}
+
 // Handle key removal event
 function handleKeyRemoved($pdo, $data) {
+    global $PUSH_NOTIFICATIONS_ENABLED, $PUSH_NOTIFICATIONS_MESSAGES, $PUSH_NOTIFICATIONS_URL;
+
     $seriennummer = $data['seriennummer'];
     $timestamp = date('Y-m-d H:i:s');
 
@@ -107,8 +205,32 @@ function handleKeyRemoved($pdo, $data) {
         ':timestamp' => $timestamp
     ]);
 
+    $actionId = $pdo->lastInsertId();
+
     // Set expiration time (5 minutes from now)
     $expirationTime = date('Y-m-d H:i:s', strtotime('+5 minutes'));
+
+    // Push-Benachrichtigung senden, wenn aktiviert
+    if (isset($PUSH_NOTIFICATIONS_ENABLED) && $PUSH_NOTIFICATIONS_ENABLED['key_removed']) {
+        error_log("Sende Push-Benachrichtigung für Schlüsselentnahme, Seriennummer: $seriennummer");
+
+        $payload = [
+            'title' => $PUSH_NOTIFICATIONS_MESSAGES['key_removed']['title'],
+            'body' => $PUSH_NOTIFICATIONS_MESSAGES['key_removed']['body'],
+            'data' => [
+                'url' => $PUSH_NOTIFICATIONS_URL,
+                'event_type' => 'key_removed',
+                'seriennummer' => $seriennummer,
+                'action_id' => $actionId
+            ]
+        ];
+
+        // Sende Benachrichtigung an alle Benutzer mit dieser Seriennummer
+        $result = sendPushNotificationsForSeriennummer($pdo, $seriennummer, $payload);
+        error_log("Ergebnis der Push-Benachrichtigung: " . json_encode($result));
+    } else {
+        error_log("Push-Benachrichtigungen sind deaktiviert oder Konfiguration fehlt");
+    }
 
     echo json_encode([
         "status" => "success",
@@ -119,6 +241,8 @@ function handleKeyRemoved($pdo, $data) {
 
 // Handle key return event
 function handleKeyReturned($pdo, $data) {
+    global $PUSH_NOTIFICATIONS_ENABLED, $PUSH_NOTIFICATIONS_MESSAGES, $PUSH_NOTIFICATIONS_URL;
+
     $seriennummer = $data['seriennummer'];
     $timestamp = date('Y-m-d H:i:s');
 
@@ -188,6 +312,28 @@ function handleKeyReturned($pdo, $data) {
             ':timestamp_take' => $lastLog['timestamp_take']
         ]);
 
+        // Push-Benachrichtigung senden, wenn aktiviert
+        if (isset($PUSH_NOTIFICATIONS_ENABLED) && $PUSH_NOTIFICATIONS_ENABLED['key_returned']) {
+            error_log("Sende Push-Benachrichtigung für Schlüsselrückgabe, Seriennummer: $seriennummer");
+
+            $payload = [
+                'title' => $PUSH_NOTIFICATIONS_MESSAGES['key_returned']['title'],
+                'body' => $PUSH_NOTIFICATIONS_MESSAGES['key_returned']['body'],
+                'data' => [
+                    'url' => $PUSH_NOTIFICATIONS_URL,
+                    'event_type' => 'key_returned',
+                    'seriennummer' => $seriennummer,
+                    'benutzername' => $lastLog['benutzername']
+                ]
+            ];
+
+            // Sende Benachrichtigung an alle Benutzer mit dieser Seriennummer
+            $result = sendPushNotificationsForSeriennummer($pdo, $seriennummer, $payload);
+            error_log("Ergebnis der Push-Benachrichtigung: " . json_encode($result));
+        } else {
+            error_log("Push-Benachrichtigungen sind deaktiviert oder Konfiguration fehlt");
+        }
+
         echo json_encode([
             "status" => "success",
             "message" => "Key return recorded successfully"
@@ -195,6 +341,28 @@ function handleKeyReturned($pdo, $data) {
     } else if ($pendingAction) {
         // If there's no open key_logs entry but there was a pending action,
         // we've successfully closed the pending action
+
+        // Push-Benachrichtigung senden, wenn aktiviert
+        if (isset($PUSH_NOTIFICATIONS_ENABLED) && $PUSH_NOTIFICATIONS_ENABLED['key_returned']) {
+            error_log("Sende Push-Benachrichtigung für nicht verifizierte Schlüsselrückgabe, Seriennummer: $seriennummer");
+
+            $payload = [
+                'title' => $PUSH_NOTIFICATIONS_MESSAGES['key_returned']['title'],
+                'body' => $PUSH_NOTIFICATIONS_MESSAGES['key_returned']['body'] . ' (Nicht verifizierte Entnahme)',
+                'data' => [
+                    'url' => $PUSH_NOTIFICATIONS_URL,
+                    'event_type' => 'key_returned_unverified',
+                    'seriennummer' => $seriennummer
+                ]
+            ];
+
+            // Sende Benachrichtigung an alle Benutzer mit dieser Seriennummer
+            $result = sendPushNotificationsForSeriennummer($pdo, $seriennummer, $payload);
+            error_log("Ergebnis der Push-Benachrichtigung: " . json_encode($result));
+        } else {
+            error_log("Push-Benachrichtigungen sind deaktiviert oder Konfiguration fehlt");
+        }
+
         echo json_encode([
             "status" => "success",
             "message" => "Unverified key return recorded successfully"
@@ -210,6 +378,8 @@ function handleKeyReturned($pdo, $data) {
 
 // Handle RFID scan event
 function handleRfidScan($pdo, $data) {
+    global $PUSH_NOTIFICATIONS_ENABLED, $PUSH_NOTIFICATIONS_MESSAGES, $PUSH_NOTIFICATIONS_URL;
+
     $seriennummer = $data['seriennummer'];
     $rfidUid = $data['rfid_uid'] ?? '';
     $timestamp = date('Y-m-d H:i:s');
@@ -250,11 +420,12 @@ function handleRfidScan($pdo, $data) {
     } catch (Exception $e) {
         // Fehler beim Speichern der RFID-UID ignorieren, da dies nicht kritisch ist
         // und den Hauptprozess nicht beeinträchtigen soll
+        error_log("Fehler beim Speichern der RFID-UID: " . $e->getMessage());
     }
 
     // Find user with this RFID UID
     $stmt = $pdo->prepare("
-        SELECT benutzername, user_id
+        SELECT benutzername, user_id, vorname, nachname
         FROM benutzer
         WHERE rfid_uid = :rfid_uid
     ");
@@ -286,6 +457,30 @@ function handleRfidScan($pdo, $data) {
     $pendingAction = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$pendingAction) {
+        // Wenn keine ausstehende Aktion gefunden wurde, aber trotzdem ein RFID-Scan erfolgt ist
+        if (isset($PUSH_NOTIFICATIONS_ENABLED) && $PUSH_NOTIFICATIONS_ENABLED['rfid_scan']) {
+            error_log("Sende Push-Benachrichtigung für RFID-Scan ohne ausstehende Aktion, Seriennummer: $seriennummer");
+
+            $payload = [
+                'title' => $PUSH_NOTIFICATIONS_MESSAGES['rfid_scan']['title'],
+                'body' => str_replace(
+                    ['[VORNAME]', '[NACHNAME]', '[BENUTZERNAME]'],
+                    [$user['vorname'], $user['nachname'], $user['benutzername']],
+                    $PUSH_NOTIFICATIONS_MESSAGES['rfid_scan']['body']
+                ),
+                'data' => [
+                    'url' => $PUSH_NOTIFICATIONS_URL,
+                    'event_type' => 'rfid_scan',
+                    'seriennummer' => $seriennummer,
+                    'benutzername' => $user['benutzername']
+                ]
+            ];
+
+            // Sende Benachrichtigung an alle Benutzer mit dieser Seriennummer
+            $result = sendPushNotificationsForSeriennummer($pdo, $seriennummer, $payload);
+            error_log("Ergebnis der Push-Benachrichtigung: " . json_encode($result));
+        }
+
         echo json_encode([
             "status" => "error",
             "message" => "No pending key removal found or verification time expired"
@@ -323,6 +518,32 @@ function handleRfidScan($pdo, $data) {
         ':timestamp_take' => $timestamp,
         ':benutzername' => $user['benutzername']
     ]);
+
+    // Push-Benachrichtigung für verifizierte Schlüsselentnahme senden, wenn aktiviert
+    if (isset($PUSH_NOTIFICATIONS_ENABLED) && $PUSH_NOTIFICATIONS_ENABLED['key_removed_verified']) {
+        error_log("Sende Push-Benachrichtigung für verifizierte Schlüsselentnahme, Seriennummer: $seriennummer");
+
+        $payload = [
+            'title' => $PUSH_NOTIFICATIONS_MESSAGES['key_removed_verified']['title'],
+            'body' => str_replace(
+                ['[VORNAME]', '[NACHNAME]', '[BENUTZERNAME]'],
+                [$user['vorname'], $user['nachname'], $user['benutzername']],
+                $PUSH_NOTIFICATIONS_MESSAGES['key_removed_verified']['body']
+            ),
+            'data' => [
+                'url' => $PUSH_NOTIFICATIONS_URL,
+                'event_type' => 'key_removed_verified',
+                'seriennummer' => $seriennummer,
+                'benutzername' => $user['benutzername']
+            ]
+        ];
+
+        // Sende Benachrichtigung an alle Benutzer mit dieser Seriennummer
+        $result = sendPushNotificationsForSeriennummer($pdo, $seriennummer, $payload);
+        error_log("Ergebnis der Push-Benachrichtigung: " . json_encode($result));
+    } else {
+        error_log("Push-Benachrichtigungen sind deaktiviert oder Konfiguration fehlt");
+    }
 
     echo json_encode([
         "status" => "success",

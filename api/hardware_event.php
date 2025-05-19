@@ -1,15 +1,22 @@
 <?php
 // hardware_event.php - API zum Empfangen von Ereignissen vom Arduino
-// Fehlerausgabe unterdrücken
-error_reporting(0);
-ini_set('display_errors', 0);
+// WebPush-Klassen importieren - müssen auf oberster Ebene stehen
+use Minishlink\WebPush\WebPush;
+use Minishlink\WebPush\Subscription;
+
+// Fehlerausgabe aktivieren für Debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+// Fehler in eine Datei protokollieren
+ini_set('log_errors', 1);
+ini_set('error_log', '../system/hardware_errors.log');
 
 header('Content-Type: application/json');
 
 require_once '../system/config.php';
 require_once '../system/hardware_auth.php'; // Enthält den API-Schlüssel für die Hardware-Authentifizierung
 require_once '../system/push_notifications_config.php'; // Konfiguration für Push-Benachrichtigungen
-require_once '../api/push_notification.php'; // Funktionen für Push-Benachrichtigungen
+require_once '../vendor/autoload.php'; // Composer Autoload für WebPush
 
 // Überprüfen, ob die Anfrage einen gültigen API-Schlüssel enthält
 $headers = getallheaders();
@@ -40,6 +47,77 @@ foreach ($requiredFields as $field) {
 
 $eventType = $data['event_type'];
 $seriennummer = $data['seriennummer'];
+
+// Funktion zum Senden von Push-Benachrichtigungen an alle Benutzer mit einer bestimmten Seriennummer
+function sendPushNotificationsForSeriennummer($pdo, $seriennummer, $payload) {
+    try {
+        // Alle Benutzer mit dieser Seriennummer finden
+        $stmt = $pdo->prepare("
+            SELECT ps.*
+            FROM push_subscriptions ps
+            JOIN benutzer b ON ps.user_id = b.user_id
+            WHERE b.seriennummer = :seriennummer
+        ");
+        $stmt->execute([':seriennummer' => $seriennummer]);
+        $subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (empty($subscriptions)) {
+            return ['status' => 'info', 'message' => 'Keine Abonnements für Benutzer mit dieser Seriennummer gefunden'];
+        }
+
+        $auth = [
+            'VAPID' => [
+                'subject' => VAPID_SUBJECT,
+                'publicKey' => VAPID_PUBLIC_KEY,
+                'privateKey' => VAPID_PRIVATE_KEY,
+            ],
+        ];
+
+        $webPush = new WebPush($auth);
+        $successCount = 0;
+        $failCount = 0;
+
+        foreach ($subscriptions as $sub) {
+            $subscription = Subscription::create([
+                'endpoint' => $sub['endpoint'],
+                'keys' => [
+                    'p256dh' => $sub['p256dh'],
+                    'auth' => $sub['auth'],
+                ],
+            ]);
+
+            $webPush->queueNotification($subscription, json_encode($payload));
+        }
+
+        $results = [];
+        foreach ($webPush->flush() as $report) {
+            $endpoint = $report->getRequest()->getUri()->__toString();
+
+            if ($report->isSuccess()) {
+                $successCount++;
+                $results[] = ['endpoint' => $endpoint, 'status' => 'success'];
+            } else {
+                $failCount++;
+                $reason = $report->getReason();
+                $results[] = ['endpoint' => $endpoint, 'status' => 'failed', 'reason' => $reason];
+
+                // Entferne fehlgeschlagene Abonnements
+                if (in_array($reason, ['410 Gone', '404 Not Found'])) {
+                    $stmt = $pdo->prepare("DELETE FROM push_subscriptions WHERE endpoint = :endpoint");
+                    $stmt->execute([':endpoint' => $endpoint]);
+                }
+            }
+        }
+
+        return [
+            'status' => 'success',
+            'message' => "Benachrichtigungen gesendet: $successCount erfolgreich, $failCount fehlgeschlagen",
+            'results' => $results
+        ];
+    } catch (Exception $e) {
+        return ['status' => 'error', 'message' => 'Fehler beim Senden der Benachrichtigungen: ' . $e->getMessage()];
+    }
+}
 
 try {
     // Je nach Ereignistyp unterschiedliche Aktionen ausführen
