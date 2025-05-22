@@ -1,13 +1,22 @@
 <?php
 // hardware_event.php - API zum Empfangen von Ereignissen vom Arduino
-// Fehlerausgabe unterdrücken
-error_reporting(0);
-ini_set('display_errors', 0);
+// WebPush-Klassen importieren - müssen auf oberster Ebene stehen
+use Minishlink\WebPush\WebPush;
+use Minishlink\WebPush\Subscription;
+
+// Fehlerausgabe aktivieren für Debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+// Fehler in eine Datei protokollieren
+ini_set('log_errors', 1);
+ini_set('error_log', '../system/hardware_errors.log');
 
 header('Content-Type: application/json');
 
 require_once '../system/config.php';
 require_once '../system/hardware_auth.php'; // Enthält den API-Schlüssel für die Hardware-Authentifizierung
+require_once '../system/push_notifications_config.php'; // Konfiguration für Push-Benachrichtigungen
+require_once '../vendor/autoload.php'; // Composer Autoload für WebPush
 
 // Überprüfen, ob die Anfrage einen gültigen API-Schlüssel enthält
 $headers = getallheaders();
@@ -38,6 +47,77 @@ foreach ($requiredFields as $field) {
 
 $eventType = $data['event_type'];
 $seriennummer = $data['seriennummer'];
+
+// Funktion zum Senden von Push-Benachrichtigungen an alle Benutzer mit einer bestimmten Seriennummer
+function sendPushNotificationsForSeriennummer($pdo, $seriennummer, $payload) {
+    try {
+        // Alle Benutzer mit dieser Seriennummer finden
+        $stmt = $pdo->prepare("
+            SELECT ps.*
+            FROM push_subscriptions ps
+            JOIN benutzer b ON ps.user_id = b.user_id
+            WHERE b.seriennummer = :seriennummer
+        ");
+        $stmt->execute([':seriennummer' => $seriennummer]);
+        $subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (empty($subscriptions)) {
+            return ['status' => 'info', 'message' => 'Keine Abonnements für Benutzer mit dieser Seriennummer gefunden'];
+        }
+
+        $auth = [
+            'VAPID' => [
+                'subject' => VAPID_SUBJECT,
+                'publicKey' => VAPID_PUBLIC_KEY,
+                'privateKey' => VAPID_PRIVATE_KEY,
+            ],
+        ];
+
+        $webPush = new WebPush($auth);
+        $successCount = 0;
+        $failCount = 0;
+
+        foreach ($subscriptions as $sub) {
+            $subscription = Subscription::create([
+                'endpoint' => $sub['endpoint'],
+                'keys' => [
+                    'p256dh' => $sub['p256dh'],
+                    'auth' => $sub['auth'],
+                ],
+            ]);
+
+            $webPush->queueNotification($subscription, json_encode($payload));
+        }
+
+        $results = [];
+        foreach ($webPush->flush() as $report) {
+            $endpoint = $report->getRequest()->getUri()->__toString();
+
+            if ($report->isSuccess()) {
+                $successCount++;
+                $results[] = ['endpoint' => $endpoint, 'status' => 'success'];
+            } else {
+                $failCount++;
+                $reason = $report->getReason();
+                $results[] = ['endpoint' => $endpoint, 'status' => 'failed', 'reason' => $reason];
+
+                // Entferne fehlgeschlagene Abonnements
+                if (in_array($reason, ['410 Gone', '404 Not Found'])) {
+                    $stmt = $pdo->prepare("DELETE FROM push_subscriptions WHERE endpoint = :endpoint");
+                    $stmt->execute([':endpoint' => $endpoint]);
+                }
+            }
+        }
+
+        return [
+            'status' => 'success',
+            'message' => "Benachrichtigungen gesendet: $successCount erfolgreich, $failCount fehlgeschlagen",
+            'results' => $results
+        ];
+    } catch (Exception $e) {
+        return ['status' => 'error', 'message' => 'Fehler beim Senden der Benachrichtigungen: ' . $e->getMessage()];
+    }
+}
 
 try {
     // Je nach Ereignistyp unterschiedliche Aktionen ausführen
@@ -72,6 +152,8 @@ try {
 
 // Funktion zum Verarbeiten des Ereignisses "Schlüssel entfernt"
 function handleKeyRemoved($pdo, $data) {
+    global $PUSH_NOTIFICATIONS_ENABLED, $PUSH_NOTIFICATIONS_MESSAGES, $PUSH_NOTIFICATIONS_URL;
+
     $seriennummer = $data['seriennummer'];
 
     // Speichern des Ereignisses in der temporären Tabelle
@@ -83,16 +165,36 @@ function handleKeyRemoved($pdo, $data) {
     ");
 
     $stmt->execute([':seriennummer' => $seriennummer]);
+    $actionId = $pdo->lastInsertId();
+
+    // Push-Benachrichtigung senden, wenn aktiviert
+    if ($PUSH_NOTIFICATIONS_ENABLED['key_removed']) {
+        $payload = [
+            'title' => $PUSH_NOTIFICATIONS_MESSAGES['key_removed']['title'],
+            'body' => $PUSH_NOTIFICATIONS_MESSAGES['key_removed']['body'],
+            'data' => [
+                'url' => $PUSH_NOTIFICATIONS_URL,
+                'event_type' => 'key_removed',
+                'seriennummer' => $seriennummer,
+                'action_id' => $actionId
+            ]
+        ];
+
+        // Sende Benachrichtigung an alle Benutzer mit dieser Seriennummer
+        sendPushNotificationsForSeriennummer($pdo, $seriennummer, $payload);
+    }
 
     echo json_encode([
         "status" => "success",
         "message" => "Schlüsselentnahme registriert. Warte auf RFID/NFC-Bestätigung.",
-        "action_id" => $pdo->lastInsertId()
+        "action_id" => $actionId
     ]);
 }
 
 // Funktion zum Verarbeiten des Ereignisses "Schlüssel zurückgegeben"
 function handleKeyReturned($pdo, $data) {
+    global $PUSH_NOTIFICATIONS_ENABLED, $PUSH_NOTIFICATIONS_MESSAGES, $PUSH_NOTIFICATIONS_URL;
+
     $seriennummer = $data['seriennummer'];
     $timestamp = date('Y-m-d H:i:s');
 
@@ -165,6 +267,23 @@ function handleKeyReturned($pdo, $data) {
             ':timestamp_take' => $lastLog['timestamp_take']
         ]);
 
+        // Push-Benachrichtigung senden, wenn aktiviert
+        if ($PUSH_NOTIFICATIONS_ENABLED['key_returned']) {
+            $payload = [
+                'title' => $PUSH_NOTIFICATIONS_MESSAGES['key_returned']['title'],
+                'body' => $PUSH_NOTIFICATIONS_MESSAGES['key_returned']['body'],
+                'data' => [
+                    'url' => $PUSH_NOTIFICATIONS_URL,
+                    'event_type' => 'key_returned',
+                    'seriennummer' => $seriennummer,
+                    'benutzername' => $lastLog['benutzername']
+                ]
+            ];
+
+            // Sende Benachrichtigung an alle Benutzer mit dieser Seriennummer
+            sendPushNotificationsForSeriennummer($pdo, $seriennummer, $payload);
+        }
+
         echo json_encode([
             "status" => "success",
             "message" => "Schlüssel erfolgreich zurückgegeben"
@@ -172,6 +291,23 @@ function handleKeyReturned($pdo, $data) {
     } else if ($pendingAction) {
         // Wenn es keinen offenen key_logs Eintrag gibt, aber eine ausstehende Aktion,
         // haben wir die ausstehende Aktion erfolgreich abgeschlossen
+
+        // Push-Benachrichtigung senden, wenn aktiviert
+        if ($PUSH_NOTIFICATIONS_ENABLED['key_returned']) {
+            $payload = [
+                'title' => $PUSH_NOTIFICATIONS_MESSAGES['key_returned']['title'],
+                'body' => $PUSH_NOTIFICATIONS_MESSAGES['key_returned']['body'] . ' (Nicht verifizierte Entnahme)',
+                'data' => [
+                    'url' => $PUSH_NOTIFICATIONS_URL,
+                    'event_type' => 'key_returned_unverified',
+                    'seriennummer' => $seriennummer
+                ]
+            ];
+
+            // Sende Benachrichtigung an alle Benutzer mit dieser Seriennummer
+            sendPushNotificationsForSeriennummer($pdo, $seriennummer, $payload);
+        }
+
         echo json_encode([
             "status" => "success",
             "message" => "Nicht verifizierte Schlüsselrückgabe erfolgreich registriert"
@@ -187,6 +323,8 @@ function handleKeyReturned($pdo, $data) {
 
 // Funktion zum Verarbeiten des Ereignisses "RFID/NFC-Scan"
 function handleRfidScan($pdo, $data) {
+    global $PUSH_NOTIFICATIONS_ENABLED, $PUSH_NOTIFICATIONS_MESSAGES, $PUSH_NOTIFICATIONS_URL;
+
     if (!isset($data['rfid_uid'])) {
         echo json_encode(["status" => "error", "message" => "RFID/NFC UID fehlt"]);
         return;
@@ -301,6 +439,27 @@ function handleRfidScan($pdo, $data) {
             ':benutzername' => $user['benutzername']
         ]);
 
+        // Push-Benachrichtigung für verifizierte Schlüsselentnahme senden, wenn aktiviert
+        if ($PUSH_NOTIFICATIONS_ENABLED['key_removed_verified']) {
+            $payload = [
+                'title' => $PUSH_NOTIFICATIONS_MESSAGES['key_removed_verified']['title'],
+                'body' => str_replace(
+                    ['[VORNAME]', '[NACHNAME]', '[BENUTZERNAME]'],
+                    [$user['vorname'], $user['nachname'], $user['benutzername']],
+                    $PUSH_NOTIFICATIONS_MESSAGES['key_removed_verified']['body']
+                ),
+                'data' => [
+                    'url' => $PUSH_NOTIFICATIONS_URL,
+                    'event_type' => 'key_removed_verified',
+                    'seriennummer' => $seriennummer,
+                    'benutzername' => $user['benutzername']
+                ]
+            ];
+
+            // Sende Benachrichtigung an alle Benutzer mit dieser Seriennummer
+            sendPushNotificationsForSeriennummer($pdo, $seriennummer, $payload);
+        }
+
         echo json_encode([
             "status" => "success",
             "message" => "Schlüsselentnahme durch " . $user['vorname'] . " " . $user['nachname'] . " bestätigt",
@@ -310,6 +469,27 @@ function handleRfidScan($pdo, $data) {
             ]
         ]);
     } else {
+        // Push-Benachrichtigung für RFID-Scan senden, wenn aktiviert
+        if ($PUSH_NOTIFICATIONS_ENABLED['rfid_scan']) {
+            $payload = [
+                'title' => $PUSH_NOTIFICATIONS_MESSAGES['rfid_scan']['title'],
+                'body' => str_replace(
+                    ['[VORNAME]', '[NACHNAME]', '[BENUTZERNAME]'],
+                    [$user['vorname'], $user['nachname'], $user['benutzername']],
+                    $PUSH_NOTIFICATIONS_MESSAGES['rfid_scan']['body']
+                ),
+                'data' => [
+                    'url' => $PUSH_NOTIFICATIONS_URL,
+                    'event_type' => 'rfid_scan',
+                    'seriennummer' => $seriennummer,
+                    'benutzername' => $user['benutzername']
+                ]
+            ];
+
+            // Sende Benachrichtigung an alle Benutzer mit dieser Seriennummer
+            sendPushNotificationsForSeriennummer($pdo, $seriennummer, $payload);
+        }
+
         echo json_encode([
             "status" => "success",
             "message" => "RFID/NFC-Scan verarbeitet, aber keine passende Aktion gefunden"

@@ -1,0 +1,22 @@
+# PHP-Handler konfigurieren
+AddType application/x-httpd-php .php
+AddHandler application/x-httpd-php .php
+
+# PHP-Einstellungen
+php_flag display_errors on
+php_value error_reporting E_ALL
+
+# Verzeichnisschutz für system-Verzeichnis
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Verhindere direkten Zugriff auf PHP-Dateien im system-Verzeichnis
+    RewriteCond %{REQUEST_URI} ^/system/.*\.php$
+    RewriteRule ^ - [F,L]
+</IfModule>
+
+
+<Files "config.php">
+    Order allow,deny
+    Deny from all
+</Files>

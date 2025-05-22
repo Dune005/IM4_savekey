@@ -46,6 +46,15 @@ async function checkAuth() {
         <div id="keyHistory" class="key-history">Lade Historie...</div>
       </div>
 
+      <div class="push-notification-container">
+        <h3>Push-Benachrichtigungen</h3>
+        <p>Bleiben Sie immer auf dem Laufenden! Aktivieren Sie Push-Benachrichtigungen, um sofort informiert zu werden, wenn sich der Status Ihrer Schlüsselbox ändert.</p>
+        <div class="push-notification-controls">
+          <button id="subscribeButton" disabled>Push-Benachrichtigungen aktivieren</button>
+          <p id="pushStatus">Initialisiere Push-Benachrichtigungen...</p>
+        </div>
+      </div>
+
       ${isAdmin ? `
       <div class="rfid-management-container">
         <h3>RFID/NFC-Verwaltung</h3>
@@ -65,6 +74,14 @@ async function checkAuth() {
         </div>
         <div class="rfid-info">
           <p><strong>Hinweis:</strong> Um Ihren RFID/NFC-Chip zu verknüpfen, scannen Sie ihn an der Schlüsselbox. Die UID wird automatisch angezeigt und kann mit einem Klick übernommen werden.</p>
+        </div>
+      </div>
+
+      <div class="admin-container">
+        <h3>Administration</h3>
+        <p>Hier finden Sie administrative Funktionen für das SaveKey-System.</p>
+        <div class="admin-links">
+          <a href="admin/push_notifications.php" class="admin-link">Push-Benachrichtigungen konfigurieren</a>
         </div>
       </div>
       ` : ''}
@@ -410,6 +427,8 @@ async function takeKey() {
     takeKeyBtn.textContent = "Wird verarbeitet...";
 
     // API-Anfrage senden, um den Schlüssel zu entnehmen
+    console.log('Sende Anfrage zum Entnehmen des Schlüssels...');
+
     const response = await fetch('api/key_action.php', {
       method: 'POST',
       headers: {
@@ -421,7 +440,17 @@ async function takeKey() {
       credentials: "include"
     });
 
+    // Prüfen, ob die Antwort ein gültiges JSON-Format hat
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      // Wenn die Antwort kein JSON ist, den Text der Antwort anzeigen
+      const text = await response.text();
+      console.error('Ungültige Antwort vom Server:', text);
+      throw new Error('Ungültige Antwort vom Server: ' + text);
+    }
+
     const data = await response.json();
+    console.log('Antwort vom Server:', data);
 
     if (data.status === "success") {
       // Status und Historie neu laden
@@ -457,6 +486,8 @@ async function returnKey() {
     returnKeyBtn.textContent = "Wird verarbeitet...";
 
     // API-Anfrage senden, um den Schlüssel zurückzugeben
+    console.log('Sende Anfrage zum Zurückgeben des Schlüssels...');
+
     const response = await fetch('api/key_action.php', {
       method: 'POST',
       headers: {
@@ -468,7 +499,17 @@ async function returnKey() {
       credentials: "include"
     });
 
+    // Prüfen, ob die Antwort ein gültiges JSON-Format hat
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      // Wenn die Antwort kein JSON ist, den Text der Antwort anzeigen
+      const text = await response.text();
+      console.error('Ungültige Antwort vom Server:', text);
+      throw new Error('Ungültige Antwort vom Server: ' + text);
+    }
+
     const data = await response.json();
+    console.log('Antwort vom Server:', data);
 
     if (data.status === "success") {
       // Status und Historie neu laden
