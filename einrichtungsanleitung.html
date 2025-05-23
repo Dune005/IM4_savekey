@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Einrichtungsanleitung - SaveKey System</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <style>
+      /* Spezifische Stile für die Anleitung */
+      .step-container {
+        margin-bottom: 3rem;
+      }
+      
+      .step {
+        background-color: var(--card-bg);
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+        position: relative;
+      }
+      
+      .step-number {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        font-weight: bold;
+        font-size: 1.5em;
+        position: absolute;
+        top: -25px;
+        left: 2rem;
+      }
+      
+      .step h3 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 1.4em;
+        color: var(--secondary-color);
+      }
+      
+      .step p, .step li {
+        font-size: 1.05em;
+        line-height: 1.6;
+      }
+      
+      .step ul {
+        padding-left: 1.5rem;
+      }
+      
+      .step li {
+        margin-bottom: 0.8rem;
+      }
+      
+      .step-icon {
+        color: var(--primary-color);
+        margin-right: 10px;
+      }
+      
+      .back-to-home {
+        display: inline-block;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+      }
+      
+      .tip-box {
+        background-color: #f8f9fa;
+        border-left: 5px solid var(--primary-color);
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+      
+      .tip-box h4 {
+        margin-top: 0;
+        color: var(--primary-color);
+      }
+      
+      /* Stile für das Inhaltsverzeichnis */
+      .toc {
+        background-color: var(--card-bg);
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        padding: 1.5rem;
+        margin: 2rem 0;
+      }
+      
+      .toc h2 {
+        margin-top: 0;
+        color: var(--secondary-color);
+        font-size: 1.5em;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--primary-color);
+        padding-bottom: 0.5rem;
+      }
+      
+      .toc-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      
+      .toc-item {
+        margin-bottom: 1rem;
+      }
+      
+      .toc-link {
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        background-color: #f5f7fa;
+        border-radius: 8px;
+        text-decoration: none;
+        color: var(--text-color);
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border-left: 4px solid var(--primary-color);
+      }
+      
+      .toc-link:hover, .toc-link:focus {
+        background-color: #e9f0f8;
+        transform: translateX(5px);
+      }
+      
+      .toc-number {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        margin-right: 15px;
+        font-weight: bold;
+      }
+      
+      /* Akkordeon-Stile */
+      .accordion-header {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      
+      .accordion-icon {
+        transition: transform 0.3s ease;
+        color: var(--primary-color);
+        font-size: 1.2em;
+      }
+      
+      .accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.5s ease;
+      }
+      
+      .accordion-content.active {
+        max-height: 2000px; /* Anpassen je nach Inhaltsgröße */
+      }
+      
+      .rotate-icon {
+        transform: rotate(180deg);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <img src="images/logo_savekey_text_white.svg" alt="SaveKey Logo" class="logo">
+        <nav>
+          <ul>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="register.html">Registrieren</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="container">
+        <h1>Schritt-für-Schritt Anleitung zur Einrichtung Ihrer SaveKey Schlüsselbox</h1>
+        
+        <a href="index.html" class="back-to-home">
+          <i class="fas fa-arrow-left"></i> Zurück zur Startseite
+        </a>
+        
+        <div class="info-section">
+          <h2>Willkommen bei Ihrer SaveKey Schlüsselbox Einrichtung</h2>
+          <p>Auf dieser Seite finden Sie eine einfach zu befolgende Anleitung, die Sie durch den gesamten Prozess der Einrichtung Ihrer SaveKey Schlüsselbox führt. Wir haben die Anleitung in klare Schritte unterteilt, damit Sie ohne Probleme starten können.</p>
+          <p>Folgen Sie einfach den Schritten nacheinander. Bei Fragen steht Ihnen unser Support-Team jederzeit zur Verfügung.</p>
+        </div>
+        
+        <!-- Inhaltsverzeichnis -->
+        <div class="toc">
+          <h2><i class="fas fa-list"></i> Übersicht der Einrichtungsschritte</h2>
+          <ul class="toc-list">
+            <li class="toc-item">
+              <a href="#schritt1" class="toc-link" onclick="scrollToStep('schritt1'); return false;">
+                <span class="toc-number">1</span>
+                QR-Code scannen und Admin-Konto erstellen
+              </a>
+            </li>
+            <li class="toc-item">
+              <a href="#schritt2" class="toc-link" onclick="scrollToStep('schritt2'); return false;">
+                <span class="toc-number">2</span>
+                Hardware einrichten
+              </a>
+            </li>
+            <li class="toc-item">
+              <a href="#schritt3" class="toc-link" onclick="scrollToStep('schritt3'); return false;">
+                <span class="toc-number">3</span>
+                Erste Anmeldung als Administrator
+              </a>
+            </li>
+            <li class="toc-item">
+              <a href="#schritt4" class="toc-link" onclick="scrollToStep('schritt4'); return false;">
+                <span class="toc-number">4</span>
+                RFID/NFC-Chip zuweisen
+              </a>
+            </li>
+            <li class="toc-item">
+              <a href="#schritt5" class="toc-link" onclick="scrollToStep('schritt5'); return false;">
+                <span class="toc-number">5</span>
+                Weitere Benutzer informieren
+              </a>
+            </li>
+            <li class="toc-item">
+              <a href="#schritt6" class="toc-link" onclick="scrollToStep('schritt6'); return false;">
+                <span class="toc-number">6</span>
+                System konfigurieren
+              </a>
+            </li>
+            <li class="toc-item">
+              <a href="#schritt7" class="toc-link" onclick="scrollToStep('schritt7'); return false;">
+                <span class="toc-number">7</span>
+                System testen
+              </a>
+            </li>
+          </ul>
+        </div>
+        
+        <!-- Schritt-für-Schritt Anleitung -->
+        <div class="step-container">
+          <!-- Schritt 1 -->
+          <div id="schritt1" class="step">
+            <div class="step-number">1</div>
+            <div class="accordion-header" onclick="toggleAccordion('schritt1-content')">
+              <h3>QR-Code scannen und Admin-Konto erstellen</h3>
+              <i class="fas fa-chevron-down accordion-icon" id="schritt1-icon"></i>
+            </div>
+            <div id="schritt1-content" class="accordion-content active">
+              <p>Der erste Schritt ist das Einrichten Ihres Administrator-Kontos:</p>
+              <ul>
+                <li><i class="fas fa-qrcode step-icon"></i> Scannen Sie den QR-Code, der mit Ihrer Schlüsselbox geliefert wurde. Dieser Code enthält die einmalige Seriennummer Ihrer Box.</li>
+                <li><i class="fas fa-link step-icon"></i> Alternativ können Sie den beiliegenden Link in Ihrem Webbrowser öffnen.</li>
+                <li><i class="fas fa-user-plus step-icon"></i> Führen Sie die Registrierung durch, indem Sie alle erforderlichen Daten eingeben.</li>
+                <li><i class="fas fa-shield-alt step-icon"></i> Wichtig: Bewahren Sie Ihre Zugangsdaten sicher auf. Sie werden sie benötigen, um als Administrator auf das System zuzugreifen.</li>
+              </ul>
+            </div>
+          </div>
+          
+          <!-- Schritt 2 -->
+          <div id="schritt2" class="step">
+            <div class="step-number">2</div>
+            <div class="accordion-header" onclick="toggleAccordion('schritt2-content')">
+              <h3>Hardware einrichten</h3>
+              <i class="fas fa-chevron-down accordion-icon" id="schritt2-icon"></i>
+            </div>
+            <div id="schritt2-content" class="accordion-content">
+              <p>Sobald Sie Ihr Admin-Konto erstellt haben, können Sie die Schlüsselbox einrichten:</p>
+              <ul>
+                <li><i class="fas fa-plug step-icon"></i> Verbinden Sie die Schlüsselbox mit einer Stromquelle.</li>
+                <li><i class="fas fa-wifi step-icon"></i> Stellen Sie sicher, dass WLAN in der Nähe verfügbar ist.</li>
+              </ul>
+            </div>
+          </div>
+          
+          <!-- Schritt 3 -->
+          <div id="schritt3" class="step">
+            <div class="step-number">3</div>
+            <div class="accordion-header" onclick="toggleAccordion('schritt3-content')">
+              <h3>Erste Anmeldung als Administrator</h3>
+              <i class="fas fa-chevron-down accordion-icon" id="schritt3-icon"></i>
+            </div>
+            <div id="schritt3-content" class="accordion-content">
+              <p>Jetzt können Sie sich zum ersten Mal anmelden und Ihr System konfigurieren:</p>
+              <ul>
+                <li><i class="fas fa-sign-in-alt step-icon"></i> Öffnen Sie die SaveKey-Webseite und klicken Sie auf "Login".</li>
+                <li><i class="fas fa-user-shield step-icon"></i> Melden Sie sich mit Ihren bei der Registrierung erstellten Admin-Zugangsdaten an.</li>
+                <li><i class="fas fa-tachometer-alt step-icon"></i> Nach der Anmeldung werden Sie zum Admin-Dashboard weitergeleitet.</li>
+              </ul>
+            </div>
+          </div>
+          
+          <!-- Schritt 4 -->
+          <div id="schritt4" class="step">
+            <div class="step-number">4</div>
+            <div class="accordion-header" onclick="toggleAccordion('schritt4-content')">
+              <h3>RFID/NFC-Chip zuweisen</h3>
+              <i class="fas fa-chevron-down accordion-icon" id="schritt4-icon"></i>
+            </div>
+            <div id="schritt4-content" class="accordion-content">
+              <p>Als Administrator können Sie nun Ihren RFID/NFC-Chip für den Zugriff auf die Schlüsselbox einrichten:</p>
+              <ul>
+                <li><i class="fas fa-id-card step-icon"></i> Gehen Sie im Admin-Dashboard zum Menüpunkt "Mein Profil".</li>
+                <li><i class="fas fa-id-card step-icon"></i> Wählen Sie die Option "RFID/NFC-Chip zuweisen".</li>
+                <li><i class="fas fa-hand-pointer step-icon"></i> Halten Sie den Chip an das Lesegerät der Box, wenn Sie dazu aufgefordert werden.</li>
+                <li><i class="fas fa-check-circle step-icon"></i> Bestätigen Sie die Zuweisung im System.</li>
+              </ul>
+            </div>
+          </div>
+          
+          <!-- Schritt 5 -->
+          <div id="schritt5" class="step">
+            <div class="step-number">5</div>
+            <div class="accordion-header" onclick="toggleAccordion('schritt5-content')">
+              <h3>Weitere Benutzer informieren</h3>
+              <i class="fas fa-chevron-down accordion-icon" id="schritt5-icon"></i>
+            </div>
+            <div id="schritt5-content" class="accordion-content">
+              <p>Weitere Benutzer müssen sich selbst registrieren, um Zugriff auf die Schlüsselbox zu erhalten:</p>
+              <ul>
+                <li><i class="fas fa-share-alt step-icon"></i> Teilen Sie die Seriennummer der Schlüsselbox mit den Personen, die Zugriff haben sollen.</li>
+                <li><i class="fas fa-info-circle step-icon"></i> Informieren Sie die Benutzer, dass sie sich auf der SaveKey-Website unter "Registrieren" anmelden müssen.</li>
+                <li><i class="fas fa-exclamation-triangle step-icon"></i> Wichtig: Jeder Benutzer muss bei der Registrierung die korrekte Seriennummer der Schlüsselbox eingeben.</li>
+                <li><i class="fas fa-user-check step-icon"></i> Nach erfolgreicher Registrierung können die Benutzer ihren eigenen RFID/NFC-Chip zuweisen.</li>
+              </ul>
+            </div>
+          </div>
+          
+          <!-- Schritt 6 -->
+          <div id="schritt6" class="step">
+            <div class="step-number">6</div>
+            <div class="accordion-header" onclick="toggleAccordion('schritt6-content')">
+              <h3>System konfigurieren</h3>
+              <i class="fas fa-chevron-down accordion-icon" id="schritt6-icon"></i>
+            </div>
+            <div id="schritt6-content" class="accordion-content">
+              <p>Passen Sie die Einstellungen an Ihre Bedürfnisse an:</p>
+              <ul>
+                <li><i class="fas fa-cogs step-icon"></i> Gehen Sie im Admin-Dashboard zum Menüpunkt "Einstellungen".</li>
+                <li><i class="fas fa-bell step-icon"></i> Konfigurieren Sie Push-Benachrichtigungen für Ereignisse wie Schlüsselentnahme oder Warnungen.</li>
+                <li><i class="fas fa-clock step-icon"></i> Legen Sie Zeitfenster fest, in denen bestimmte Benutzer Zugriff haben sollen (optional).</li>
+                <li><i class="fas fa-save step-icon"></i> Speichern Sie Ihre Einstellungen.</li>
+              </ul>
+              <div class="tip-box">
+                <h4><i class="fas fa-lightbulb"></i> Tipp:</h4>
+                <p>Es empfiehlt sich, die Push-Benachrichtigungen zu aktivieren, um über wichtige Ereignisse direkt informiert zu werden.</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Schritt 7 -->
+          <div id="schritt7" class="step">
+            <div class="step-number">7</div>
+            <div class="accordion-header" onclick="toggleAccordion('schritt7-content')">
+              <h3>System testen</h3>
+              <i class="fas fa-chevron-down accordion-icon" id="schritt7-icon"></i>
+            </div>
+            <div id="schritt7-content" class="accordion-content">
+              <p>Zum Abschluss sollten Sie das System testen:</p>
+              <ul>
+                <li><i class="fas fa-vial step-icon"></i> Testen Sie die Entnahme und Rückgabe des Schlüssels mit Ihrem registrierten RFID/NFC-Chip.</li>
+                <li><i class="fas fa-mobile-alt step-icon"></i> Überprüfen Sie, ob die konfigurierten Push-Benachrichtigungen korrekt auf Ihrem Smartphone ankommen.</li>
+                <li><i class="fas fa-user-check step-icon"></i> Prüfen Sie, ob der Zugriff nur mit registriertem RFID/NFC-Chip möglich ist.</li>
+                <li><i class="fas fa-clipboard-check step-icon"></i> Überprüfen Sie, ob alle Aktivitäten korrekt im Protokoll angezeigt werden.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <div class="info-section">
+          <h2>Unterstützung und Hilfe</h2>
+          <p>Sollten Sie während der Einrichtung auf Probleme stoßen oder weitere Fragen haben, zögern Sie nicht, unseren Support zu kontaktieren:</p>
+          <ul>
+            <li><i class="fas fa-headset"></i> Support-Chat: Verfügbar über die SaveKey-App</li>
+            <li><i class="fas fa-phone"></i> Telefon: +49 (0) 123 456789</li>
+            <li><i class="fas fa-question-circle"></i> FAQ: <a href="#">Häufig gestellte Fragen</a></li>
+          </ul>
+          <p>Unser Team steht Ihnen gerne zur Verfügung, um sicherzustellen, dass Ihre SaveKey Schlüsselbox optimal eingerichtet ist.</p>
+        </div>
+        
+        <a href="index.html" class="back-to-home">
+          <i class="fas fa-arrow-left"></i> Zurück zur Startseite
+        </a>
+      </div>
+    </main>
+
+    <footer>
+      <div class="container">
+        <p>&copy; 2024 IM4 SaveKey System</p>
+      </div>
+    </footer>
+    
+    <!-- JavaScript für Akkordeon-Funktionalität -->
+    <script>
+      // Initial ersten Abschnitt öffnen und andere schließen
+      document.addEventListener('DOMContentLoaded', function() {
+        // Alle Akkordeon-Inhalte schließen außer dem ersten
+        var contents = document.querySelectorAll('.accordion-content');
+        for (var i = 1; i < contents.length; i++) {
+          contents[i].classList.remove('active');
+        }
+        
+        // Alle Icons initial richtig setzen
+        updateAllIcons();
+      });
+      
+      // Funktion zum Umschalten eines Akkordeon-Elements
+      function toggleAccordion(contentId) {
+        var content = document.getElementById(contentId);
+        var iconId = contentId.replace('content', 'icon');
+        var icon = document.getElementById(iconId);
+        
+        if (content.classList.contains('active')) {
+          content.classList.remove('active');
+          icon.classList.remove('rotate-icon');
+        } else {
+          content.classList.add('active');
+          icon.classList.add('rotate-icon');
+        }
+      }
+      
+      // Funktion zum Scrollen zu einem bestimmten Schritt und Öffnen des Inhalts
+      function scrollToStep(stepId) {
+        var element = document.getElementById(stepId);
+        var contentId = stepId + '-content';
+        var content = document.getElementById(contentId);
+        var iconId = contentId.replace('content', 'icon');
+        var icon = document.getElementById(iconId);
+        
+        // Zum Element scrollen mit etwas Offset für bessere Sichtbarkeit
+        window.scrollTo({
+          top: element.offsetTop - 50,
+          behavior: 'smooth'
+        });
+        
+        // Inhalt öffnen, falls geschlossen
+        if (!content.classList.contains('active')) {
+          content.classList.add('active');
+          icon.classList.add('rotate-icon');
+        }
+      }
+      
+      // Funktion zum Aktualisieren aller Icons basierend auf dem Zustand der Inhalte
+      function updateAllIcons() {
+        var contents = document.querySelectorAll('.accordion-content');
+        for (var i = 0; i < contents.length; i++) {
+          var contentId = contents[i].id;
+          var iconId = contentId.replace('content', 'icon');
+          var icon = document.getElementById(iconId);
+          
+          if (contents[i].classList.contains('active')) {
+            icon.classList.add('rotate-icon');
+          } else {
+            icon.classList.remove('rotate-icon');
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

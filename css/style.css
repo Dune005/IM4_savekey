@@ -1,20 +1,24 @@
 /* style.css */
 :root {
-  --primary-color: #3498db; /* Blauton */
+  --primary-color: #2570A9; /* Angepasstes Blau für besseren Kontrast (5.05:1 auf Weiß) */
+  --primary-color-rgb: 37, 112, 169; /* RGB-Werte für #2570A9 */
   --secondary-color: #2c3e50; /* Dunkelblau/Grau */
   --accent-color: #e74c3c; /* Akzentfarbe Rot */
   --light-gray: #ecf0f1;
   --dark-gray: #7f8c8d;
   --text-color: #34495e;
   --card-bg: #ffffff;
-  --font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Moderne Schriftart */
+  --font-family: 'Open Sans', Arial, Verdana, sans-serif; /* Open Sans als primäre Wahl, Roboto ist auch gut */
+  --base-font-size: 18px; /* Basis-Schriftgröße für bessere Lesbarkeit */
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap'); alter Import, kann entfernt oder auskommentiert werden */
 
 
 body {
   font-family: var(--font-family);
+  font-size: var(--base-font-size); /* Basis-Schriftgröße anwenden */
   margin: 0;
   line-height: 1.7; /* Etwas mehr Zeilenabstand */
   color: var(--text-color);
@@ -38,18 +42,21 @@ body {
 }
 
 #subscribeButton {
-  padding: 10px 20px;
+  padding: 12px 24px; /* Erhöhtes Padding für größere Klickfläche */
   background-color: var(--primary-color);
   color: white;
   border: none;
   border-radius: 4px;
-  font-size: 1rem;
+  font-size: 1rem; /* 1rem entspricht jetzt var(--base-font-size), also 18px */
+  /* Mindesthöhe sicherstellen, falls Text sehr kurz ist */
+  min-height: 44px;
+  box-sizing: border-box; /* Padding und Border in die Höhe/Breite einrechnen */
   cursor: pointer;
   transition: background-color 0.3s;
 }
 
 #subscribeButton:hover:not(:disabled) {
-  background-color: #2980b9;
+  background-color: #1A4F8F;
 }
 
 #subscribeButton:disabled {
@@ -103,9 +110,16 @@ header nav a {
   color: #fff;
   text-decoration: none;
   text-transform: none; /* Kein Uppercase für moderneren Look */
-  font-size: 15px; /* Etwas grösser */
-  font-weight: 500; /* Mittlere Schriftstärke */
-  padding: 10px 20px; /* Mehr Padding für Button-Optik */
+  font-size: 1em; /* Relative Größe zur Basis, also 18px. Oder direkt 18px. */
+  font-weight: 600; /* Etwas dicker für bessere Lesbarkeit auf farbigem Grund */
+  padding: 12px 22px; /* Angepasstes Padding für Klickfläche (ca. 18px + 2*12px = 42px Höhe, plus Zeilenhöhe) */
+  /* Um 44px sicher zu erreichen: */
+  min-height: 20px; /* Texthöhe bei 18px ca 20-22px */
+  line-height: 20px; /* Zentriert Text vertikal bei fester Höhe */
+  display: inline-flex; /* Ermöglicht vertikale Ausrichtung und min-height */
+  align-items: center;
+  min-width: 44px; /* Stellt sicher, dass auch schmale Buttons breit genug sind */
+  justify-content: center; /* Text zentrieren, falls Button breiter als Text */
   border: 1px solid transparent; /* Transparenter Rand initial */
   border-radius: 25px; /* Stärker abgerundete Ecken */
   transition: all 0.3s ease;
@@ -154,8 +168,8 @@ h1 {
 }
 
 .info-section p { /* Gezieltes Styling für Absätze in der Info-Sektion */
-  font-size: 1.05em; /* Etwas grössere Schrift für bessere Lesbarkeit */
-  margin-bottom: 15px; /* Abstand zwischen Absätzen */
+  font-size: 1em; /* Passt sich der Basis-Schriftgröße an (18px) */
+  margin-bottom: 1.2em; /* Etwas mehr Abstand, relativ zur Schriftgröße */
 }
 
 .info-section ul {
@@ -178,7 +192,6 @@ h1 {
   top: 2px;
   color: var(--primary-color);
 }
-
 
 .admin-info { /* Nicht mehr verwendet, aber falls doch */
   border-left: 5px solid var(--accent-color);
@@ -212,7 +225,6 @@ footer {
 footer p {
   margin: 0;
 }
-
 
 /* Vorhandene Styles beibehalten und anpassen */
 
@@ -256,3 +268,363 @@ p {
 
 /* Hier wurden die spezifischen Styles für die Protected Page entfernt,
    da diese jetzt direkt in der protected.html-Datei enthalten sind */
+
+/* Login Page Styles */
+.login-body {
+  position: relative; /* Für absolute Positionierung des back-link */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  background-color: var(--light-gray); /* Hintergrundfarbe konsistent halten */
+}
+
+.login-container {
+  background-color: var(--card-bg);
+  padding: 2.5rem; /* Etwas mehr Padding */
+  border-radius: 12px; /* Konsistent mit .info-section */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); /* Konsistent mit .info-section */
+  max-width: 450px; /* Etwas breiter für mehr Platz */
+  width: 100%;
+  text-align: center; /* Zentriert das Logo, falls es nicht block ist */
+}
+
+.login-logo {
+  display: block; /* Sicherstellen, dass es block ist für margin auto */
+  margin: 0 auto 2.5rem; /* Mehr Abstand nach unten */
+  max-width: 200px; /* Maximale Breite für das Logo auf der Login-Seite */
+}
+
+.login-container h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 1.8em; /* Angepasst an die Basisschriftgröße */
+  color: var(--secondary-color);
+}
+
+.login-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* Abstand zwischen Formulargruppen */
+}
+
+.login-container label {
+  display: block;
+  margin-bottom: 0.75rem; /* Mehr Abstand zum Input */
+  font-weight: 800;
+  font-size: 1em; /* Relative Größe zur Basis (18px) */
+  color: var(--text-color);
+  text-align: left; /* Label linksbündig */
+}
+
+.login-container input[type="text"],
+.login-container input[type="password"] {
+  width: 100%;
+  padding: 14px 18px; /* Größeres Padding für bessere Klick-/Touchfläche und Lesbarkeit */
+  border: 2px solid #d1d5db; /* Etwas dunklerer Rand für besseren Kontrast */
+  border-radius: 8px; /* Etwas abgerundeter */
+  font-size: 1em; /* Relative Größe zur Basis (18px) */
+  line-height: 1.5; /* Stellt sicher, dass Text nicht abgeschnitten wird */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  min-height: 48px; /* Mindesthöhe für Eingabefelder */
+  box-sizing: border-box;
+}
+
+.login-container input[type="text"]:focus,
+.login-container input[type="password"]:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb, 37, 112, 169), 0.3); /* Fokus-Indikator, --primary-color-rgb muss ggf. definiert werden */
+  outline: none;
+}
+
+.login-container .button-primary {
+  padding: 14px 24px; /* Konsistentes Padding mit anderen Buttons */
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 8px; /* Konsistent mit Inputs */
+  font-size: 1.1em; /* Etwas größer für Hauptaktion */
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  min-height: 48px; /* Mindesthöhe */
+  box-sizing: border-box;
+  width: 100%; /* Button über volle Breite */
+}
+
+.login-container .button-primary:hover {
+  background-color: #1A4F8F; /* Dunklere Variante von --primary-color */
+  transform: translateY(-1px);
+}
+
+.login-container .register-link {
+  text-align: center;
+  margin-top: 2rem; /* Mehr Abstand */
+  font-size: 0.95em; /* Etwas größer für bessere Lesbarkeit */
+}
+
+.login-container .register-link a {
+  color: var(--primary-color); /* Konsistente Linkfarbe */
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-container .register-link a:hover,
+.login-container .register-link a:focus {
+  text-decoration: underline;
+  outline: 2px solid transparent; /* Verhindert doppelten Fokusrahmen, wenn Browser eigenen setzt */
+}
+
+.back-link {
+  position: absolute;
+  top: 17%; /* Näher an die Box rücken */
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.95em;
+  z-index: 10; /* Sicherstellen, dass es über anderen Elementen liegt */
+}
+
+.back-link a {
+  color: var(--text-color);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.back-link a i {
+  margin-right: 8px;
+  font-size: 1em;
+  color: var(--primary-color);
+}
+
+.back-link a:hover,
+.back-link a:focus {
+  color: var(--primary-color);
+  text-decoration: underline;
+  outline: 2px solid transparent;
+}
+
+.back-link-register {
+  position: absolute;
+  top: -1%; /* Angepasster Wert für die Registrierungsseite */
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.95em;
+  z-index: 10;
+}
+
+.back-link-register a {
+  color: var(--text-color);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.back-link-register a i {
+  margin-right: 8px;
+  font-size: 1em;
+  color: var(--primary-color);
+}
+
+.back-link-register a:hover,
+.back-link-register a:focus {
+  color: var(--primary-color);
+  text-decoration: underline;
+  outline: 2px solid transparent;
+}
+
+/* Register Page Styles */
+.register-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  background-color: var(--light-gray);
+}
+
+.register-container {
+  background-color: var(--card-bg);
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  max-width: 550px; /* Erhöht von 500px für mehr Platz */
+  width: 100%;
+  text-align: center;
+}
+
+.register-logo {
+  display: block;
+  margin: 0 auto 2rem; /* Etwas weniger Abstand als Login, da mehr Felder folgen */
+  max-width: 180px; /* Etwas kleiner als Login-Logo */
+}
+
+.register-container h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 1.8em;
+  color: var(--secondary-color);
+}
+
+.register-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem; /* Etwas weniger Gap als Login, da mehr Felder */
+}
+
+.register-container label {
+  display: block;
+  margin-bottom: 0.6rem; /* Etwas weniger als Login */
+  font-weight: 800;
+  font-size: 0.9em; /* Angepasst von 1em, um Umbrüche zu vermeiden */
+  color: var(--text-color);
+  text-align: left;
+  white-space: nowrap; /* Verhindert Umbrüche */
+}
+
+.register-container input[type="text"],
+.register-container input[type="password"],
+.register-container input[type="email"],
+.register-container input[type="tel"] {
+  width: 100%;
+  padding: 14px 18px;
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1em;
+  line-height: 1.5;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  min-height: 48px;
+  box-sizing: border-box;
+}
+
+.register-container input[type="text"]:focus,
+.register-container input[type="password"]:focus,
+.register-container input[type="email"]:focus,
+.register-container input[type="tel"]:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.3);
+  outline: none;
+}
+
+.register-container .button-primary {
+  padding: 14px 24px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  min-height: 48px;
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: 0.5rem; /* Kleiner Abstand nach oben zum letzten Feld */
+}
+
+.register-container .button-primary:hover {
+  background-color: #1A4F8F;
+  transform: translateY(-1px);
+}
+
+.register-container .login-link {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 0.95em;
+}
+
+.register-container .login-link a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.register-container .login-link a:hover,
+.register-container .login-link a:focus {
+  text-decoration: underline;
+  outline: 2px solid transparent;
+}
+
+/* Media Query für kleinere Bildschirme, falls nötig */
+@media (max-width: 520px) { /* Angepasster Breakpoint */
+  .register-container {
+    padding: 1.5rem;
+    max-width: 100%;
+  }
+  .register-container h1 {
+    font-size: 1.6em;
+  }
+}
+
+/* Media Query für kleinere Bildschirme, falls nötig */
+@media (max-width: 480px) {
+  .login-container {
+    padding: 1.5rem;
+  }
+  .login-container h1 {
+    font-size: 1.6em;
+  }
+}
+
+/* Help Button Container */
+.help-button-container {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.button-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 25px;
+  background-color: var(--secondary-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1em;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  cursor: pointer;
+  min-height: 48px; /* Barrierefreiheit */
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.button-secondary i {
+  margin-right: 10px;
+  font-size: 1.2em;
+}
+
+.button-secondary:hover,
+.button-secondary:focus {
+  background-color: #a83232; /* Dunklere Variante */
+  transform: translateY(-2px);
+}
+
+.button-secondary:focus {
+  outline: 3px solid rgba(var(--secondary-color-rgb), 0.4);
+  outline-offset: 2px;
+}
+
+/* Media Query für kleine Bildschirme */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 15px;
+  }
+
+  header nav ul li {
+    margin-left: 1rem;
+  }
+  
+  .button-secondary {
+    padding: 12px 20px;
+    font-size: 1em;
+    width: 100%;
+  }
+}

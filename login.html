@@ -2,128 +2,16 @@
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
-    <title>Login</title>
-    <style>
-      :root {
-        --primary-color: #2c3e50;
-        --accent-color: #3498db;
-        --bg-color: #f5f6fa;
-        --card-color: #ffffff;
-        --text-color: #2d3436;
-        --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      }
-
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
-      body {
-        font-family: var(--font-family);
-        font-size: 16px;
-        line-height: 1.6;
-        background-color: var(--bg-color);
-        color: var(--text-color);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        padding: 20px;
-      }
-
-      .login-container {
-        background-color: var(--card-color);
-        padding: 2rem;
-        border-radius: 10px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        max-width: 400px;
-        width: 100%;
-      }
-
-      h1 {
-        text-align: center;
-        margin-bottom: 2rem;
-        font-size: 24px;
-        color: var(--primary-color);
-      }
-
-      form {
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-      }
-
-      label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 600;
-        font-size: 15px;
-      }
-
-      input[type="text"],
-      input[type="password"] {
-        width: 100%;
-        padding: 12px 15px;
-        border: 2px solid #dcdde1;
-        border-radius: 6px;
-        font-size: 15px;
-        transition: border-color 0.3s ease;
-      }
-
-      input[type="text"]\:focus,
-      input[type="password"]\:focus {
-        border-color: var(--accent-color);
-        outline: none;
-      }
-
-      button {
-        padding: 12px;
-        background-color: var(--accent-color);
-        color: white;
-        border: none;
-        border-radius: 6px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-      }
-
-      button:hover {
-        background-color: #2980b9;
-      }
-
-      .register-link {
-        text-align: center;
-        margin-top: 1.5rem;
-        font-size: 14px;
-      }
-
-      .register-link a {
-        color: var(--accent-color);
-        text-decoration: none;
-        font-weight: 500;
-      }
-
-      .register-link a:hover {
-        text-decoration: underline;
-      }
-
-      @media (max-width: 480px) {
-        .login-container {
-          padding: 1.5rem;
-        }
-        
-        h1 {
-          font-size: 20px;
-        }
-      }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SaveKey System</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
   </head>
-
+  <body class="login-body">
     <div class="login-container">
-      <img src="images/logo_savekey.svg" alt="Logo" class="logo" style="display: block; margin: 0 auto 40px; max-width: 250px;">
-      <h1></h1>
+      <img src="images/logo_savekey.svg" alt="SaveKey Logo" class="logo login-logo" style="display: block; margin: 0 auto 40px; max-width: 250px;">
+      <h1>Anmelden bei SaveKey</h1>
       <form id="loginForm">
         <div>
           <label for="benutzername">Benutzername</label>
@@ -133,11 +21,13 @@
           <label for="password">Passwort</label>
           <input type="password" id="password" name="password" required aria-required="true" />
         </div>
-        <button type="submit">Login</button>
+        <button type="submit" class="button-primary">Login</button>
       </form>
 
-      <p class="register-link">Noch kein Konto? <a href="register.html">Hier registrieren</a>.</p>
+      <p class="register-link">Sie sind neu hier? <a href="register.html">Jetzt bei SaveKey registrieren</a>.</p>
     </div>
+
+    <p class="back-link"><a href="index.html"><i class="fas fa-arrow-left"></i> Zurück zur Startseite</a></p>
 
 <script src="js/login.js"></script>
   </body>
