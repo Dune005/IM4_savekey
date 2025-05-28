@@ -11,7 +11,10 @@ async function checkAuth() {
 
     const result = await response.json();
 
-    // Display user data in the protected content div with all available fields
+    // Globale Navigation wird durch global-auth.js behandelt
+    // Hier kümmern wir uns nur um den protected-spezifischen Content
+
+    // Display protected content div ohne redundante user info
     const protectedContent = document.getElementById("protectedContent");
 
     // Speichere die Seriennummer für spätere Verwendung
@@ -20,81 +23,137 @@ async function checkAuth() {
     // Prüfen, ob der Benutzer ein Administrator ist
     const isAdmin = result.is_admin === true;
 
-    // Zeige Benutzerinformationen an
+    // Zeige das Dashboard mit prominenter Statusanzeige an
     protectedContent.innerHTML = `
-      <h2>Willkommen, ${result.vorname} ${result.nachname}!</h2>
-      <div class="user-info">
-        <p><strong>Benutzername:</strong> ${result.benutzername}</p>
-        <p><strong>E-Mail:</strong> ${result.mail}</p>
-        <p><strong>Seriennummer Ihrer Schlüsselbox:</strong> ${seriennummer}</p>
-        <p><strong>Benutzerrolle:</strong> ${isAdmin ? 'Administrator' : 'Normaler Benutzer'}</p>
+      <div class="dashboard-welcome">
+        <div class="welcome-message">
+          <h2>Willkommen zurück, ${result.vorname}!</h2>
+          <p class="welcome-subtitle">Hier ist der aktuelle Status Ihrer Schlüsselbox <strong>${seriennummer}</strong></p>
+        </div>
       </div>
 
-      <div class="key-status-container">
-        <h3>Status Ihres Schlüssels</h3>
+      <div class="key-status-container prominent">
+        <div class="status-header">
+          <div class="status-title">
+            <h2>Schlüsselstatus</h2>
+            <p class="status-subtitle">Aktueller Zustand Ihres Schlüssels</p>
+          </div>
+        </div>
         <div id="keyStatus" class="key-status">Lade Status...</div>
         ${isAdmin ? `
         <div class="key-actions">
-          <button id="takeKeyBtn" class="action-btn take-btn">Schlüssel entnehmen</button>
-          <button id="returnKeyBtn" class="action-btn return-btn">Schlüssel zurückgeben</button>
+          <button id="takeKeyBtn" class="action-btn take-btn">
+            <i class="fas fa-download"></i>
+            <span>Schlüssel entnehmen</span>
+          </button>
+          <button id="returnKeyBtn" class="action-btn return-btn">
+            <i class="fas fa-upload"></i>
+            <span>Schlüssel zurückgeben</span>
+          </button>
         </div>
         ` : ''}
       </div>
 
       <div class="key-history-container">
-        <h3>Schlüsselhistorie</h3>
-        <div id="keyHistory" class="key-history">Lade Historie...</div>
-      </div>
-
-      <div class="push-notification-container">
-        <h3>Push-Benachrichtigungen</h3>
-        <p>Bleiben Sie immer auf dem Laufenden! Aktivieren Sie Push-Benachrichtigungen, um sofort informiert zu werden, wenn sich der Status Ihrer Schlüsselbox ändert.</p>
-        <div class="push-notification-controls">
-          <button id="subscribeButton" disabled>Push-Benachrichtigungen aktivieren</button>
-          <p id="pushStatus">Initialisiere Push-Benachrichtigungen...</p>
+        <div class="history-header" id="historyToggle">
+          <h3>Schlüsselhistorie</h3>
+          <i class="fas fa-chevron-down history-arrow"></i>
         </div>
+        <div id="keyHistory" class="key-history collapsed">Lade Historie...</div>
       </div>
 
-      ${isAdmin ? `
       <div class="rfid-management-container">
-        <h3>RFID/NFC-Verwaltung</h3>
-        <p>Hier können Sie Ihren RFID/NFC-Chip mit Ihrem Konto verknüpfen, um die Schlüsselbox zu nutzen.</p>
-        <div id="rfidStatus" class="rfid-status">Lade RFID/NFC-Status...</div>
-        <div id="lastScannedRfid" class="last-scanned-rfid" style="display: none;">
-          <div class="alert alert-info">
-            <h4>Zuletzt gescannter RFID-Chip:</h4>
-            <p>UID: <code id="lastScannedRfidUid"></code></p>
-            <button id="useScannedRfidBtn" class="action-btn">Diese UID verwenden</button>
+        <div class="rfid-header" id="rfidToggle">
+          <h3><i class="fas fa-credit-card"></i> Meine Verifizierungsmethode</h3>
+          <i class="fas fa-chevron-down rfid-arrow"></i>
+        </div>
+        
+        <div id="rfidContent" class="rfid-content collapsed">
+          <div id="rfidStatus" class="rfid-status">Lade Status Ihrer Zutrittskarte...</div>
+          
+          <div id="lastScannedRfid" class="last-scanned-rfid" style="display: none;">
+            <div class="scanned-card-info">
+              <h4><i class="fas fa-check-circle"></i> Neue Karte erkannt!</h4>
+              <p>Karten-ID: <code id="lastScannedRfidUid"></code></p>
+              <button id="useScannedRfidBtn" class="action-btn use-card-btn">
+                <i class="fas fa-plus-circle"></i> Diese Karte verwenden
+              </button>
+            </div>
+          </div>
+          
+          <div class="rfid-form-section">
+            <h4>Karte oder Badge zuweisen</h4>
+            <div class="rfid-form">
+              <input type="text" id="rfidUid" placeholder="Karten-ID eingeben (z.B. 04:A3:2B:1E)" class="rfid-input" />
+              <div class="button-group">
+                <button id="assignRfidBtn" class="action-btn rfid-btn">
+                  <i class="fas fa-link"></i> Zuweisen
+                </button>
+                <button id="removeRfidBtn" class="action-btn rfid-remove-btn">
+                  <i class="fas fa-unlink"></i> Entfernen
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="rfid-instructions">
+            <h4><i class="fas fa-info-circle"></i> So funktioniert es:</h4>
+            <ol class="instruction-steps">
+              <li>Halten Sie Ihre Karte an das Lesegerät der Schlüsselbox</li>
+              <li>Die Karten-ID erscheint automatisch hier im Dashboard</li>
+              <li>Klicken Sie auf "Diese Karte verwenden" um sie zu aktivieren</li>
+            </ol>
           </div>
         </div>
-        <div class="rfid-form">
-          <input type="text" id="rfidUid" placeholder="RFID/NFC UID eingeben" class="rfid-input" />
-          <button id="assignRfidBtn" class="action-btn rfid-btn">RFID/NFC zuweisen</button>
-          <button id="removeRfidBtn" class="action-btn rfid-remove-btn">RFID/NFC entfernen</button>
-        </div>
-        <div class="rfid-info">
-          <p><strong>Hinweis:</strong> Um Ihren RFID/NFC-Chip zu verknüpfen, scannen Sie ihn an der Schlüsselbox. Die UID wird automatisch angezeigt und kann mit einem Klick übernommen werden.</p>
-        </div>
       </div>
 
-      <div class="admin-container">
-        <h3>Administration</h3>
-        <p>Hier finden Sie administrative Funktionen für das SaveKey-System.</p>
-        <div class="admin-links">
-          <a href="admin/push_notifications.php" class="admin-link">Push-Benachrichtigungen konfigurieren</a>
+      <div class="push-notification-container compact">
+        <div class="push-notification-controls">
+          <button id="subscribeButton" disabled>
+            <i class="fas fa-bell"></i> Push-Benachrichtigungen aktivieren
+          </button>
+          <p id="pushStatus">Initialisiere...</p>
         </div>
       </div>
-      ` : ''}
     `;
 
     // Lade den Schlüsselstatus und die Historie
     loadKeyStatus();
     loadKeyHistory();
 
+    // Initialisiere die Toggle-Funktionalität für die Schlüsselhistorie
+    initializeHistoryToggle();
+    
+    // Initialisiere die Toggle-Funktionalität für RFID-Management (für alle Benutzer)
+    initializeRfidToggle();
+
     // Starte die automatische Aktualisierung des Schlüsselstatus (alle 5 Sekunden)
     setStatusUpdateInterval(5000);
 
-    // Nur für Administratoren die Aktionsbuttons und RFID-Verwaltung einrichten
+    // RFID/NFC-Verwaltung für alle Benutzer einrichten
+    const assignRfidBtn = document.getElementById('assignRfidBtn');
+    if (assignRfidBtn) {
+      assignRfidBtn.addEventListener('click', () => assignRfid());
+    }
+
+    const removeRfidBtn = document.getElementById('removeRfidBtn');
+    if (removeRfidBtn) {
+      removeRfidBtn.addEventListener('click', () => removeRfid());
+    }
+
+    // RFID/NFC-Status laden
+    loadRfidStatus();
+
+    // Event-Listener für den "Diese UID verwenden"-Button hinzufügen
+    const useScannedRfidBtn = document.getElementById('useScannedRfidBtn');
+    if (useScannedRfidBtn) {
+      useScannedRfidBtn.addEventListener('click', useScannedRfid);
+    }
+
+    // Starte die Abfrage nach neuen RFID-Scans
+    startRfidScanPolling();
+
+    // Nur für Administratoren die Aktionsbuttons einrichten
     if (result.is_admin === true) {
       // Benutzernamen als Datenelement zum Button hinzufügen
       const takeKeyBtn = document.getElementById('takeKeyBtn');
@@ -108,29 +167,6 @@ async function checkAuth() {
       if (returnKeyBtn) {
         returnKeyBtn.addEventListener('click', () => returnKey());
       }
-
-      // Event-Listener für die RFID/NFC-Verwaltung hinzufügen
-      const assignRfidBtn = document.getElementById('assignRfidBtn');
-      if (assignRfidBtn) {
-        assignRfidBtn.addEventListener('click', () => assignRfid());
-      }
-
-      const removeRfidBtn = document.getElementById('removeRfidBtn');
-      if (removeRfidBtn) {
-        removeRfidBtn.addEventListener('click', () => removeRfid());
-      }
-
-      // RFID/NFC-Status laden
-      loadRfidStatus();
-
-      // Event-Listener für den "Diese UID verwenden"-Button hinzufügen
-      const useScannedRfidBtn = document.getElementById('useScannedRfidBtn');
-      if (useScannedRfidBtn) {
-        useScannedRfidBtn.addEventListener('click', useScannedRfid);
-      }
-
-      // Starte die Abfrage nach neuen RFID-Scans
-      startRfidScanPolling();
     }
 
     return true;
@@ -177,15 +213,25 @@ async function loadKeyStatus() {
       const takeKeyBtn = document.getElementById('takeKeyBtn');
       const returnKeyBtn = document.getElementById('returnKeyBtn');
 
+      // Container-Element für die Farbänderung basierend auf dem Status
+      const keyStatusContainer = document.querySelector('.key-status-container.prominent');
+
       // Wenn der Schlüssel verfügbar ist
       if (isAvailable) {
+        // Container-Klassen für Status-Styling setzen
+        if (keyStatusContainer) {
+          keyStatusContainer.className = 'key-status-container prominent status-available';
+        }
+
         // Nur Button-Eigenschaften ändern, wenn die Buttons existieren (für Admins)
         if (takeKeyBtn) takeKeyBtn.disabled = false;
         if (returnKeyBtn) returnKeyBtn.disabled = true;
 
         keyStatusElement.innerHTML = `
           <div class="key-available">
-            <i class="key-icon available"></i>
+            <div class="key-icon available">
+              <i class="fas fa-key"></i>
+            </div>
             <div class="status-text">
               <h4>Schlüssel ist verfügbar</h4>
               <p>Der Schlüssel befindet sich in der Box und kann entnommen werden.</p>
@@ -198,6 +244,11 @@ async function loadKeyStatus() {
       }
       // Wenn es eine ausstehende Entnahme gibt
       else if (pendingRemoval) {
+        // Container-Klassen für Status-Styling setzen
+        if (keyStatusContainer) {
+          keyStatusContainer.className = 'key-status-container prominent status-pending';
+        }
+
         // Nur Button-Eigenschaften ändern, wenn die Buttons existieren (für Admins)
         if (takeKeyBtn) takeKeyBtn.disabled = true;
         if (returnKeyBtn) returnKeyBtn.disabled = true;
@@ -215,7 +266,9 @@ async function loadKeyStatus() {
 
         keyStatusElement.innerHTML = `
           <div class="key-pending">
-            <i class="key-icon pending"></i>
+            <div class="key-icon pending">
+              <i class="fas fa-clock"></i>
+            </div>
             <div class="status-text">
               <h4>Schlüssel wurde entnommen - Verifizierung ausstehend</h4>
               <p>Der Schlüssel wurde am ${formattedDate} aus der Box entnommen.</p>
@@ -230,6 +283,11 @@ async function loadKeyStatus() {
       }
       // Wenn es eine abgelaufene, nicht verifizierte Entnahme gibt
       else if (unverifiedRemoval) {
+        // Container-Klassen für Status-Styling setzen
+        if (keyStatusContainer) {
+          keyStatusContainer.className = 'key-status-container prominent status-stolen';
+        }
+
         // Nur Button-Eigenschaften ändern, wenn die Buttons existieren (für Admins)
         if (takeKeyBtn) takeKeyBtn.disabled = true;
         if (returnKeyBtn) returnKeyBtn.disabled = true;
@@ -240,7 +298,9 @@ async function loadKeyStatus() {
 
         keyStatusElement.innerHTML = `
           <div class="key-stolen">
-            <i class="key-icon stolen"></i>
+            <div class="key-icon stolen">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
             <div class="status-text">
               <h4>WARNUNG: Schlüssel ohne Verifizierung entnommen!</h4>
               <p>Der Schlüssel wurde am ${formattedDate} aus der Box entnommen, aber niemand hat sich verifiziert.</p>
@@ -255,6 +315,11 @@ async function loadKeyStatus() {
       }
       // Wenn der Schlüssel von jemandem entnommen wurde
       else {
+        // Container-Klassen für Status-Styling setzen
+        if (keyStatusContainer) {
+          keyStatusContainer.className = 'key-status-container prominent status-unavailable';
+        }
+
         // Nur Button-Eigenschaften ändern, wenn die Buttons existieren (für Admins)
         if (takeKeyBtn) takeKeyBtn.disabled = true;
 
@@ -274,7 +339,9 @@ async function loadKeyStatus() {
 
         keyStatusElement.innerHTML = `
           <div class="key-unavailable">
-            <i class="key-icon unavailable"></i>
+            <div class="key-icon unavailable">
+              <i class="fas fa-key"></i>
+            </div>
             <div class="status-text">
               <h4>Schlüssel ist nicht verfügbar</h4>
               <p>Der Schlüssel wurde am ${formattedDate} von ${currentUser.vorname} ${currentUser.nachname} entnommen.</p>
@@ -339,10 +406,14 @@ async function loadKeyHistory() {
         return;
       }
 
+      // Zeige nur die letzten 5 Einträge
+      const recentHistory = history.slice(0, 5);
+      const totalEntries = history.length;
+
       // Erstelle eine Timeline für die Historie
       let content = "<div class='timeline'>";
 
-      history.forEach((entry, index) => {
+      recentHistory.forEach((entry, index) => {
         const takeDate = new Date(entry.take_time);
         const formattedTakeDate = takeDate.toLocaleDateString('de-DE') + ' ' + takeDate.toLocaleTimeString('de-DE');
 
@@ -398,6 +469,22 @@ async function loadKeyHistory() {
       });
 
       content += "</div>";
+
+      // Hinweis hinzufügen, wenn mehr als 5 Einträge vorhanden sind
+      if (totalEntries > 5) {
+        content += `
+          <div class="history-info">
+            <div class="history-notice">
+              <i class="fas fa-info-circle"></i>
+              <div class="notice-content">
+                <p><strong>Hinweis:</strong> Es werden nur die letzten 5 Aktivitäten angezeigt (${totalEntries} Einträge insgesamt).</p>
+                <p>Bei Notfällen oder für eine vollständige Historie kontaktieren Sie bitte den Support.</p>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
       keyHistoryElement.innerHTML = content;
     } else {
       throw new Error(data.message || "Unbekannter Fehler beim Laden der Historie");
@@ -695,8 +782,55 @@ async function removeRfid() {
   }
 }
 
+// Hash-Link Handling für externe Navigation
+function handleHashLinks() {
+  const hash = window.location.hash;
+  
+  if (hash === '#history') {
+    setTimeout(() => {
+      const historyContainer = document.querySelector('.key-history-container');
+      if (historyContainer) {
+        // Historie aufklappen falls sie zugeklappt ist
+        const historyContent = document.getElementById('keyHistory');
+        if (historyContent && historyContent.classList.contains('collapsed')) {
+          const historyToggle = document.getElementById('historyToggle');
+          if (historyToggle) {
+            historyToggle.click();
+          }
+        }
+        historyContainer.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 500);
+  } else if (hash === '#rfid') {
+    setTimeout(() => {
+      const rfidContainer = document.querySelector('.rfid-management-container');
+      if (rfidContainer) {
+        // RFID-Bereich aufklappen falls er zugeklappt ist
+        const rfidContent = document.getElementById('rfidContent');
+        if (rfidContent && rfidContent.classList.contains('collapsed')) {
+          const rfidToggle = document.getElementById('rfidToggle');
+          if (rfidToggle) {
+            rfidToggle.click();
+          }
+        }
+        rfidContainer.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 500);
+  }
+}
+
 // Check auth when page loads
-window.addEventListener("load", checkAuth);
+window.addEventListener("load", () => {
+  // Warte auf die globale Authentifizierung, dann prüfe den lokalen Zustand
+  setTimeout(() => {
+    if (window.globalAuth && window.globalAuth.isLoggedIn()) {
+      checkAuth().then(() => {
+        // Nach dem Laden des Contents, Hash-Links verarbeiten
+        handleHashLinks();
+      });
+    }
+  }, 100);
+});
 
 // Globale Variable für das RFID-Scan-Polling-Intervall
 let rfidScanPollingInterval = null;
@@ -811,3 +945,62 @@ window.addEventListener("beforeunload", () => {
     clearTimeout(rfidDisplayTimer);
   }
 });
+
+// Helper function to get user initials (wird auch von global-auth.js verwendet)
+function getUserInitials(firstName, lastName) {
+  const firstInitial = firstName ? firstName.charAt(0).toUpperCase() : '';
+  const lastInitial = lastName ? lastName.charAt(0).toUpperCase() : '';
+  return firstInitial + lastInitial;
+}
+
+// Initialisiert die Toggle-Funktionalität für die Schlüsselhistorie
+function initializeHistoryToggle() {
+  const historyToggle = document.getElementById('historyToggle');
+  const keyHistory = document.getElementById('keyHistory');
+  
+  if (historyToggle && keyHistory) {
+    historyToggle.addEventListener('click', function() {
+      const arrow = historyToggle.querySelector('.history-arrow');
+      
+      if (keyHistory.classList.contains('collapsed')) {
+        // Historie ausklappen
+        keyHistory.classList.remove('collapsed');
+        keyHistory.classList.add('expanded');
+        arrow.classList.remove('fa-chevron-down');
+        arrow.classList.add('fa-chevron-up');
+      } else {
+        // Historie einklappen
+        keyHistory.classList.remove('expanded');
+        keyHistory.classList.add('collapsed');
+        arrow.classList.remove('fa-chevron-up');
+        arrow.classList.add('fa-chevron-down');
+      }
+    });
+  }
+}
+
+// Initialisiert die Toggle-Funktionalität für RFID-Management
+function initializeRfidToggle() {
+  const rfidToggle = document.getElementById('rfidToggle');
+  const rfidContent = document.getElementById('rfidContent');
+  
+  if (rfidToggle && rfidContent) {
+    rfidToggle.addEventListener('click', function() {
+      const arrow = rfidToggle.querySelector('.rfid-arrow');
+      
+      if (rfidContent.classList.contains('collapsed')) {
+        // RFID-Bereich ausklappen
+        rfidContent.classList.remove('collapsed');
+        rfidContent.classList.add('expanded');
+        arrow.classList.remove('fa-chevron-down');
+        arrow.classList.add('fa-chevron-up');
+      } else {
+        // RFID-Bereich einklappen
+        rfidContent.classList.remove('expanded');
+        rfidContent.classList.add('collapsed');
+        arrow.classList.remove('fa-chevron-up');
+        arrow.classList.add('fa-chevron-down');
+      }
+    });
+  }
+}

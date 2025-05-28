@@ -3,15 +3,188 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SaveKey System</title>
+    <title>SaveKey System - Ihre intelligente Schlüsselverwaltung</title>
+    <meta name="description" content="SaveKey - Die sichere und einfache Lösung für Ihre Schlüsselverwaltung. Jederzeit wissen, wo Ihre Schlüssel sind.">
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="manifest" href="manifest.json">
+    <script src="js/global-auth.js"></script>
+    <style>
+      /* Optimierungen für 50+ Zielgruppe - konsistent mit Einrichtungsanleitung */
+      body {
+        font-size: 19px; /* Größere Basis-Schriftgröße */
+        line-height: 1.8; /* Mehr Zeilenabstand für bessere Lesbarkeit */
+      }
+      
+      .container {
+        max-width: 800px; /* Konsistent mit Einrichtungsanleitung */
+        padding: 0 30px; /* Mehr seitlicher Abstand */
+      }
+      
+      /* Hero-Bereich Styling */
+      .hero-section {
+        text-align: center;
+        padding: 4rem 0;
+        background: linear-gradient(135deg, rgba(37, 112, 169, 0.8) 0%, rgba(44, 62, 80, 0.8) 100%), 
+                    url('https://images.unsplash.com/photo-1582139329536-e7284fece509?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover;
+        margin: -2rem -30px 3rem -30px;
+        border-radius: 0 0 20px 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        color: white;
+        position: relative;
+      }
+      
+      .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(37, 112, 169, 0.7) 0%, rgba(44, 62, 80, 0.7) 100%);
+        border-radius: 0 0 20px 20px;
+      }
+      
+      .hero-section > * {
+        position: relative;
+        z-index: 1;
+      }
+      
+      .hero-section h1 {
+        font-size: 2.4em;
+        color: white;
+        margin-bottom: 1rem;
+        font-weight: 600;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+      
+      .hero-section .subtitle {
+        font-size: 1.3em;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 2rem;
+        font-weight: 500;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+      }
+      
+      /* Info-Sektion vereinfacht */
+      .info-section {
+        background-color: var(--card-bg);
+        padding: 2.5rem;
+        border-radius: 15px;
+        margin: 3rem 0;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      }
+      
+      .info-section h2 {
+        color: var(--secondary-color);
+        font-size: 1.8em;
+        margin-bottom: 2rem;
+        font-weight: 600;
+        text-align: center;
+      }
+      
+      .info-section p {
+        font-size: 1.1em;
+        line-height: 1.8;
+        margin-bottom: 1.8rem;
+        text-align: left;
+        color: var(--text-color);
+      }
+      
+      /* Action-Buttons Container */
+      .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin: 3rem 0;
+        align-items: center;
+      }
+      
+      .action-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 18px 30px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-size: 1.1em;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        min-height: 60px;
+        width: 100%;
+        max-width: 400px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+      
+      .action-button.primary {
+        background-color: var(--primary-color);
+        color: white;
+      }
+      
+      .action-button.primary:hover {
+        background-color: #1A4F8F;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(37, 112, 169, 0.25);
+        color: white;
+      }
+      
+      .action-button.secondary {
+        background-color: #f8fbff;
+        color: var(--primary-color);
+        border: 2px solid var(--primary-color);
+      }
+      
+      .action-button.secondary:hover {
+        background-color: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(37, 112, 169, 0.25);
+      }
+      
+      .action-button i {
+        margin-right: 12px;
+        font-size: 1.2em;
+      }
+      
+      /* Footer Verbesserungen */
+      footer {
+        background: var(--secondary-color);
+        color: #fff;
+        padding: 2rem 0;
+        margin-top: 4rem;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+      }
+      
+      footer .container {
+        text-align: center;
+      }
+      
+      footer p {
+        margin: 0;
+        font-size: 1em;
+        opacity: 0.9;
+      }
+      
+      /* Responsive Design */
+      @media (min-width: 768px) {
+        .action-buttons {
+          flex-direction: row;
+          justify-content: center;
+        }
+        
+        .action-button {
+          width: auto;
+          min-width: 280px;
+        }
+      }
+    </style>
   </head>
   <body>
     <header>
       <div class="container">
-        <img src="images/logo_savekey_text_white.svg" alt="SaveKey Logo" class="logo">
+        <a href="index.html">
+          <img src="images/logo_savekey_text_white.svg" alt="SaveKey Logo" class="logo">
+        </a>
         <nav>
           <ul>
             <li><a href="login.html">Login</a></li>
@@ -23,18 +196,27 @@
 
     <main>
       <div class="container">
-        <h1>Willkommen bei SaveKey Systems</h1>
+        <!-- Hero Section -->
+        <div class="hero-section">
+          <h1>Willkommen bei SaveKey-Systems</h1>
+          <p class="subtitle">Ihrer intelligenten Schlüsselverwaltung</p>
+        </div>
 
+        <!-- Hauptinformationen -->
         <section class="info-section">
           <h2>Sicher und einfach Ihre Schlüssel verwalten</h2>
-          <p>Schön, dass Sie hier sind! Mit Ihrem SaveKey System haben Sie stets die Gewissheit, dass Ihre Schlüssel sicher verwahrt sind. Diese Seite ist Ihr persönlicher Zugang, um alle Vorgänge rund um Ihre Schlüsselbox einzusehen und zu verwalten.</p>
-          <p>Melden Sie sich einfach an, um auf Ihr persönliches Dashboard zuzugreifen. Dort sehen Sie jederzeit, wer einen Schlüssel entnommen hat und ob die Entnahme bestätigt wurde. Alles wird für Sie übersichtlich und lückenlos protokolliert.</p>
+          <p><strong>Schön, dass Sie hier sind!</strong> Mit Ihrem SaveKey System haben Sie stets die Gewissheit, dass Ihre Schlüssel sicher verwahrt sind. Diese Seite ist Ihr persönlicher Zugang, um alle Vorgänge rund um Ihre Schlüsselbox einzusehen und zu verwalten.</p>
+          <p>Melden Sie sich einfach an, um auf Ihr persönliches Dashboard zuzugreifen. Dort sehen Sie jederzeit, wer einen Schlüssel entnommen hat und ob die Entnahme bestätigt wurde. <strong>Alles wird für Sie übersichtlich und lückenlos protokolliert.</strong></p>
           <p>Ihre Sicherheit und Ihr Komfort stehen für uns an erster Stelle. Verlassen Sie sich auf SaveKey – Ihre intelligente Schlüsselverwaltung.</p>
         </section>
         
-        <div class="help-button-container">
-          <a href="einrichtungsanleitung.html" class="button-secondary">
-            <i class="fas fa-question-circle"></i> Ich brauche Hilfe bei der Einrichtung meiner Schlüsselbox
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <a href="login.html" class="action-button primary">
+            <i class="fas fa-sign-in-alt"></i> Jetzt anmelden
+          </a>
+          <a href="einrichtungsanleitung.html" class="action-button secondary">
+            <i class="fas fa-question-circle"></i> Hilfe bei der Einrichtung
           </a>
         </div>
       </div>
@@ -42,7 +224,7 @@
 
     <footer>
       <div class="container">
-        <p>&copy; 2024 IM4 SaveKey System</p>
+        <p>© 2024 IM4 SaveKey System - Ihre vertrauensvolle Schlüsselverwaltung</p>
       </div>
     </footer>
   </body>

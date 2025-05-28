@@ -7,8 +7,49 @@
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="manifest" href="manifest.json">
+    <script src="js/global-auth.js"></script>
+    <style>
+      /* Back-to-home Button Styling - konsistent mit Einrichtungsanleitung */
+      .back-to-home {
+        display: inline-block;
+        margin: 2rem auto 2rem auto;
+        padding: 15px 25px;
+        background-color: var(--primary-color);
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 1.1em;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(37, 112, 169, 0.2);
+      }
+      
+      .back-to-home:hover {
+        background-color: #1A4F8F;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(37, 112, 169, 0.3);
+        color: white;
+      }
+      
+      .back-to-home i {
+        margin-right: 10px;
+      }
+      
+      /* Container für den Back-Button */
+      .back-button-container {
+        text-align: center;
+        margin-bottom: 2rem;
+        display: block;
+        margin: 2rem auto;
+      }
+    </style>
   </head>
   <body class="login-body">
+    <div class="back-button-container">
+      <a href="index.html" class="back-to-home">
+        <i class="fas fa-arrow-left"></i> Zurück zur Startseite
+      </a>
+    </div>
     <div class="login-container">
       <img src="images/logo_savekey.svg" alt="SaveKey Logo" class="logo login-logo" style="display: block; margin: 0 auto 40px; max-width: 250px;">
       <h1>Anmelden bei SaveKey</h1>
@@ -23,12 +64,8 @@
         </div>
         <button type="submit" class="button-primary">Login</button>
       </form>
-
       <p class="register-link">Sie sind neu hier? <a href="register.html">Jetzt bei SaveKey registrieren</a>.</p>
     </div>
-
-    <p class="back-link"><a href="index.html"><i class="fas fa-arrow-left"></i> Zurück zur Startseite</a></p>
-
-<script src="js/login.js"></script>
+    <script src="js/login.js"></script>
   </body>
 </html>
