@@ -43,12 +43,10 @@ async function checkAuth() {
         ${isAdmin ? `
         <div class="key-actions">
           <button id="takeKeyBtn" class="action-btn take-btn">
-            <i class="fas fa-download"></i>
-            <span>Schlüssel entnehmen</span>
+            <span class="btn-text">Schlüssel<br>entnehmen</span>
           </button>
           <button id="returnKeyBtn" class="action-btn return-btn">
-            <i class="fas fa-upload"></i>
-            <span>Schlüssel zurückgeben</span>
+            <span class="btn-text">Schlüssel<br>zurückgeben</span>
           </button>
         </div>
         ` : ''}

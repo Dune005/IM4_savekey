@@ -50,6 +50,9 @@ async function checkGlobalAuthStatus() {
 // Funktion zum Aktualisieren der globalen Navigation
 function updateGlobalNavigation() {
   const navElement = document.querySelector('nav ul');
+  const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+  const headerElement = document.querySelector('header');
+  
   if (!navElement) return;
 
   // Prüfe, ob wir auf der Login- oder Register-Seite sind
@@ -60,11 +63,21 @@ function updateGlobalNavigation() {
   // Auf Login/Register-Seiten keine Navigation anzeigen
   if (isLoginPage || isRegisterPage) {
     navElement.innerHTML = '';
+    // Hamburger-Menu wird durch CSS gesteuert, kein manuelles Verstecken nötig
+    if (headerElement) {
+      headerElement.classList.remove('user-logged-in');
+    }
     return;
   }
 
   if (isLoggedIn && currentUser) {
-    // Benutzer ist eingeloggt - zeige User-Dropdown
+    // Header als "eingeloggt" markieren für mobile CSS
+    if (headerElement) {
+      headerElement.classList.add('user-logged-in');
+    }
+    
+    // Hamburger-Menu wird durch CSS gesteuert (versteckt für eingeloggte User auf mobil)
+    
     navElement.innerHTML = `
       <li class="header-user-dropdown">
         <div class="user-info-trigger" id="userInfoTrigger">
@@ -158,7 +171,13 @@ function updateGlobalNavigation() {
     }
 
   } else {
-    // Benutzer ist nicht eingeloggt - zeige Login/Register Buttons
+    // Header als "nicht eingeloggt" markieren für mobile CSS
+    if (headerElement) {
+      headerElement.classList.remove('user-logged-in');
+    }
+    
+    // Hamburger-Menu wird durch CSS gesteuert (sichtbar nur auf mobil für nicht eingeloggte User)
+    
     navElement.innerHTML = `
       <li><a href="login.html">Login</a></li>
       <li><a href="register.html">Registrieren</a></li>
