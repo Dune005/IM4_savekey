@@ -11,34 +11,84 @@
 9. [Video-Dokumentation](#video-dokumentation)
 10. [Lernfortschritt](#lernfortschritt)
 
-## Projektübersicht
+# SaveKey | Digitales Schlüsselüberwachungssystem
 
-**Kurzbeschreibung**
-Dieses Projekt erweitert eine klassische Schlüsselbox um ein digitales Überwachungssystem. Es erkennt Entnahmen, fordert eine Bestätigung an und dokumentiert automatisch Zeitstempel und Nutzer:innen. Unbestätigte Entnahmen lösen Warnmeldungen aus.
+**Kurzbeschreibung**  
+SaveKey erweitert eine klassische Schlüsselbox um ein intelligentes digitales Überwachungssystem. Das System erkennt automatisch Schlüsselentnahmen, fordert eine Benutzerbestätigung an und dokumentiert lückenlos alle Aktivitäten mit Zeitstempel und Nutzerdaten. Unbestätigte Entnahmen lösen sofortige Warnmeldungen aus, um maximale Sicherheit zu gewährleisten.
 
-### Features
-- Erkennung von Schlüssellentnahme (Magnetsensor)
-- Nutzer-Authentifizierung per RFID/NFC oder Push-Link
-- Automatische Protokollierung von Uhrzeit und Nutzername
-- Warn-E-Mail bei fehlender Bestätigung
-- Stromausfall-Erkennung und Alarm
+## 🔑 Hauptfunktionen
 
-### Hardware
-- Arduino-kompatibles Board
-- Magnetsensor (Reed-Kontakt)
-- RFID-/NFC-Reader
-- WLAN-Modul
-- Netzteil mit Backup-Kondensator
+### Kernfeatures
+- **Automatische Erkennung** von Schlüsselentnahmen durch präzisen Magnetsensor
+- **Duale Authentifizierung** via RFID/NFC-Tags oder webbasierte Push-Benachrichtigungen
+- **Vollständige Protokollierung** mit Zeitstempel, Benutzername und Aktivitätstyp
+- **Intelligentes Alarmsystem** bei fehlender Bestätigung oder Stromausfall
+- **Webbasierte Verwaltung** mit responsiver Benutzeroberfläche
 
-### Installation
-1. Arduino IDE öffnen und Sketch hochladen
-2. Sensoren und WLAN-Modul anschließen
-3. Konfigurationsdatei (`config.json`) mit WLAN- und API-Daten anpassen
+### Systemzustände
+1. **Ruhezustand** - Schlüssel in der Box, System überwacht kontinuierlich
+2. **Entnahme erkannt** - Countdown startet, Benachrichtigung wird versendet
+3. **RFID-Quittierung** - Sofortige Bestätigung durch registrierte Tags
+4. **Web-Quittierung** - Alternative Bestätigung über Push-Link oder QR-Code
+5. **Alarmfall** - Automatische Warnmeldung bei fehlender Bestätigung
 
-### Nutzung
-- Web-Oberfläche starten: `http://<IP-Adresse>/`
-- Entnahme quittieren per RFID-/NFC-Tag oder Link
-- Admin-Einstellungen im Menü anpassen (Timeout, Nutzer:innen, E-Mail)
+## 🛠️ Hardware-Komponenten
+
+- **Arduino-kompatibles Microcontroller-Board** (ESP32/ESP8266)
+- **Reed-Kontakt Magnetsensor** für zuverlässige Schlüsselerkennung
+- **RFID/NFC-Reader** (RC522 oder PN532) für Benutzeridentifikation
+- **Integriertes WLAN-Modul** für Internetverbindung
+- **Netzteil mit Backup-Kondensator** für unterbrechungsfreien Betrieb
+
+## 💻 Software-Stack
+
+- **Backend**: PHP mit MySQL-Datenbank
+- **Frontend**: Responsive HTML5/CSS3/JavaScript
+- **Push-Dienst**: Web-Push-Benachrichtigungen
+- **Firmware**: Arduino IDE kompatibel
+- **API**: RESTful Web-Services für Hardware-Kommunikation
+
+## 🚀 Quick-Start Installation
+
+### Voraussetzungen
+- Webserver mit PHP 7.4+ und MySQL
+- Arduino IDE für Firmware-Upload
+- Komponenten gemäß Hardware-Liste
+
+### Setup-Schritte
+1. **Repository klonen** und auf Webserver bereitstellen
+2. **Datenbank einrichten** mit den SQL-Dateien aus `/system/`
+3. **Arduino-Sketch hochladen** aus `/system/arduino/`
+4. **Hardware verkabeln** gemäß Anschlussbelegung
+5. **Konfiguration anpassen** in `system/config.php`
+6. **Admin-Benutzer erstellen** über die Registrierungsseite
+
+### Erste Schritte
+- **Web-Interface aufrufen**: `https://savekey.klaus-klebband.ch/`
+- **Admin-Panel konfigurieren**: Benutzer, Timeouts, E-Mail-Einstellungen
+- **RFID-Tags registrieren** für autorisierte Benutzer
+- **Push-Benachrichtigungen einrichten** für mobile Geräte
+
+## 📋 Funktionsweise
+
+Das System arbeitet ereignisgesteuert und reagiert auf folgende Trigger:
+- **Magnetfeld-Änderung**: Erkennung von Schlüsselentnahme/-rückgabe
+- **RFID-Scan**: Sofortige Benutzeridentifikation und -autorisierung
+- **Web-Interaktion**: Alternative Authentifizierung über Browser
+- **Timeout-Events**: Automatische Alarmauslösung bei fehlender Quittierung
+
+## 📁 Projektstruktur
+
+- `/api/` - Backend-API-Endpunkte für Hardware-Kommunikation
+- `/admin/` - Admin-Tools für QR-Code-Generierung und Push-Management
+- `/system/` - Konfigurationsdateien, Datenbankschemas und Arduino-Code
+- `/Anleitungen/` - Detaillierte Setup- und Bedienungsanleitungen
+- `/css/`, `/js/`, `/images/` - Frontend-Ressourcen
+
+---
+
+**Für detaillierte Installationsanleitungen und technische Dokumentation siehe `/Anleitungen/` Ordner.**
+
 
 
 ## Anleitungen
