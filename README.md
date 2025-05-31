@@ -94,11 +94,11 @@ Das System arbeitet ereignisgesteuert und reagiert auf folgende Trigger:
 ## Anleitungen
 Eine Schritt-für-Schritt-Anleitung zur Reproduzierbarkeit des Projekts finden Sie in den folgenden Dokumenten in der richtigen Reihenfolge:
 1. [Projektbeschrieb_savekey.md](Anleitungen/Projektbeschrieb_savekey.md) - Überblick über das Projekt und seine Ziele.
-2. [Dokumentation_SaveKey.md](Anleitungen/Dokumentation_SaveKey.md) - Detaillierte technische Dokumentation.
-3. [ANLEITUNG_ADMIN_SETUP.md](Anleitungen/ANLEITUNG_ADMIN_SETUP.md) - Anleitung zur Einrichtung der Admin-Funktionen.
-4. [ANLEITUNG_DATENBANK_SETUP.md](Anleitungen/ANLEITUNG_DATENBANK_SETUP.md) - Anleitung zur Einrichtung der Datenbank.
-5. [ANLEITUNG_QR_CODE_ADMIN.md](Anleitungen/ANLEITUNG_QR_CODE_ADMIN.md) - Anleitung zur Nutzung der QR-Code-Funktionalität.
-6. [ANLEITUNG_RFID_LIVE_ANZEIGE.md](Anleitungen/ANLEITUNG_RFID_LIVE_ANZEIGE.md) - Anleitung zur Live-Anzeige der RFID-Daten.
+2. [ANLEITUNG_ADMIN_SETUP.md](Anleitungen/ANLEITUNG_ADMIN_SETUP.md) - Anleitung zur Einrichtung der Admin-Funktionen.
+3. [ANLEITUNG_DATENBANK_SETUP.md](Anleitungen/ANLEITUNG_DATENBANK_SETUP.md) - Anleitung zur Einrichtung der Datenbank.
+4. [ANLEITUNG_QR_CODE_ADMIN.md](Anleitungen/ANLEITUNG_QR_CODE_ADMIN.md) - Anleitung zur Nutzung der QR-Code-Funktionalität.
+5. [ANLEITUNG_PUSH_BENACHRICHTIGUNGEN.md](Anleitungen/ANLEITUNG_PUSH_BENACHRICHTIGUNGEN.md) - Anleitung zur Einrichtung der Push-Funktionalität.
+
 
 ## Flussdiagramm
 Die Flussdiagramme befinden sich im Ordner `images/dokumentation/`:
