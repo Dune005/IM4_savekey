@@ -24,9 +24,7 @@ Unser Projekt erweitert die klassische Schlüsselbox um eine digitale Überwachu
 
 5. **Alarmfall**
 
-   * Meldet sich niemand innerhalb des eingestellten Zeitfensters, sendet das System eine Warn-E-Mail an die Schlüsselbox-Besitzerin mit dem Hinweis „Schlüssel wurde entnommen\!“.
-
-Darüber hinaus wird bei **Stromausfall** eine eigene Warnung („Spannung weg“) ausgelöst, um Manipulationen oder unerwartete Ausfälle sofort sichtbar zu machen.
+   * Meldet sich niemand innerhalb des eingestellten Zeitfensters, sendet das System eine Warn-Push-Benachrichtigung an die Schlüsselbox-Besitzerin mit dem Hinweis „Schlüssel wurde entnommen\!“.
 
 ---
 
@@ -42,7 +40,7 @@ Darüber hinaus wird bei **Stromausfall** eine eigene Warnung („Spannung weg�
 
   * **WLAN-Modul** (integriert oder als externes Shield), um Sensordaten und Statusmeldungen an einen Server oder direkt in die Cloud zu übertragen.
 
-  * **Spannungsversorgung** über Netzteil mit Backup-Kondensator, um bei kurzzeitigen Stromausfällen Warnungen auszulösen.
+  * **Spannungsversorgung** über Akku. Kommt mehr als 1 Minute kein Ping vom Arduino, geht eine Meldung raus.
 
 * **Firmware & Kommunikation**
 

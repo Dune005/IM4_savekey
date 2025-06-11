@@ -124,6 +124,11 @@ Die Bilder vom Entwicklungsprozess befinden sich im Ordner `images/entwicklung/`
 - [PROTOYPING (2).jpg](images/entwicklung/PROTOYPING%20(2).jpg)
 - [PROTOYPING (3).jpg](images/entwicklung/PROTOYPING%20(3).jpg)
 - [PROTOYPING (4).jpg](images/entwicklung/PROTOYPING%20(4).jpg)
+- [FINALISATION (1).jpg](images/entwicklung/FINALISATION%20(1).jpg)
+- [FINALISATION (2).jpg](images/entwicklung/FINALISATION%20(2).jpg)
+- [FINALISATION (3).jpg](images/entwicklung/FINALISATION%20(3).jpg)
+- [FINALISATION (4).jpg](images/entwicklung/FINALISATION%20(4).jpg)
+
 
 ## Bericht zum Umsetzungsprozess
 
@@ -139,17 +144,29 @@ Die Bilder vom Entwicklungsprozess befinden sich im Ordner `images/entwicklung/`
 7. Erste erfolgreiche Probeläufe nach unserer Ursprungslogik
 8. Erste Edgecases treten auf, werden notiert aber noch nicht behoben (z. B. dass man Schlüssel zurückgeben kann online, obwohl ihn jemand anderes geholt hat)
 9. Entwicklung des Prototypen:
-   a. Probleme: Steckkontakte, Nähe der Sensoren
+   a. Probleme: schlechte Steckkontakte, Nähe der Sensoren
    b. Lösung: Wago-Klemmen benutzen, Sensoren entfernen voneinander (> 5 cm)
    c. Neue Edgecases entdeckt:
       i. Wer weist den Admin zu?
       ii. Wie garantiert man, dass nur der Admin den Schlüssel manuell retournieren kann?
 10. Funktion nun hergestellt:
-    a. Behandlung und Behebung der Edgecases
-    b. Weitere Gedanken für die effektive Anwendung: z. B. liefern wir die Boxen mit registrierten Badges aus, oder macht das der User selbst?
-11. Pröbeln mit möglichen Zusatzfunktionen
+   a. Behandlung und Behebung der Edgecases
+   b. Weitere Gedanken für die effektive Anwendung: z. B. liefern wir die Boxen mit registrierten Badges aus, oder macht das der User selbst? Entscheid: Alle RFID-Fähigen Karten können verwendet werden. Auslieferung würde mit drei unregistrierten RFID-BAdges erfolgen
+11. Entwicklung des Entprodukts:
+   a. Bestellung & Einkauf: Schlüsselbox, Schlüsselringe mit Magneten
+   b. Entwurf und Druck der Innenplatte: Unsere Schlüsselbox bekommt einen 3D-geprinteten Einschub zum Versorgen der Technik
+   c. Zusammenbauen der Komponenten und erste Tests
+   d. Denkfehler: Endprodukt braucht definitiv einen Ladeport und/oder Ein/Aus-Schalter, beides wurde eingebaut
+12. Finalisierung des Codes & Behebung der Edgecases:
+   a. Admin Zuweisung ist default mässig geregelt bei der Auslieferung der Box, sprich man kann nur mittels QR-Registrierungsseite zum Admin werden
+   b. Schlüsselretournierung im Verlustfall ist nun Admin-Recht
+13. Troubleshooting Endprodukt:
+   a. Steckkontakte der Kabel führten oft zu Problemen, alles wurde geklebt mit Heisleim
+   b. Kabelanzahl wurde aufs Minimum reduziert mittels direkten Übergängen und Wagoklemmen
+14. Finale Test und Video-Aufnahme
 
 ## Video-Dokumentation
-*Platzhalter für zukünftige Inhalte*
+Die Video-Dokumentation ist hier zu finden:
+[Video-Dokumentation ansehen](https://youtu.be/3qLkSS7PpP0)
 
 
