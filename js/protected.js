@@ -1,3 +1,16 @@
+// Utility-Funktion für Screenreader-Ankündigungen
+function announceToScreenReader(message) {
+  const announcementContainer = document.getElementById('status-announcements');
+  if (announcementContainer) {
+    announcementContainer.textContent = message;
+    
+    // Nach kurzer Zeit wieder leeren, damit wiederholte Nachrichten funktionieren
+    setTimeout(() => {
+      announcementContainer.textContent = '';
+    }, 1000);
+  }
+}
+
 async function checkAuth() {
   try {
     const response = await fetch("/api/protected.php", {
@@ -39,13 +52,13 @@ async function checkAuth() {
             <p class="status-subtitle">Aktueller Zustand Ihres Schlüssels</p>
           </div>
         </div>
-        <div id="keyStatus" class="key-status">Lade Status...</div>
+        <div id="keyStatus" class="key-status" aria-live="polite" aria-atomic="true">Lade Status...</div>
         ${isAdmin ? `
         <div class="key-actions">
-          <button id="takeKeyBtn" class="action-btn take-btn">
+          <button id="takeKeyBtn" class="action-btn take-btn" aria-label="Schlüssel aus der Box entnehmen">
             <span class="btn-text">Schlüssel<br>entnehmen</span>
           </button>
-          <button id="returnKeyBtn" class="action-btn return-btn">
+          <button id="returnKeyBtn" class="action-btn return-btn" aria-label="Schlüssel in die Box zurückgeben">
             <span class="btn-text">Schlüssel<br>zurückgeben</span>
           </button>
         </div>
@@ -53,28 +66,28 @@ async function checkAuth() {
       </div>
 
       <div class="key-history-container">
-        <div class="history-header" id="historyToggle">
+        <div class="history-header" id="historyToggle" role="button" tabindex="0" aria-expanded="false" aria-controls="keyHistory" aria-label="Schlüsselhistorie anzeigen">
           <h3>Schlüsselhistorie</h3>
-          <i class="fas fa-chevron-down history-arrow"></i>
+          <i class="fas fa-chevron-down history-arrow" aria-hidden="true"></i>
         </div>
         <div id="keyHistory" class="key-history collapsed">Lade Historie...</div>
       </div>
 
       <div class="rfid-management-container">
-        <div class="rfid-header" id="rfidToggle">
-          <h3><i class="fas fa-credit-card"></i> Meine Verifizierungsmethode</h3>
-          <i class="fas fa-chevron-down rfid-arrow"></i>
+        <div class="rfid-header" id="rfidToggle" role="button" tabindex="0" aria-expanded="false" aria-controls="rfidContent" aria-label="RFID-Verwaltung anzeigen">
+          <h3><i class="fas fa-credit-card" aria-hidden="true"></i> Meine Verifizierungsmethode</h3>
+          <i class="fas fa-chevron-down rfid-arrow" aria-hidden="true"></i>
         </div>
         
         <div id="rfidContent" class="rfid-content collapsed">
           <div id="rfidStatus" class="rfid-status">Lade Status Ihrer Zutrittskarte...</div>
           
-          <div id="lastScannedRfid" class="last-scanned-rfid" style="display: none;">
+          <div id="lastScannedRfid" class="last-scanned-rfid" style="display: none;" aria-live="polite">
             <div class="scanned-card-info">
-              <h4><i class="fas fa-check-circle"></i> Neue Karte erkannt!</h4>
+              <h4><i class="fas fa-check-circle" aria-hidden="true"></i> Neue Karte erkannt!</h4>
               <p>Karten-ID: <code id="lastScannedRfidUid"></code></p>
-              <button id="useScannedRfidBtn" class="action-btn use-card-btn">
-                <i class="fas fa-plus-circle"></i> Diese Karte verwenden
+              <button id="useScannedRfidBtn" class="action-btn use-card-btn" aria-label="Diese erkannte Karte als Zutrittskarte verwenden">
+                <i class="fas fa-plus-circle" aria-hidden="true"></i> Diese Karte verwenden
               </button>
             </div>
           </div>
@@ -84,18 +97,18 @@ async function checkAuth() {
             <div class="rfid-form">
               <input type="text" id="rfidUid" placeholder="Karten-ID eingeben (z.B. 04:A3:2B:1E)" class="rfid-input" />
               <div class="button-group">
-                <button id="assignRfidBtn" class="action-btn rfid-btn">
-                  <i class="fas fa-link"></i> Zuweisen
+                <button id="assignRfidBtn" class="action-btn rfid-btn" aria-label="Eingegebene Karten-ID zuweisen">
+                  <i class="fas fa-link" aria-hidden="true"></i> Zuweisen
                 </button>
-                <button id="removeRfidBtn" class="action-btn rfid-remove-btn">
-                  <i class="fas fa-unlink"></i> Entfernen
+                <button id="removeRfidBtn" class="action-btn rfid-remove-btn" aria-label="Zugewiesene Karte entfernen">
+                  <i class="fas fa-unlink" aria-hidden="true"></i> Entfernen
                 </button>
               </div>
             </div>
           </div>
 
           <div class="rfid-instructions">
-            <h4><i class="fas fa-info-circle"></i> So funktioniert es:</h4>
+            <h4><i class="fas fa-info-circle" aria-hidden="true"></i> So funktioniert es:</h4>
             <ol class="instruction-steps">
               <li>Halten Sie Ihre Karte an das Lesegerät der Schlüsselbox</li>
               <li>Die Karten-ID erscheint automatisch hier im Dashboard</li>
@@ -228,7 +241,7 @@ async function loadKeyStatus() {
         keyStatusElement.innerHTML = `
           <div class="key-available">
             <div class="key-icon available">
-              <i class="fas fa-key"></i>
+              <i class="fas fa-key" aria-hidden="true"></i>
             </div>
             <div class="status-text">
               <h4>Schlüssel ist verfügbar</h4>
@@ -236,6 +249,12 @@ async function loadKeyStatus() {
             </div>
           </div>
         `;
+        
+        // Ankündigung für Screenreader nur bei Status-Änderung
+        if (!keyStatusElement.classList.contains('loaded') || keyStatusElement.dataset.lastStatus !== 'available') {
+          announceToScreenReader('Schlüssel ist verfügbar und kann entnommen werden');
+          keyStatusElement.dataset.lastStatus = 'available';
+        }
 
         // Wenn der Schlüssel verfügbar ist, können wir das Aktualisierungsintervall auf einen längeren Zeitraum setzen
         setStatusUpdateInterval(5000); // Alle 5 Sekunden aktualisieren
@@ -265,7 +284,7 @@ async function loadKeyStatus() {
         keyStatusElement.innerHTML = `
           <div class="key-pending">
             <div class="key-icon pending">
-              <i class="fas fa-clock"></i>
+              <i class="fas fa-clock" aria-hidden="true"></i>
             </div>
             <div class="status-text">
               <h4>Schlüssel wurde entnommen - Verifizierung ausstehend</h4>
@@ -275,6 +294,12 @@ async function loadKeyStatus() {
             </div>
           </div>
         `;
+        
+        // Ankündigung für Screenreader nur bei Status-Änderung
+        if (!keyStatusElement.classList.contains('loaded') || keyStatusElement.dataset.lastStatus !== 'pending') {
+          announceToScreenReader(`Schlüssel wurde entnommen, Verifizierung ausstehend. Verbleibende Zeit: ${remainingMinutes} Minuten`);
+          keyStatusElement.dataset.lastStatus = 'pending';
+        }
 
         // Bei ausstehender Entnahme häufiger aktualisieren
         setStatusUpdateInterval(5000); // Alle 5 Sekunden aktualisieren
@@ -297,7 +322,7 @@ async function loadKeyStatus() {
         keyStatusElement.innerHTML = `
           <div class="key-stolen">
             <div class="key-icon stolen">
-              <i class="fas fa-exclamation-triangle"></i>
+              <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
             </div>
             <div class="status-text">
               <h4>WARNUNG: Schlüssel ohne Verifizierung entnommen!</h4>
@@ -307,6 +332,12 @@ async function loadKeyStatus() {
             </div>
           </div>
         `;
+        
+        // Ankündigung für Screenreader nur bei Status-Änderung
+        if (!keyStatusElement.classList.contains('loaded') || keyStatusElement.dataset.lastStatus !== 'stolen') {
+          announceToScreenReader('Warnung: Schlüssel ohne Verifizierung entnommen! Bitte kontaktieren Sie den Administrator.');
+          keyStatusElement.dataset.lastStatus = 'stolen';
+        }
 
         // Bei nicht verifizierter Entnahme häufiger aktualisieren
         setStatusUpdateInterval(10000); // Alle 10 Sekunden aktualisieren
@@ -338,7 +369,7 @@ async function loadKeyStatus() {
         keyStatusElement.innerHTML = `
           <div class="key-unavailable">
             <div class="key-icon unavailable">
-              <i class="fas fa-key"></i>
+              <i class="fas fa-key" aria-hidden="true"></i>
             </div>
             <div class="status-text">
               <h4>Schlüssel ist nicht verfügbar</h4>
@@ -347,6 +378,12 @@ async function loadKeyStatus() {
             </div>
           </div>
         `;
+        
+        // Ankündigung für Screenreader nur bei Status-Änderung
+        if (!keyStatusElement.classList.contains('loaded') || keyStatusElement.dataset.lastStatus !== 'unavailable') {
+          announceToScreenReader(`Schlüssel ist nicht verfügbar. Entnommen von ${currentUser.vorname} ${currentUser.nachname}`);
+          keyStatusElement.dataset.lastStatus = 'unavailable';
+        }
 
         // Wenn der Schlüssel entnommen wurde, können wir das Aktualisierungsintervall auf einen mittleren Zeitraum setzen
         setStatusUpdateInterval(15000); // Alle 15 Sekunden aktualisieren
@@ -357,9 +394,14 @@ async function loadKeyStatus() {
   } catch (error) {
     console.error("Fehler beim Laden des Schlüsselstatus:", error);
     document.getElementById("keyStatus").innerHTML = `
-      <div class="error-message">
+      <div class="error-message" role="alert">
         Fehler beim Laden des Status: ${error.message}
-        <button onclick="loadKeyStatus()">Erneut versuchen</button>
+        <button onclick="loadKeyStatus()" 
+                aria-label="Schlüsselstatus erneut laden" 
+                class="retry-btn">
+          <i class="fas fa-redo" aria-hidden="true"></i> 
+          Erneut versuchen
+        </button>
       </div>
     `;
 
@@ -490,9 +532,14 @@ async function loadKeyHistory() {
   } catch (error) {
     console.error("Fehler beim Laden der Schlüsselhistorie:", error);
     document.getElementById("keyHistory").innerHTML = `
-      <div class="error-message">
+      <div class="error-message" role="alert">
         Fehler beim Laden der Historie: ${error.message}
-        <button onclick="loadKeyHistory()">Erneut versuchen</button>
+        <button onclick="loadKeyHistory()" 
+                aria-label="Historie erneut laden" 
+                class="retry-btn">
+          <i class="fas fa-redo" aria-hidden="true"></i> 
+          Erneut versuchen
+        </button>
       </div>
     `;
   }
@@ -669,9 +716,14 @@ async function loadRfidStatus() {
   } catch (error) {
     console.error("Fehler beim Laden des RFID/NFC-Status:", error);
     document.getElementById("rfidStatus").innerHTML = `
-      <div class="error-message">
+      <div class="error-message" role="alert">
         Fehler beim Laden des RFID/NFC-Status: ${error.message}
-        <button onclick="loadRfidStatus()">Erneut versuchen</button>
+        <button onclick="loadRfidStatus()" 
+                aria-label="RFID-Status erneut laden" 
+                class="retry-btn">
+          <i class="fas fa-redo" aria-hidden="true"></i> 
+          Erneut versuchen
+        </button>
       </div>
     `;
   }
@@ -884,6 +936,9 @@ async function checkForNewRfidScans() {
           // Zeige die zuletzt gescannte RFID-UID an
           lastScannedRfidUidElement.textContent = newUid;
           lastScannedRfidElement.style.display = 'block';
+          
+          // Ankündigung für Screenreader
+          announceToScreenReader(`Neue RFID-Karte erkannt: ${newUid}`);
 
           // Bestehenden Timer löschen, falls vorhanden
           if (rfidDisplayTimer) {
@@ -957,7 +1012,20 @@ function initializeHistoryToggle() {
   const keyHistory = document.getElementById('keyHistory');
   
   if (historyToggle && keyHistory) {
+    // Click-Event für Maus-Interaktion
     historyToggle.addEventListener('click', function() {
+      toggleHistorySection();
+    });
+    
+    // Keyboard-Event für Tastatur-Interaktion
+    historyToggle.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleHistorySection();
+      }
+    });
+    
+    function toggleHistorySection() {
       const arrow = historyToggle.querySelector('.history-arrow');
       
       if (keyHistory.classList.contains('collapsed')) {
@@ -966,14 +1034,24 @@ function initializeHistoryToggle() {
         keyHistory.classList.add('expanded');
         arrow.classList.remove('fa-chevron-down');
         arrow.classList.add('fa-chevron-up');
+        historyToggle.setAttribute('aria-expanded', 'true');
+        historyToggle.setAttribute('aria-label', 'Schlüsselhistorie ausblenden');
+        
+        // Status-Ankündigung für Screenreader
+        announceToScreenReader('Schlüsselhistorie wurde geöffnet');
       } else {
         // Historie einklappen
         keyHistory.classList.remove('expanded');
         keyHistory.classList.add('collapsed');
         arrow.classList.remove('fa-chevron-up');
         arrow.classList.add('fa-chevron-down');
+        historyToggle.setAttribute('aria-expanded', 'false');
+        historyToggle.setAttribute('aria-label', 'Schlüsselhistorie anzeigen');
+        
+        // Status-Ankündigung für Screenreader
+        announceToScreenReader('Schlüsselhistorie wurde geschlossen');
       }
-    });
+    }
   }
 }
 
@@ -983,7 +1061,20 @@ function initializeRfidToggle() {
   const rfidContent = document.getElementById('rfidContent');
   
   if (rfidToggle && rfidContent) {
+    // Click-Event für Maus-Interaktion
     rfidToggle.addEventListener('click', function() {
+      toggleRfidSection();
+    });
+    
+    // Keyboard-Event für Tastatur-Interaktion
+    rfidToggle.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleRfidSection();
+      }
+    });
+    
+    function toggleRfidSection() {
       const arrow = rfidToggle.querySelector('.rfid-arrow');
       
       if (rfidContent.classList.contains('collapsed')) {
@@ -992,13 +1083,23 @@ function initializeRfidToggle() {
         rfidContent.classList.add('expanded');
         arrow.classList.remove('fa-chevron-down');
         arrow.classList.add('fa-chevron-up');
+        rfidToggle.setAttribute('aria-expanded', 'true');
+        rfidToggle.setAttribute('aria-label', 'RFID-Verwaltung ausblenden');
+        
+        // Status-Ankündigung für Screenreader
+        announceToScreenReader('RFID-Verwaltung wurde geöffnet');
       } else {
         // RFID-Bereich einklappen
         rfidContent.classList.remove('expanded');
         rfidContent.classList.add('collapsed');
         arrow.classList.remove('fa-chevron-up');
         arrow.classList.add('fa-chevron-down');
+        rfidToggle.setAttribute('aria-expanded', 'false');
+        rfidToggle.setAttribute('aria-label', 'RFID-Verwaltung anzeigen');
+        
+        // Status-Ankündigung für Screenreader
+        announceToScreenReader('RFID-Verwaltung wurde geschlossen');
       }
-    });
+    }
   }
 }

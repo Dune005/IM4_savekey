@@ -4,9 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin-Registrierung - SaveKey System</title>
+    
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="manifest" href="/assets/site.webmanifest">
+    
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="manifest" href="manifest.json">
     <script src="js/global-auth.js"></script>
   </head>
   <body>
@@ -33,34 +39,44 @@
         <p>Die Seriennummer Ihrer Schlüsselbox wurde automatisch aus dem QR-Code übernommen und kann nicht geändert werden.</p>
       </div>
 
-      <form id="adminRegisterForm">
+      <!-- Live-Region für Statusmeldungen -->
+      <div id="form-messages" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+
+      <form id="adminRegisterForm" novalidate>
         <div>
-          <label>Vorname</label>
-          <input type="text" id="vorname" required />
+          <label for="vorname">Vorname</label>
+          <input type="text" id="vorname" required aria-required="true" aria-describedby="vorname-error" />
+          <div id="vorname-error" class="error-message" aria-live="polite" style="display: none;"></div>
         </div>
         <div>
-          <label>Nachname</label>
-          <input type="text" id="nachname" required />
+          <label for="nachname">Nachname</label>
+          <input type="text" id="nachname" required aria-required="true" aria-describedby="nachname-error" />
+          <div id="nachname-error" class="error-message" aria-live="polite" style="display: none;"></div>
         </div>
         <div>
-          <label>Benutzername</label>
-          <input type="text" id="benutzername" required />
+          <label for="benutzername">Benutzername</label>
+          <input type="text" id="benutzername" required aria-required="true" aria-describedby="benutzername-error" />
+          <div id="benutzername-error" class="error-message" aria-live="polite" style="display: none;"></div>
         </div>
         <div>
-          <label>E-Mail</label>
-          <input type="email" id="mail" required />
+          <label for="mail">E-Mail</label>
+          <input type="email" id="mail" required aria-required="true" aria-describedby="mail-error" />
+          <div id="mail-error" class="error-message" aria-live="polite" style="display: none;"></div>
         </div>
         <div>
-          <label>Passwort</label>
-          <input type="password" id="password" required />
+          <label for="password">Passwort</label>
+          <input type="password" id="password" required aria-required="true" aria-describedby="password-error" />
+          <div id="password-error" class="error-message" aria-live="polite" style="display: none;"></div>
         </div>
         <div>
-          <label>Telefon (optional)</label>
-          <input type="tel" id="phone" />
+          <label for="phone">Telefon (optional)</label>
+          <input type="tel" id="phone" aria-describedby="phone-error" />
+          <div id="phone-error" class="error-message" aria-live="polite" style="display: none;"></div>
         </div>
         <div>
-          <label>Seriennummer der Schlüsselbox</label>
-          <input type="text" id="seriennummer" readonly />
+          <label for="seriennummer">Seriennummer der Schlüsselbox</label>
+          <input type="text" id="seriennummer" readonly aria-describedby="seriennummer-help" />
+          <div id="seriennummer-help" class="field-help">Diese wurde automatisch aus dem QR-Code übernommen</div>
         </div>
         <!-- Verstecktes Feld für den Token -->
         <input type="hidden" id="token" />

@@ -4,9 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrieren - SaveKey System</title>
+    
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="manifest" href="/assets/site.webmanifest">
+    
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="manifest" href="manifest.json">
     <script src="js/global-auth.js"></script>
     <style>
       /* Back-to-home Button Styling - konsistent mit Login */
@@ -219,34 +225,44 @@
       <img src="images/logo_savekey.svg" alt="SaveKey Logo" class="logo register-logo" style="display: block; margin: 0 auto 40px; max-width: 200px;">
       <h1>Ihr Zugang zu SaveKey</h1>
 
-      <form id="registerForm">
+      <!-- Live-Region für Statusmeldungen -->
+      <div id="form-messages" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+
+      <form id="registerForm" novalidate>
         <div>
           <label for="vorname">Vorname</label>
-          <input type="text" id="vorname" name="vorname" required aria-required="true" />
+          <input type="text" id="vorname" name="vorname" required aria-required="true" aria-describedby="vorname-error" />
+          <div id="vorname-error" class="error-message" aria-live="polite" style="display: none;"></div>
         </div>
         <div>
           <label for="nachname">Nachname</label>
-          <input type="text" id="nachname" name="nachname" required aria-required="true" />
+          <input type="text" id="nachname" name="nachname" required aria-required="true" aria-describedby="nachname-error" />
+          <div id="nachname-error" class="error-message" aria-live="polite" style="display: none;"></div>
         </div>
         <div>
           <label for="benutzername">Benutzername</label>
-          <input type="text" id="benutzername" name="benutzername" required aria-required="true" />
+          <input type="text" id="benutzername" name="benutzername" required aria-required="true" aria-describedby="benutzername-error" />
+          <div id="benutzername-error" class="error-message" aria-live="polite" style="display: none;"></div>
         </div>
         <div>
           <label for="mail">E-Mail</label>
-          <input type="email" id="mail" name="mail" required aria-required="true" />
+          <input type="email" id="mail" name="mail" required aria-required="true" aria-describedby="mail-error" />
+          <div id="mail-error" class="error-message" aria-live="polite" style="display: none;"></div>
         </div>
         <div>
           <label for="password">Passwort</label>
-          <input type="password" id="password" name="password" required aria-required="true" />
+          <input type="password" id="password" name="password" required aria-required="true" aria-describedby="password-error" />
+          <div id="password-error" class="error-message" aria-live="polite" style="display: none;"></div>
         </div>
         <div>
           <label for="phone">Telefon (optional)</label>
-          <input type="tel" id="phone" name="phone" />
+          <input type="tel" id="phone" name="phone" aria-describedby="phone-error" />
+          <div id="phone-error" class="error-message" aria-live="polite" style="display: none;"></div>
         </div>
         <div>
           <label for="seriennummer">Seriennummer Ihrer Schlüsselbox</label>
-          <input type="text" id="seriennummer" name="seriennummer" required aria-required="true" />
+          <input type="text" id="seriennummer" name="seriennummer" required aria-required="true" aria-describedby="seriennummer-error" />
+          <div id="seriennummer-error" class="error-message" aria-live="polite" style="display: none;"></div>
         </div>
         <button type="submit" class="button-primary">Konto erstellen</button>
       </form>

@@ -5,9 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SaveKey System - Ihre intelligente Schlüsselverwaltung</title>
     <meta name="description" content="SaveKey - Die sichere und einfache Lösung für Ihre Schlüsselverwaltung. Jederzeit wissen, wo Ihre Schlüssel sind.">
+    
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="manifest" href="/assets/site.webmanifest">
+    
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="manifest" href="manifest.json">
     <script src="js/global-auth.js"></script>
     <script src="js/mobile-nav.js"></script>
   </head>
@@ -18,10 +24,10 @@
           <img src="images/logo_savekey_text_white.svg" alt="SaveKey Logo" class="logo">
         </a>
         <!-- Hamburger-Menü für mobile Geräte (nur für nicht eingeloggte Nutzer) -->
-        <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Menü öffnen">
+        <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Menü öffnen" aria-expanded="false" aria-controls="navigation">
           <i class="fas fa-bars"></i>
         </button>
-        <nav id="navigation">
+        <nav id="navigation" role="navigation" aria-label="Hauptnavigation">
           <ul>
             <li><a href="login.html">Login</a></li>
             <li><a href="register.html">Registrieren</a></li>
@@ -39,22 +45,22 @@
         </div>
 
         <!-- Hauptinformationen -->
-        <section class="landing-info-section">
-          <h2>Sicher und einfach Ihre Schlüssel verwalten</h2>
+        <section class="landing-info-section" aria-labelledby="info-heading">
+          <h2 id="info-heading">Sicher und einfach Ihre Schlüssel verwalten</h2>
           <p><strong>Schön, dass Sie hier sind!</strong> Mit Ihrem SaveKey System haben Sie stets die Gewissheit, dass Ihre Schlüssel sicher verwahrt sind. Diese Seite ist Ihr persönlicher Zugang, um alle Vorgänge rund um Ihre Schlüsselbox einzusehen und zu verwalten.</p>
           <p>Melden Sie sich einfach an, um auf Ihr persönliches Dashboard zuzugreifen. Dort sehen Sie jederzeit, wer einen Schlüssel entnommen hat und ob die Entnahme bestätigt wurde. <strong>Alles wird für Sie übersichtlich und lückenlos protokolliert.</strong></p>
           <p>Ihre Sicherheit und Ihr Komfort stehen für uns an erster Stelle. Verlassen Sie sich auf SaveKey – Ihre intelligente Schlüsselverwaltung.</p>
         </section>
         
         <!-- Action Buttons -->
-        <div class="action-buttons">
+        <section class="action-buttons" aria-label="Aktionen">
           <a href="login.html" class="action-button primary">
-            <i class="fas fa-sign-in-alt"></i> Jetzt anmelden
+            <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Jetzt anmelden
           </a>
           <a href="einrichtungsanleitung.html" class="action-button secondary">
-            <i class="fas fa-question-circle"></i> Hilfe bei der Einrichtung
+            <i class="fas fa-question-circle" aria-hidden="true"></i> Hilfe bei der Einrichtung
           </a>
-        </div>
+        </section>
       </div>
     </main>
 

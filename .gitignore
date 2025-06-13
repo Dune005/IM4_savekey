@@ -1,7 +1,47 @@
+# IDE/Editor Dateien
 .vscode/
-arduino/
+.idea/
+*.swp
+*.swo
+*~
+
+
+# Konfigurationsdateien mit Credentials
 config.php
+push_config.php
+
+# Dependencies
 vendor/
 composer.lock
+node_modules/
+
+# System Dateien
 .DS_Store
-push_config.php
+Thumbs.db
+
+# Log Dateien
+*.log
+logs/
+error.log
+access.log
+
+# Backup und temporäre Dateien
+*.backup
+*.bak
+*.tmp
+*.temp
+*~
+
+# Umgebungsvariablen
+.env
+.env.local
+.env.production
+.env.staging
+
+# Cache Dateien
+cache/
+*.cache
+
+# Uploads (falls sensibel)
+uploads/
+temp_uploads/

@@ -10,7 +10,7 @@ Das SaveKey-System unterscheidet zwischen zwei Benutzerrollen:
    - Können den Status ihres Schlüssels einsehen
    - Können die Schlüsselhistorie einsehen
    - Können KEINE Schlüssel entnehmen oder zurückgeben über die Weboberfläche
-   - Können KEINE RFID/NFC-Chips zuweisen oder entfernen
+   - Können RFID/NFC-Chips zuweisen und entfernen
 
 2. **Administrator-Benutzer**:
    - Haben alle Rechte der normalen Benutzer

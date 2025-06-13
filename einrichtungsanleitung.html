@@ -4,19 +4,37 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Einrichtungsanleitung - SaveKey System</title>
+    
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="manifest" href="/assets/site.webmanifest">
+    
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="manifest" href="manifest.json">
     <style>
       /* Basis-Einstellungen für 50+ Zielgruppe */
       body {
         font-size: 19px; /* Erhöhte Basis-Schriftgröße */
         line-height: 1.8; /* Mehr Zeilenabstand für bessere Lesbarkeit */
+        overflow-x: hidden; /* Verhindert horizontales Scrollen */
+      }
+      
+      html {
+        overflow-x: hidden; /* Verhindert horizontales Scrollen auf HTML-Ebene */
+      }
+      
+      * {
+        box-sizing: border-box; /* Stellt sicher, dass Padding in der Breite enthalten ist */
       }
       
       .container {
         max-width: 800px; /* Schmaler für weniger Augen-Bewegung */
         padding: 0 30px; /* Mehr seitlicher Abstand */
+        width: 100%; /* Stellt sicher, dass Container nie über 100% geht */
+        margin: 0 auto; /* Zentriert den Container */
+        box-sizing: border-box; /* Padding wird in die Breite eingerechnet */
       }
       
       h1 {
@@ -29,17 +47,20 @@
       
       /* Spezifische Stile für die Anleitung */
       .step-container {
-        margin-bottom: 4rem;
+        margin: 4rem auto; /* auto für Zentrierung */
+        max-width: 800px; /* Gleiche Breite wie Container */
       }
       
       .step {
         background-color: var(--card-bg);
-        padding: 2.5rem;
+        padding: 1.8rem; /* Reduziert von 2.5rem */
         border-radius: 15px;
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-        margin-bottom: 3rem;
+        margin-bottom: 2.5rem; /* Reduziert von 3rem */
         position: relative;
         border: 2px solid #e8f2f7; /* Subtiler Rahmen für bessere Abgrenzung */
+        width: 100%; /* Stelle sicher, dass die volle Container-Breite genutzt wird */
+        box-sizing: border-box; /* Padding wird in die Breite eingerechnet */
       }
       
       .step-number {
@@ -60,8 +81,8 @@
       }
       
       .step h3 {
-        margin-top: 2rem;
-        margin-bottom: 2rem;
+        margin-top: 1.5rem; /* Reduziert von 2rem */
+        margin-bottom: 1.2rem; /* Reduziert von 2rem */
         font-size: 1.6em; /* Größere Überschriften */
         color: var(--secondary-color);
         font-weight: 600;
@@ -72,7 +93,7 @@
       .step p, .step li {
         font-size: 1.1em; /* Größere Schrift */
         line-height: 1.8; /* Mehr Zeilenabstand */
-        margin-bottom: 1rem;
+        margin-bottom: 0.8rem; /* Reduziert von 1rem */
       }
       
       .step ul {
@@ -80,7 +101,7 @@
       }
       
       .step li {
-        margin-bottom: 1.2rem; /* Mehr Abstand zwischen Listenpunkten */
+        margin-bottom: 0.8rem; /* Reduziert von 1.2rem */
         display: flex;
         align-items: flex-start;
       }
@@ -94,9 +115,8 @@
       }
       
       .back-to-home {
-        display: inline-block;
-        margin-top: 2rem;
-        margin-bottom: 2rem;
+        display: block;
+        margin: 3rem auto; /* auto für Zentrierung */
         padding: 15px 25px; /* Größere Klickfläche */
         background-color: var(--primary-color);
         color: white;
@@ -106,6 +126,9 @@
         font-weight: 500;
         transition: all 0.3s ease;
         box-shadow: 0 4px 12px rgba(37, 112, 169, 0.2);
+        max-width: 800px; /* Gleiche Breite wie Container */
+        text-align: center; /* Text zentrieren */
+        width: calc(100% - 60px); /* Volle Breite minus Container-Padding */
       }
       
       .back-to-home:hover {
@@ -118,8 +141,8 @@
       .tip-box {
         background-color: #f0f8ff;
         border-left: 6px solid var(--primary-color);
-        padding: 2rem;
-        margin: 2rem 0;
+        padding: 1.5rem; /* Reduziert von 2rem */
+        margin: 1.5rem 0; /* Reduziert von 2rem 0 */
         border-radius: 0 12px 12px 0;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
       }
@@ -144,8 +167,9 @@
         border-radius: 15px;
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
         padding: 2.5rem;
-        margin: 3rem 0;
+        margin: 3rem auto; /* auto für Zentrierung */
         border: 2px solid #e8f2f7;
+        max-width: 800px; /* Gleiche Breite wie Container */
       }
       
       .toc h2 {
@@ -248,8 +272,8 @@
         opacity: 1;
         transform: translateY(0);
         max-height: none; /* Entfernt die feste max-height Beschränkung */
-        padding-top: 1rem;
-        padding-bottom: 0.5rem;
+        padding-top: 0.8rem; /* Reduziert von 1rem */
+        padding-bottom: 0.3rem; /* Reduziert von 0.5rem */
       }
       
       .rotate-icon {
@@ -355,9 +379,10 @@
         background-color: var(--card-bg);
         padding: 2.5rem;
         border-radius: 15px;
-        margin: 3rem 0;
+        margin: 3rem auto; /* auto für Zentrierung */
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
         border: 2px solid #e8f2f7;
+        max-width: 800px; /* Gleiche Breite wie Container */
       }
       
       .info-section h2 {
@@ -416,6 +441,67 @@
         margin-bottom: 1.5rem; /* Mehr Abstand zwischen den Elementen */
       }
 
+      /* Mobile Optimierungen */
+      @media (max-width: 768px) {
+        .container {
+          padding: 0 20px; /* Weniger Padding auf mobilen Geräten */
+        }
+        
+        .step {
+          padding: 1.5rem; /* Noch kompakter auf Mobile */
+          margin-bottom: 2rem;
+        }
+        
+        .step-number {
+          width: 50px;
+          height: 50px;
+          font-size: 1.5em;
+          top: -25px;
+          left: 1.5rem;
+        }
+        
+        .step h3 {
+          font-size: 1.4em;
+          margin-top: 1.2rem;
+        }
+        
+        .toc, .info-section, .step-container {
+          width: 100%;
+          max-width: none;
+          margin-left: 0;
+          margin-right: 0;
+        }
+        
+        .support-team {
+          flex-direction: column;
+          align-items: center;
+        }
+        
+        .support-person {
+          max-width: 100%;
+          margin-bottom: 1rem;
+        }
+      }
+
+      /* Zusätzliche Sicherheit für sehr kleine Bildschirme */
+      @media (max-width: 480px) {
+        .container {
+          padding: 0 15px;
+        }
+        
+        body {
+          font-size: 18px;
+        }
+        
+        h1 {
+          font-size: 1.8em;
+        }
+        
+        .step {
+          padding: 1.2rem;
+        }
+      }
+
     </style>
   </head>
   <body class="einrichtungsanleitung">
@@ -424,7 +510,7 @@
         <a href="index.html">
           <img src="images/logo_savekey_text_white.svg" alt="SaveKey Logo" class="logo">
         </a>
-        <nav>
+        <nav role="navigation" aria-label="Hauptnavigation">
           <ul>
             <li><a href="login.html">Login</a></li>
             <li><a href="register.html">Registrieren</a></li>
@@ -435,14 +521,14 @@
 
     <main>
       <div class="container">
-        <h1><i class="fas fa-cogs" style="color: var(--primary-color); margin-right: 15px;"></i>Schritt-für-Schritt Anleitung zur Einrichtung Ihrer SaveKey Schlüsselbox</h1>
+        <h1><i class="fas fa-cogs" style="color: var(--primary-color); margin-right: 15px;" aria-hidden="true"></i>Schritt-für-Schritt Anleitung zur Einrichtung Ihrer SaveKey Schlüsselbox</h1>
         
         <a href="index.html" class="back-to-home">
-          <i class="fas fa-arrow-left" style="margin-right: 10px;"></i> Zurück zur Startseite
+          <i class="fas fa-arrow-left" style="margin-right: 10px;" aria-hidden="true"></i> Zurück zur Startseite
         </a>
         
-        <div class="info-section">
-          <h2><i class="fas fa-info-circle" style="color: var(--primary-color); margin-right: 10px;"></i>Willkommen bei Ihrer SaveKey Schlüsselbox Einrichtung</h2>
+        <section class="info-section" aria-labelledby="welcome-heading">
+          <h2 id="welcome-heading"><i class="fas fa-info-circle" style="color: var(--primary-color); margin-right: 10px;" aria-hidden="true"></i>Willkommen bei Ihrer SaveKey Schlüsselbox Einrichtung</h2>
           <p><strong>Herzlich willkommen!</strong> Auf dieser Seite finden Sie eine einfach zu befolgende Anleitung, die Sie Schritt für Schritt durch die gesamte Einrichtung Ihrer SaveKey Schlüsselbox führt.</p>
           <p>Wir haben die Anleitung in <strong>7 übersichtliche Schritte</strong> unterteilt, damit Sie ohne Probleme starten können. Jeder Schritt ist ausführlich erklärt und enthält hilfreiche Symbole zur besseren Orientierung.</p>
           <div class="tip-box">
@@ -456,9 +542,9 @@
         </div>
         
         <!-- Inhaltsverzeichnis -->
-        <div class="toc">
-          <h2><i class="fas fa-list-ol" style="color: var(--primary-color); margin-right: 10px;"></i>Die 7 Einrichtungsschritte im Überblick</h2>
-          <ul class="toc-list">
+        <nav class="toc" id="inhaltsverzeichnis" aria-labelledby="toc-heading">
+          <h2 id="toc-heading"><i class="fas fa-list-ol" style="color: var(--primary-color); margin-right: 10px;" aria-hidden="true"></i>Die 7 Einrichtungsschritte im Überblick</h2>
+          <ul class="toc-list" role="list">
             <li class="toc-item">
               <a href="#schritt1" class="toc-link" onclick="scrollToStep('schritt1'); return false;">
                 <span class="toc-number">1</span>
@@ -486,13 +572,13 @@
             <li class="toc-item">
               <a href="#schritt5" class="toc-link" onclick="scrollToStep('schritt5'); return false;">
                 <span class="toc-number">5</span>
-                <span>Weitere Benutzer hinzufügen</span>
+                <span>Push-Benachrichtigungen einrichten</span>
               </a>
             </li>
             <li class="toc-item">
               <a href="#schritt6" class="toc-link" onclick="scrollToStep('schritt6'); return false;">
                 <span class="toc-number">6</span>
-                <span>System konfigurieren</span>
+                <span>Weitere Benutzer hinzufügen</span>
               </a>
             </li>
             <li class="toc-item">
@@ -502,16 +588,16 @@
               </a>
             </li>
           </ul>
-        </div>
+        </nav>
         
         <!-- Schritt-für-Schritt Anleitung -->
         <div class="step-container">
           <!-- Schritt 1 -->
           <div id="schritt1" class="step">
             <div class="step-number">1</div>
-            <div class="accordion-header" onclick="toggleAccordion('schritt1-content')">
-              <h3><i class="fas fa-user-plus" style="color: var(--primary-color); margin-right: 10px;"></i>QR-Code scannen und Admin-Konto erstellen</h3>
-              <i class="fas fa-chevron-down accordion-icon" id="schritt1-icon"></i>
+            <div class="accordion-header" onclick="toggleAccordion('schritt1-content')" role="button" tabindex="0" aria-expanded="true" aria-controls="schritt1-content">
+              <h3><i class="fas fa-user-plus" style="color: var(--primary-color); margin-right: 10px;" aria-hidden="true"></i>QR-Code scannen und Admin-Konto erstellen</h3>
+              <i class="fas fa-chevron-down accordion-icon" id="schritt1-icon" aria-hidden="true"></i>
             </div>
             <div id="schritt1-content" class="accordion-content active">
               <p><strong>Starten Sie hier:</strong> Der erste Schritt ist das Einrichten Ihres Administrator-Kontos. Als Administrator haben Sie die volle Kontrolle über Ihre Schlüsselbox.</p>
@@ -533,9 +619,9 @@
           <!-- Schritt 2 -->
           <div id="schritt2" class="step">
             <div class="step-number">2</div>
-            <div class="accordion-header" onclick="toggleAccordion('schritt2-content')">
+            <div class="accordion-header" onclick="toggleAccordion('schritt2-content')" role="button" tabindex="0" aria-expanded="false" aria-controls="schritt2-content">
               <h3>Hardware einrichten</h3>
-              <i class="fas fa-chevron-down accordion-icon" id="schritt2-icon"></i>
+              <i class="fas fa-chevron-down accordion-icon" id="schritt2-icon" aria-hidden="true"></i>
             </div>
             <div id="schritt2-content" class="accordion-content">
               <p>Sobald Sie Ihr Admin-Konto erstellt haben, können Sie die Schlüsselbox einrichten:</p>
@@ -549,9 +635,9 @@
           <!-- Schritt 3 -->
           <div id="schritt3" class="step">
             <div class="step-number">3</div>
-            <div class="accordion-header" onclick="toggleAccordion('schritt3-content')">
+            <div class="accordion-header" onclick="toggleAccordion('schritt3-content')" role="button" tabindex="0" aria-expanded="false" aria-controls="schritt3-content">
               <h3>Erste Anmeldung als Administrator</h3>
-              <i class="fas fa-chevron-down accordion-icon" id="schritt3-icon"></i>
+              <i class="fas fa-chevron-down accordion-icon" id="schritt3-icon" aria-hidden="true"></i>
             </div>
             <div id="schritt3-content" class="accordion-content">
               <p>Jetzt können Sie sich zum ersten Mal anmelden und Ihr System konfigurieren:</p>
@@ -566,9 +652,9 @@
           <!-- Schritt 4 -->
           <div id="schritt4" class="step">
             <div class="step-number">4</div>
-            <div class="accordion-header" onclick="toggleAccordion('schritt4-content')">
+            <div class="accordion-header" onclick="toggleAccordion('schritt4-content')" role="button" tabindex="0" aria-expanded="false" aria-controls="schritt4-content">
               <h3>Verifizierung an der Schlüsselbox einrichten</h3>
-              <i class="fas fa-chevron-down accordion-icon" id="schritt4-icon"></i>
+              <i class="fas fa-chevron-down accordion-icon" id="schritt4-icon" aria-hidden="true"></i>
             </div>
             <div id="schritt4-content" class="accordion-content">
               <p><strong>Wichtiger Sicherheitsschritt:</strong> Alle Benutzer der Schlüsselbox müssen sich mit einer Karte oder einem Badge verifizieren. Diese Verifizierung ist jedes Mal notwendig, wenn ein Schlüssel entnommen werden soll.</p>
@@ -592,11 +678,47 @@
           <!-- Schritt 5 -->
           <div id="schritt5" class="step">
             <div class="step-number">5</div>
-            <div class="accordion-header" onclick="toggleAccordion('schritt5-content')">
-              <h3>Weitere Benutzer hinzufügen</h3>
-              <i class="fas fa-chevron-down accordion-icon" id="schritt5-icon"></i>
+            <div class="accordion-header" onclick="toggleAccordion('schritt5-content')" role="button" tabindex="0" aria-expanded="false" aria-controls="schritt5-content">
+              <h3><i class="fas fa-bell" style="color: var(--primary-color); margin-right: 10px;" aria-hidden="true"></i>Push-Benachrichtigungen einrichten</h3>
+              <i class="fas fa-chevron-down accordion-icon" id="schritt5-icon" aria-hidden="true"></i>
             </div>
             <div id="schritt5-content" class="accordion-content">
+              <p><strong>Bleiben Sie immer informiert:</strong> Push-Benachrichtigungen informieren Sie sofort über wichtige Ereignisse an Ihrer Schlüsselbox, wie zum Beispiel Schlüsselentnahmen oder Warnungen.</p>
+              
+              <h4 style="color: var(--secondary-color); margin-top: 1.5rem; margin-bottom: 0.8rem;">📱 Für Android-Geräte (Samsung, Huawei, etc.):</h4>
+              <p><strong>Ganz einfach:</strong> Öffnen Sie die SaveKey-Website in Ihrem Browser und klicken Sie auf den Button "Push-Benachrichtigungen aktivieren". Das war's schon! Ihr Android-Gerät wird Sie um Erlaubnis fragen – bestätigen Sie diese.</p>
+              
+              <h4 style="color: var(--secondary-color); margin-top: 1.5rem; margin-bottom: 0.8rem;">🍎 Für iPhone/iPad:</h4>
+              <p><strong>Wichtiger Hinweis für iPhone-Benutzer:</strong> Bei Apple-Geräten sind ein paar zusätzliche Schritte nötig:</p>
+              <ul style="padding-left: 2rem; margin-top: 1rem;">
+                <li><strong>1.</strong> Öffnen Sie die SaveKey-Website in Safari</li>
+                <li><strong>2.</strong> Tippen Sie unten auf das "Teilen"-Symbol (Rechteck mit Pfeil nach oben)</li>
+                <li><strong>3.</strong> Wählen Sie "Zum Home-Bildschirm hinzufügen"</li>
+                <li><strong>4.</strong> Bestätigen Sie mit "Hinzufügen"</li>
+                <li><strong>5.</strong> Öffnen Sie SaveKey nun über das neue Symbol auf Ihrem Home-Bildschirm</li>
+                <li><strong>6.</strong> Erst jetzt können Sie auf "Push-Benachrichtigungen aktivieren" klicken</li>
+              </ul>
+              
+              <div class="tip-box">
+                <h4><i class="fas fa-info-circle"></i> Warum ist das bei iPhones komplizierter?</h4>
+                <p>Apple erlaubt Push-Benachrichtigungen für Websites nur, wenn diese als "Web-App" auf dem Home-Bildschirm gespeichert sind. Deshalb sind diese zusätzlichen Schritte nötig. Keine Sorge – Sie müssen das nur einmal machen!</p>
+              </div>
+              
+              <div class="tip-box" style="background-color: #e8f5e8; border-left-color: #28a745;">
+                <h4><i class="fas fa-check-circle" style="color: #28a745;"></i> So wissen Sie, dass es funktioniert:</h4>
+                <p>Nach der erfolgreichen Aktivierung erhalten Sie eine Bestätigungsnachricht. Zusätzlich können Sie die Benachrichtigungen jederzeit in den Einstellungen Ihres Geräts verwalten.</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Schritt 6 -->
+          <div id="schritt6" class="step">
+            <div class="step-number">6</div>
+            <div class="accordion-header" onclick="toggleAccordion('schritt6-content')" role="button" tabindex="0" aria-expanded="false" aria-controls="schritt6-content">
+              <h3>Weitere Benutzer hinzufügen</h3>
+              <i class="fas fa-chevron-down accordion-icon" id="schritt6-icon" aria-hidden="true"></i>
+            </div>
+            <div id="schritt6-content" class="accordion-content">
               <p>Weitere Benutzer müssen sich selbst registrieren, um Zugriff auf die Schlüsselbox zu erhalten:</p>
               <ul>
                 <li><i class="fas fa-share-alt step-icon"></i> Teilen Sie die Seriennummer der Schlüsselbox mit den Personen, die Zugriff haben sollen.</li>
@@ -607,34 +729,12 @@
             </div>
           </div>
           
-          <!-- Schritt 6 -->
-          <div id="schritt6" class="step">
-            <div class="step-number">6</div>
-            <div class="accordion-header" onclick="toggleAccordion('schritt6-content')">
-              <h3>System konfigurieren</h3>
-              <i class="fas fa-chevron-down accordion-icon" id="schritt6-icon"></i>
-            </div>
-            <div id="schritt6-content" class="accordion-content">
-              <p>Passen Sie die Einstellungen an Ihre Bedürfnisse an:</p>
-              <ul>
-                <li><i class="fas fa-cogs step-icon"></i> Gehen Sie im Admin-Dashboard zum Menüpunkt "Einstellungen".</li>
-                <li><i class="fas fa-bell step-icon"></i> Konfigurieren Sie Push-Benachrichtigungen für Ereignisse wie Schlüsselentnahme oder Warnungen.</li>
-                <li><i class="fas fa-clock step-icon"></i> Legen Sie Zeitfenster fest, in denen bestimmte Benutzer Zugriff haben sollen (optional).</li>
-                <li><i class="fas fa-save step-icon"></i> Speichern Sie Ihre Einstellungen.</li>
-              </ul>
-              <div class="tip-box">
-                <h4><i class="fas fa-lightbulb"></i> Tipp:</h4>
-                <p>Es empfiehlt sich, die Push-Benachrichtigungen zu aktivieren, um über wichtige Ereignisse direkt informiert zu werden.</p>
-              </div>
-            </div>
-          </div>
-          
           <!-- Schritt 7 -->
           <div id="schritt7" class="step">
             <div class="step-number">7</div>
-            <div class="accordion-header" onclick="toggleAccordion('schritt7-content')">
+            <div class="accordion-header" onclick="toggleAccordion('schritt7-content')" role="button" tabindex="0" aria-expanded="false" aria-controls="schritt7-content">
               <h3>System testen</h3>
-              <i class="fas fa-chevron-down accordion-icon" id="schritt7-icon"></i>
+              <i class="fas fa-chevron-down accordion-icon" id="schritt7-icon" aria-hidden="true"></i>
             </div>
             <div id="schritt7-content" class="accordion-content">
               <p>Zum Abschluss sollten Sie das System testen:</p>
@@ -656,13 +756,12 @@
             <div class="support-person">
               <div class="support-avatar" style="background-image: url('/images/Profilbilder/claudio_savekey.png');"></div>
               <div class="support-name">Claudio Riz</div>
-              <div class="support-role">Senior Support Spezialistin</div>
+              <div class="support-role">Senior Support Spezialist</div>
               <div class="support-description">
                 Claudio ist seit 5 Jahren bei SaveKey und kennt jede Funktion des Systems. Er hilft besonders gerne bei der ersten Einrichtung und komplexeren technischen Fragen.
               </div>
               <div class="support-contact">
                 <span><i class="fas fa-envelope"></i> claudio.riz@stud.fhgr.ch</span>
-                <span><i class="fas fa-phone"></i> +41 44 123 45 67</span>
                 <span><i class="fas fa-clock"></i> Mo-Fr, 8:00-17:00</span>
               </div>
             </div>
@@ -676,7 +775,6 @@
               </div>
               <div class="support-contact">
                 <span><i class="fas fa-envelope"></i> aaron.taeschler@stud.fhgr.ch</span>
-                <span><i class="fas fa-phone"></i> +41 44 123 45 68</span>
                 <span><i class="fas fa-clock"></i> Mo-Fr, 9:00-18:00</span>
               </div>
             </div>
@@ -733,6 +831,8 @@
         var content = document.getElementById(contentId);
         var iconId = contentId.replace('content', 'icon');
         var icon = document.getElementById(iconId);
+        var headerId = contentId.replace('-content', '');
+        var header = document.querySelector(`[aria-controls="${contentId}"]`);
         
         if (content.classList.contains('active')) {
           // Schließen: Erst Höhe messen, dann animieren
@@ -758,6 +858,7 @@
           }, 260);
           
           icon.classList.remove('rotate-icon');
+          if (header) header.setAttribute('aria-expanded', 'false');
         } else {
           // Öffnen: CSS-Klasse setzen und Höhe berechnen
           content.classList.add('active');
@@ -786,6 +887,7 @@
           }, 260);
           
           icon.classList.add('rotate-icon');
+          if (header) header.setAttribute('aria-expanded', 'true');
         }
       }
       
@@ -809,11 +911,24 @@
           if (!content.classList.contains('active')) {
             content.classList.add('active');
             icon.classList.add('rotate-icon');
+            
+            // Accordion-Header für ARIA-Attribute finden und aktualisieren
+            var accordionHeader = element.querySelector('.accordion-header');
+            if (accordionHeader) {
+              accordionHeader.setAttribute('aria-expanded', 'true');
+            }
           }
           
           // Visuelles Feedback: kurzes Highlighting des Schritts
           element.style.transform = 'scale(1.02)';
           element.style.transition = 'transform 0.3s ease';
+          
+          // Fokus auf den Accordion-Header setzen für bessere Accessibility
+          var accordionHeader = element.querySelector('.accordion-header');
+          if (accordionHeader) {
+            accordionHeader.focus();
+          }
+          
           setTimeout(function() {
             element.style.transform = 'scale(1)';
           }, 300);
@@ -849,11 +964,37 @@
         }
       });
       
-      // Mache Accordion Headers fokussierbar für Keyboard Navigation
+      // Mache Accordion Headers fokussierbar für Keyboard Navigation und setze ARIA-Attribute
       document.querySelectorAll('.accordion-header').forEach(header => {
-        header.setAttribute('tabindex', '0');
-        header.setAttribute('role', 'button');
-        header.setAttribute('aria-expanded', header.querySelector('.accordion-content.active') ? 'true' : 'false');
+        // Prüfe, ob bereits tabindex und role gesetzt sind
+        if (!header.hasAttribute('tabindex')) {
+          header.setAttribute('tabindex', '0');
+        }
+        if (!header.hasAttribute('role')) {
+          header.setAttribute('role', 'button');
+        }
+        
+        // Finde das zugehörige content Element
+        const onclick = header.getAttribute('onclick');
+        if (onclick) {
+          const contentId = onclick.match(/'([^']+)'/)[1];
+          const content = document.getElementById(contentId);
+          
+          // Setze aria-controls
+          header.setAttribute('aria-controls', contentId);
+          
+          // Setze aria-expanded basierend auf dem aktuellen Status
+          const isExpanded = content && content.classList.contains('active');
+          header.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+        }
+        
+        // Füge aria-hidden zu allen Icons hinzu
+        const icons = header.querySelectorAll('i');
+        icons.forEach(icon => {
+          if (!icon.hasAttribute('aria-hidden')) {
+            icon.setAttribute('aria-hidden', 'true');
+          }
+        });
       });
     </script>
   </body>

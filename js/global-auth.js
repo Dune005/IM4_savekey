@@ -80,21 +80,21 @@ function updateGlobalNavigation() {
     
     navElement.innerHTML = `
       <li class="header-user-dropdown">
-        <div class="user-info-trigger" id="userInfoTrigger">
+        <div class="user-info-trigger" id="userInfoTrigger" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false" aria-controls="userDropdownMenu" aria-label="Benutzermenü öffnen">
           <div class="user-avatar">
-            <i class="fas fa-user"></i>
+            <i class="fas fa-user" aria-hidden="true"></i>
           </div>
           <div class="user-welcome">
             <span class="welcome-text">Willkommen,</span>
             <span class="user-name" id="headerUserName">${currentUser.vorname}</span>
           </div>
-          <i class="fas fa-chevron-down dropdown-arrow"></i>
+          <i class="fas fa-chevron-down dropdown-arrow" aria-hidden="true"></i>
         </div>
         
-        <div class="user-dropdown-menu" id="userDropdownMenu">
+        <div class="user-dropdown-menu" id="userDropdownMenu" role="menu" aria-labelledby="userInfoTrigger">
           <div class="dropdown-header">
             <div class="dropdown-avatar">
-              <i class="fas fa-user"></i>
+              <i class="fas fa-user" aria-hidden="true"></i>
             </div>
             <div class="dropdown-user-info">
               <div class="dropdown-name" id="dropdownFullName">${currentUser.vorname} ${currentUser.nachname}</div>
@@ -105,21 +105,21 @@ function updateGlobalNavigation() {
           <div class="dropdown-user-details">
             <div class="user-detail-item">
               <div class="detail-label">
-                <i class="fas fa-user"></i>
+                <i class="fas fa-user" aria-hidden="true"></i>
                 <span>Benutzername</span>
               </div>
               <div class="detail-value" id="dropdownUsername">${currentUser.benutzername}</div>
             </div>
             <div class="user-detail-item">
               <div class="detail-label">
-                <i class="fas fa-key"></i>
+                <i class="fas fa-key" aria-hidden="true"></i>
                 <span>Schlüsselbox</span>
               </div>
               <div class="detail-value" id="dropdownSeriennummer">${currentUser.seriennummer}</div>
             </div>
             <div class="user-detail-item">
               <div class="detail-label">
-                <i class="fas fa-shield-alt"></i>
+                <i class="fas fa-shield-alt" aria-hidden="true"></i>
                 <span>Benutzerrolle</span>
               </div>
               <div class="detail-value role-${currentUser.is_admin ? 'admin' : 'user'}" id="dropdownRole">${currentUser.is_admin ? 'Administrator' : 'Benutzer'}</div>
@@ -127,24 +127,24 @@ function updateGlobalNavigation() {
           </div>
           <div class="dropdown-divider"></div>
           <div class="dropdown-links">
-            <a href="protected.html" class="dropdown-link">
-              <i class="fas fa-tachometer-alt"></i>
+            <a href="protected.html" class="dropdown-link" role="menuitem">
+              <i class="fas fa-tachometer-alt" aria-hidden="true"></i>
               <span>Dashboard</span>
             </a>
-            <a href="#" class="dropdown-link" id="showStatusLink">
-              <i class="fas fa-eye"></i>
+            <a href="#" class="dropdown-link" id="showStatusLink" role="menuitem">
+              <i class="fas fa-eye" aria-hidden="true"></i>
               <span>Status anzeigen</span>
             </a>
-            <a href="#" class="dropdown-link" id="showHistoryLink">
-              <i class="fas fa-history"></i>
+            <a href="#" class="dropdown-link" id="showHistoryLink" role="menuitem">
+              <i class="fas fa-history" aria-hidden="true"></i>
               <span>Schlüsselhistorie</span>
             </a>
-            <a href="#" class="dropdown-link" id="showRfidLink">
-              <i class="fas fa-key"></i>
+            <a href="#" class="dropdown-link" id="showRfidLink" role="menuitem">
+              <i class="fas fa-key" aria-hidden="true"></i>
               <span>RFID verwalten</span>
             </a>
-            <button class="dropdown-link logout-link" id="globalLogoutBtn">
-              <i class="fas fa-sign-out-alt"></i>
+            <button class="dropdown-link logout-link" id="globalLogoutBtn" role="menuitem">
+              <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
               <span>Abmelden</span>
             </button>
           </div>
@@ -240,6 +240,22 @@ function initializeGlobalUserDropdown() {
     }
   });
 
+  // Toggle dropdown on Enter or Space key
+  userInfoTrigger.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const isOpen = userDropdownMenu.classList.contains('show');
+      
+      if (isOpen) {
+        closeGlobalUserDropdown();
+      } else {
+        openGlobalUserDropdown();
+      }
+    }
+  });
+
   // Close dropdown when clicking outside
   document.addEventListener('click', function(e) {
     if (!userInfoTrigger.contains(e.target) && !userDropdownMenu.contains(e.target)) {
@@ -266,6 +282,7 @@ function openGlobalUserDropdown() {
   
   if (userInfoTrigger && userDropdownMenu) {
     userInfoTrigger.classList.add('active');
+    userInfoTrigger.setAttribute('aria-expanded', 'true');
     userDropdownMenu.classList.add('show');
   }
 }
@@ -276,6 +293,7 @@ function closeGlobalUserDropdown() {
   
   if (userInfoTrigger && userDropdownMenu) {
     userInfoTrigger.classList.remove('active');
+    userInfoTrigger.setAttribute('aria-expanded', 'false');
     userDropdownMenu.classList.remove('show');
   }
 }

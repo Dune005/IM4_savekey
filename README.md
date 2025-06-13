@@ -98,6 +98,7 @@ Eine Schritt-für-Schritt-Anleitung zur Reproduzierbarkeit des Projekts finden S
 3. [ANLEITUNG_DATENBANK_SETUP.md](Anleitungen/ANLEITUNG_DATENBANK_SETUP.md) - Anleitung zur Einrichtung der Datenbank.
 4. [ANLEITUNG_QR_CODE_ADMIN.md](Anleitungen/ANLEITUNG_QR_CODE_ADMIN.md) - Anleitung zur Nutzung der QR-Code-Funktionalität.
 5. [ANLEITUNG_PUSH_BENACHRICHTIGUNGEN.md](Anleitungen/ANLEITUNG_PUSH_BENACHRICHTIGUNGEN.md) - Anleitung zur Einrichtung der Push-Funktionalität.
+6. [ANLEITUNG_ACCESSIBILITY.md](Anleitungen/ANLEITUNG_ACCESSIBILITY.md) - Informationen zur Barrierefreiheit und Zugänglichkeitsfunktionen von SaveKey.
 
 
 ## Flussdiagramm

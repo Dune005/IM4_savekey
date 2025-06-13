@@ -5,9 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SaveKey Dashboard - Ihre intelligente Schlüsselverwaltung</title>
     <meta name="description" content="SaveKey Dashboard - Verwalten Sie Ihre Schlüssel sicher und einfach. Überblick über Status und Historie.">
+    
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="manifest" href="/assets/site.webmanifest">
+    
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="manifest" href="manifest.json">
     <script src="js/global-auth.js"></script>
   </head>
   <body>
@@ -16,10 +22,10 @@
         <a href="index.html">
           <img src="images/logo_savekey_text_white.svg" alt="SaveKey Logo" class="logo">
         </a>
-        <nav>
+        <nav role="navigation" aria-label="Benutzernavigation">
           <ul>
             <li class="header-user-dropdown">
-              <div class="user-info-trigger" id="userInfoTrigger">
+              <div class="user-info-trigger" id="userInfoTrigger" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false" aria-controls="userDropdownMenu" aria-label="Benutzermenü öffnen">
                 <div class="user-avatar">
                   <i class="fas fa-user"></i>
                 </div>
@@ -30,7 +36,7 @@
                 <i class="fas fa-chevron-down dropdown-arrow"></i>
               </div>
               
-              <div class="user-dropdown-menu" id="userDropdownMenu">
+              <div class="user-dropdown-menu" id="userDropdownMenu" role="menu" aria-labelledby="userInfoTrigger">
                 <div class="dropdown-header">
                   <div class="dropdown-avatar">
                     <i class="fas fa-user"></i>
@@ -66,20 +72,20 @@
                 </div>
                 <div class="dropdown-divider"></div>
                 <div class="dropdown-links">
-                  <a href="#" class="dropdown-link">
-                    <i class="fas fa-eye"></i>
+                  <a href="#" class="dropdown-link" role="menuitem">
+                    <i class="fas fa-eye" aria-hidden="true"></i>
                     <span>Status anzeigen</span>
                   </a>
-                  <a href="#" class="dropdown-link">
-                    <i class="fas fa-history"></i>
+                  <a href="#" class="dropdown-link" role="menuitem">
+                    <i class="fas fa-history" aria-hidden="true"></i>
                     <span>Schlüsselhistorie</span>
                   </a>
-                  <a href="#" class="dropdown-link">
-                    <i class="fas fa-key"></i>
+                  <a href="#" class="dropdown-link" role="menuitem">
+                    <i class="fas fa-key" aria-hidden="true"></i>
                     <span>RFID verwalten</span>
                   </a>
-                  <button class="dropdown-link logout-link" id="logoutBtn">
-                    <i class="fas fa-sign-out-alt"></i>
+                  <button class="dropdown-link logout-link" id="logoutBtn" role="menuitem">
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
                     <span>Abmelden</span>
                   </button>
                 </div>
@@ -92,6 +98,9 @@
 
     <main class="protected-main">
       <div class="container">
+        
+        <!-- Live Region für Statusmeldungen -->
+        <div id="status-announcements" aria-live="polite" aria-atomic="true" class="sr-only"></div>
         
         <!-- This is where we'll dynamically show the protected content -->
         <div id="protectedContent"></div>

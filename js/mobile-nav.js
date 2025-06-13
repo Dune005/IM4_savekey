@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         icon.classList.add('fa-bars');
                     }
                     mobileMenuToggle.setAttribute('aria-label', 'Menü öffnen');
+                    mobileMenuToggle.setAttribute('aria-expanded', 'false');
                 }
                 return; // Funktion beenden, da der eingeloggte Status Vorrang hat
             }
@@ -43,6 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         icon.classList.add('fa-bars');
                     }
                     mobileMenuToggle.setAttribute('aria-label', 'Menü öffnen');
+                    mobileMenuToggle.setAttribute('aria-expanded', 'false');
                 }
             }
         }
@@ -64,10 +66,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 icon.classList.remove('fa-bars');
                 icon.classList.add('fa-times');
                 this.setAttribute('aria-label', 'Menü schließen');
+                this.setAttribute('aria-expanded', 'true');
             } else {
                 icon.classList.remove('fa-times');
                 icon.classList.add('fa-bars');
                 this.setAttribute('aria-label', 'Menü öffnen');
+                this.setAttribute('aria-expanded', 'false');
             }
         });
         
@@ -81,6 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 icon.classList.remove('fa-times');
                 icon.classList.add('fa-bars');
                 mobileMenuToggle.setAttribute('aria-label', 'Menü öffnen');
+                mobileMenuToggle.setAttribute('aria-expanded', 'false');
             }
         });
         
