@@ -135,72 +135,72 @@ Die Bilder vom Entwicklungsprozess befinden sich im Ordner `images/entwicklung/`
 
 ### Entwicklungsprozess
 
-1. UX & Konzeption
+**1. UX & Konzeption**
 - UX-Konzept und Use Case definiert  
 - Anwendungslogik und Nutzerinteraktionen skizziert
 
-2. Technisches Setup
+**2. Technisches Setup**
 - GitHub-Repository erstellt, Codebasis angelegt  
 - Server und Datenbank eingerichtet  
 - Erste Codierungsschritte dokumentiert
 
-3. Prototyping
+**3. Prototyping**
 - Aufbau des Hardware-Prototyps mit Steckbrett  
 - Erste Funktionstests  
 
-**Troubleshooting:**
+***Troubleshooting:***
 - Schlechte Steckkontakte → Austausch Steckbretter  
 - Logikproblem: RFID + Reed-Kontakt in Serie → technisch korrekt, aber falsch umgesetzt im Microcontroller
 
-4. Programmierung & Anbindung
+**4. Programmierung & Anbindung**
 - Microcontroller programmiert (Arduino)  
 - Einlesen und Zuordnen der Daten  
 - Anbindung an den Server: Datenbankeinträge realisiert  
 - Erste erfolgreiche Tests nach geplanter Logik
 
-5. Auftretende Edge Cases
+**5. Auftretende Edge Cases**
 - Erste Edge Cases identifiziert, aber noch nicht behoben  
   *(z. B. Rückgabe durch falsche Nutzer möglich)*  
 - Prototyp weiterentwickelt  
 
-**Probleme:**
+***Probleme:***
 - Schlechte Steckkontakte  
 - Sensoren zu nah beieinander  
 
-**Lösungen:**
+***Lösungen:***
 - Verwendung von Wago-Klemmen  
 - Abstand der Sensoren > 5 cm  
 
-**Weitere Edge Cases:**
+***Weitere Edge Cases:***
 - Wer vergibt Adminrechte?  
 - Wie verhindert man unautorisierte Rückgaben?
 
-6. Funktionierende Lösung
+**6. Funktionierende Lösung**
 - Behandlung & Behebung der bisherigen Edge Cases  
 
-**Anwendungsszenarien diskutiert:**
+***Anwendungsszenarien diskutiert:***
 - Wer registriert RFID-Badges?  
 - Entscheidung: Beliebige RFID-Karten erlaubt  
 - Auslieferung erfolgt mit drei unregistrierten Badges
 
-7. Entwicklung des Endprodukts
+**7. Entwicklung des Endprodukts**
 - Einkauf: Schlüsselbox, Magnet-Schlüsselringe  
 - Innenplatte entworfen und 3D-gedruckt  
 - Zusammenbau der Komponenten, erste Funktionstests  
 
-**Erkenntnisse & Anpassungen:**
+***Erkenntnisse & Anpassungen:***
 - Ladeport und Ein/Aus-Schalter nötig → nachträglich eingebaut
 
-8. Finalisierung & Optimierung
+**8. Finalisierung & Optimierung**
 - Finaler Code mit Edge-Case-Behebungen:  
   - Admin-Zuweisung über QR-Registrierungsseite  
   - Nur Admin kann verlorene Schlüssel zurückbuchen  
 
-**Hardware-Optimierung:**
+***Hardware-Optimierung:***
 - Steckkontakte mit Heißleim fixiert  
 - Kabelanzahl reduziert durch Direktverbindungen und Wago-Klemmen
 
-9. Abschluss
+**9. Abschluss**
 - Finaler Systemtest  
 - Videoaufzeichnung des funktionierenden Endprodukts
 
