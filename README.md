@@ -134,37 +134,75 @@ Die Bilder vom Entwicklungsprozess befinden sich im Ordner `images/entwicklung/`
 ## Bericht zum Umsetzungsprozess
 
 ### Entwicklungsprozess
-1. UX Teil wie oben beschrieben.
-2. Setup Server & DB, GitHub Repository erstellen, coden. (Anleitungen und Schritte im GitHub Repository)
-3. Stecken des Prototyps
-4. Troubleshooting:
-   a. Steckkontakte nicht gut (Austausch der Steckbretter)
-   b. Denkfehler: RFID und Reed Kontakt in Serie – technisch richtig, aber am Microcontroller falsch
-5. Programmierung Arduino: Microcontroller programmieren, Daten einlesen und zuordnen
-6. Vernetzung Microcontroller mit Server, Einträge in DB.
-7. Erste erfolgreiche Probeläufe nach unserer Ursprungslogik
-8. Erste Edgecases treten auf, werden notiert aber noch nicht behoben (z. B. dass man Schlüssel zurückgeben kann online, obwohl ihn jemand anderes geholt hat)
-9. Entwicklung des Prototypen:
-   a. Probleme: schlechte Steckkontakte, Nähe der Sensoren
-   b. Lösung: Wago-Klemmen benutzen, Sensoren entfernen voneinander (> 5 cm)
-   c. Neue Edgecases entdeckt:
-      i. Wer weist den Admin zu?
-      ii. Wie garantiert man, dass nur der Admin den Schlüssel manuell retournieren kann?
-10. Funktion nun hergestellt:
-   a. Behandlung und Behebung der Edgecases
-   b. Weitere Gedanken für die effektive Anwendung: z. B. liefern wir die Boxen mit registrierten Badges aus, oder macht das der User selbst? Entscheid: Alle RFID-Fähigen Karten können verwendet werden. Auslieferung würde mit drei unregistrierten RFID-BAdges erfolgen
-11. Entwicklung des Entprodukts:
-   a. Bestellung & Einkauf: Schlüsselbox, Schlüsselringe mit Magneten
-   b. Entwurf und Druck der Innenplatte: Unsere Schlüsselbox bekommt einen 3D-geprinteten Einschub zum Versorgen der Technik
-   c. Zusammenbauen der Komponenten und erste Tests
-   d. Denkfehler: Endprodukt braucht definitiv einen Ladeport und/oder Ein/Aus-Schalter, beides wurde eingebaut
-12. Finalisierung des Codes & Behebung der Edgecases:
-   a. Admin Zuweisung ist default mässig geregelt bei der Auslieferung der Box, sprich man kann nur mittels QR-Registrierungsseite zum Admin werden
-   b. Schlüsselretournierung im Verlustfall ist nun Admin-Recht
-13. Troubleshooting Endprodukt:
-   a. Steckkontakte der Kabel führten oft zu Problemen, alles wurde geklebt mit Heisleim
-   b. Kabelanzahl wurde aufs Minimum reduziert mittels direkten Übergängen und Wagoklemmen
-14. Finale Test und Video-Aufnahme
+
+1. UX & Konzeption
+- UX-Konzept und Use Case definiert  
+- Anwendungslogik und Nutzerinteraktionen skizziert
+
+2. Technisches Setup
+- GitHub-Repository erstellt, Codebasis angelegt  
+- Server und Datenbank eingerichtet  
+- Erste Codierungsschritte dokumentiert
+
+3. Prototyping
+- Aufbau des Hardware-Prototyps mit Steckbrett  
+- Erste Funktionstests  
+
+**Troubleshooting:**
+- Schlechte Steckkontakte → Austausch Steckbretter  
+- Logikproblem: RFID + Reed-Kontakt in Serie → technisch korrekt, aber falsch umgesetzt im Microcontroller
+
+4. Programmierung & Anbindung
+- Microcontroller programmiert (Arduino)  
+- Einlesen und Zuordnen der Daten  
+- Anbindung an den Server: Datenbankeinträge realisiert  
+- Erste erfolgreiche Tests nach geplanter Logik
+
+5. Auftretende Edge Cases
+- Erste Edge Cases identifiziert, aber noch nicht behoben  
+  *(z. B. Rückgabe durch falsche Nutzer möglich)*  
+- Prototyp weiterentwickelt  
+
+**Probleme:**
+- Schlechte Steckkontakte  
+- Sensoren zu nah beieinander  
+
+**Lösungen:**
+- Verwendung von Wago-Klemmen  
+- Abstand der Sensoren > 5 cm  
+
+**Weitere Edge Cases:**
+- Wer vergibt Adminrechte?  
+- Wie verhindert man unautorisierte Rückgaben?
+
+6. Funktionierende Lösung
+- Behandlung & Behebung der bisherigen Edge Cases  
+
+**Anwendungsszenarien diskutiert:**
+- Wer registriert RFID-Badges?  
+- Entscheidung: Beliebige RFID-Karten erlaubt  
+- Auslieferung erfolgt mit drei unregistrierten Badges
+
+7. Entwicklung des Endprodukts
+- Einkauf: Schlüsselbox, Magnet-Schlüsselringe  
+- Innenplatte entworfen und 3D-gedruckt  
+- Zusammenbau der Komponenten, erste Funktionstests  
+
+**Erkenntnisse & Anpassungen:**
+- Ladeport und Ein/Aus-Schalter nötig → nachträglich eingebaut
+
+8. Finalisierung & Optimierung
+- Finaler Code mit Edge-Case-Behebungen:  
+  - Admin-Zuweisung über QR-Registrierungsseite  
+  - Nur Admin kann verlorene Schlüssel zurückbuchen  
+
+**Hardware-Optimierung:**
+- Steckkontakte mit Heißleim fixiert  
+- Kabelanzahl reduziert durch Direktverbindungen und Wago-Klemmen
+
+9. Abschluss
+- Finaler Systemtest  
+- Videoaufzeichnung des funktionierenden Endprodukts
 
 ## Video-Dokumentation
 Die Video-Dokumentation ist hier zu finden:
