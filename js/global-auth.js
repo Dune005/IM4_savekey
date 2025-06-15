@@ -141,7 +141,7 @@ function updateGlobalNavigation() {
             </a>
             <a href="#" class="dropdown-link" id="showRfidLink" role="menuitem">
               <i class="fas fa-key" aria-hidden="true"></i>
-              <span>RFID verwalten</span>
+              <span>Verifizierungsmethode</span>
             </a>
             <button class="dropdown-link logout-link" id="globalLogoutBtn" role="menuitem">
               <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
