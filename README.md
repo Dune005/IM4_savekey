@@ -115,7 +115,7 @@ oder als Text-Dokument:
 
 ## Steckschema
 Das Steckschema ist hier zu finden:
-- [Safekey Steckplatine.png](images/dokumentation/Safekey%20Steckplatine.png)
+- [Savekey Steckplatine.png](images/dokumentation/Savekey%20Steckplatine.png)
 
 ## Screenshots / Bilder / ggf. GIFs
 Die Bilder vom Entwicklungsprozess befinden sich im Ordner `images/entwicklung/`:
