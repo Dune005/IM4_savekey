@@ -22,7 +22,7 @@ SaveKey erweitert eine klassische Schl체sselbox um ein intelligentes digitales �
 - **Automatische Erkennung** von Schl체sselentnahmen durch pr채zisen Magnetsensor
 - **Duale Authentifizierung** via RFID/NFC-Tags oder webbasierte Push-Benachrichtigungen
 - **Vollst채ndige Protokollierung** mit Zeitstempel, Benutzername und Aktivit채tstyp
-- **Intelligentes Alarmsystem** bei fehlender Best채tigung oder Stromausfall
+- **Intelligentes Alarmsystem** bei fehlender Best채tigung
 - **Webbasierte Verwaltung** mit responsiver Benutzeroberfl채che
 
 ### Systemzust채nde
