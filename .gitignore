@@ -45,3 +45,7 @@ cache/
 # Uploads (falls sensibel)
 uploads/
 temp_uploads/
+
+# Weitere Dateien
+.github
+copilot-instructions.md

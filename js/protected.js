@@ -368,7 +368,7 @@ async function loadKeyStatus() {
 
         keyStatusElement.innerHTML = `
           <div class="key-unavailable">
-            <div class="key-icon unavailable">
+            <div class="key-icon unavailable"> 
               <i class="fas fa-key" aria-hidden="true"></i>
             </div>
             <div class="status-text">

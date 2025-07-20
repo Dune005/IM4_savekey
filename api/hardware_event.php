@@ -156,6 +156,20 @@ function handleKeyRemoved($pdo, $data) {
 
     $seriennummer = $data['seriennummer'];
 
+    // Clean up any existing pending actions for this serial number before creating a new one
+    // This prevents multiple pending entries from accumulating during setup/testing
+    $cleanupStmt = $pdo->prepare("
+        DELETE FROM pending_key_actions 
+        WHERE seriennummer = :seriennummer 
+        AND status = 'pending'
+    ");
+    $cleanupStmt->execute([':seriennummer' => $seriennummer]);
+    
+    $deletedCount = $cleanupStmt->rowCount();
+    if ($deletedCount > 0) {
+        error_log("Bereinigt $deletedCount vorherige pending Einträge für Seriennummer: $seriennummer");
+    }
+
     // Speichern des Ereignisses in der temporären Tabelle
     $stmt = $pdo->prepare("
         INSERT INTO pending_key_actions
@@ -197,6 +211,20 @@ function handleKeyReturned($pdo, $data) {
 
     $seriennummer = $data['seriennummer'];
     $timestamp = date('Y-m-d H:i:s');
+
+    // Clean up any existing pending actions for this serial number
+    // This ensures a clean state when the key is physically returned
+    $cleanupStmt = $pdo->prepare("
+        DELETE FROM pending_key_actions 
+        WHERE seriennummer = :seriennummer 
+        AND status = 'pending'
+    ");
+    $cleanupStmt->execute([':seriennummer' => $seriennummer]);
+    
+    $deletedCount = $cleanupStmt->rowCount();
+    if ($deletedCount > 0) {
+        error_log("Bereinigt $deletedCount pending Einträge bei Schlüsselrückgabe für Seriennummer: $seriennummer");
+    }
 
     // Suchen des letzten offenen Eintrags für diese Seriennummer
     $stmt = $pdo->prepare("
