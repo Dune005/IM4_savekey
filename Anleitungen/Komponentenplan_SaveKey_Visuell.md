@@ -10,12 +10,18 @@
 |  +-------------+      +-------------+    |
 |  | Magnetsensor|      | RFID/NFC-   |    |
 |  | (Reed)      |      | Leser (PN532)|    |
+|  | Pin 1       |      | I²C (4/5)    |    |
 |  +------+------+      +------+------+    |
 |         |                     |           |
 |         v                     v           |
 |  +----------------------------------+    |
-|  |        ESP32 Arduino-Board       |    |
-|  |  (Finite State Machine Firmware) |    |
+|  |      ESP32 C6 DevKitC-1-N8       |    |
+|  | (8MB Flash, USB-Stromversorgung)  |    |
+|  |  +---------------------------+   |    |
+|  |  | Status-LED (Pin 10)       |   |    |
+|  |  | • 2x Blinken: Init      |   |    |
+|  |  | • 3s Leuchten: Verifikation| |    |
+|  |  +---------------------------+   |    |
 |  +----------------+------------------    |
 |                   |                      |
 |                   | HTTP/HTTPS (JSON)    |
@@ -73,6 +79,26 @@
 | Push-Link)     |  | Verwaltung)      |
 +----------------+  +------------------+
 ```
+
+## Hardware-Spezifische Details (ESP32 C6)
+
+### Pin-Belegung
+- **Magnetsensor**: Pin 1 (INPUT_PULLDOWN)
+- **Status-LED**: Pin 10 (OUTPUT)
+- **PN532 NFC-Reader** (I²C):
+  - SDA: Pin 4
+  - SCL: Pin 5  
+  - IRQ: Pin 2
+  - RESET: Pin 3
+
+### LED-Verhalten
+- **Initialisierung**: 2x Blinken beim Systemstart
+- **Erfolgreiche Verifikation**: 3 Sekunden durchgehend leuchtend
+- **Non-blocking**: LED-Verwaltung erfolgt parallel zu anderen Aufgaben
+
+### Stromversorgung
+- **USB-Port**: Direkte Stromversorgung über ESP32 C6 USB-Port
+- **Keine Batterie**: Kein externes Netzteil oder Backup-System nötig
 
 ## Kommunikationsfluss
 

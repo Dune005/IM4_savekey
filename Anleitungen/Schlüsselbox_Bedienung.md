@@ -19,7 +19,9 @@ Diese Anleitung beschreibt die grundlegende Inbetriebnahme und Nutzung der SaveK
 - Der QR-Code ist einmalig gültig und enthält die Seriennummer der Box (Sicherheitsmechanismus).
 
 ### 1.2. System-Einrichtung
-- Verbinden Sie die Box mit Strom und stellen Sie sicher, dass WLAN verfügbar ist.
+- Verbinden Sie die ESP32 C6-Box über das USB-Kabel mit einer Stromquelle (USB-Netzteil, Powerbank oder Computer).
+- Die Status-LED blinkt 2x zur Bestätigung der erfolgreichen Initialisierung.
+- Stellen Sie sicher, dass WLAN verfügbar ist (Box verbindet sich automatisch).
 - Öffnen Sie die Weboberfläche (siehe Link im QR-Code oder http://<IP-Adresse>/).
 - Melden Sie sich als Admin an.
 - Legen Sie Benutzer an und weisen Sie ihnen RFID/NFC-Chips zu (über die Weboberfläche oder durch Scannen an der Box).
@@ -37,6 +39,7 @@ Diese Anleitung beschreibt die grundlegende Inbetriebnahme und Nutzung der SaveK
 ### 2.1. Schlüssel entnehmen
 - Öffnen Sie die Box und entnehmen Sie den gewünschten Schlüssel.
 - Halten Sie Ihren registrierten RFID/NFC-Chip an das Lesegerät, um die Entnahme zu bestätigen.
+- Bei erfolgreicher Verifikation leuchtet die Status-LED für 3 Sekunden zur Bestätigung.
 - Alternativ: Nutzen Sie den per E-Mail/Push-Link erhaltenen Bestätigungsdialog.
 - Die Entnahme wird protokolliert und der Schlüssel als "nicht verfügbar" markiert.
 

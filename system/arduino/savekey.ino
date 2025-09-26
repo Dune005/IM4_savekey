@@ -3,157 +3,284 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
+#include <esp_system.h>
 
 // --- WLAN-Credentials ---
-const char* ssid     = "tinkergarden";
-const char* password = "strenggeheim";
+const char* ssid     = "Igloo";
+const char* password = "1glooVision";
 
 // --- API-Konfiguration ---
-const char* API_ENDPOINT = "https://savekey.klaus-klebband.ch/api/arduino_api.php"; // Ersetze mit deiner tatsächlichen Domain
-const char* API_KEY = "sk_hardware_safekey_12345"; // Muss mit dem Wert in system/hardware_auth.php übereinstimmen
+const char* API_ENDPOINT = "https://savekey.klaus-klebband.ch/api/arduino_api.php";
+const char* API_KEY = "sk_hardware_safekey_12345";
 
 // --- I²C-Pins für PN532 ---
-#define SDA_PIN     6
-#define SCL_PIN     7
+#define SDA_PIN     4
+#define SCL_PIN     5
 
 // --- PN532 / NFC-Pins ---
 #define PN532_IRQ   2
 #define PN532_RESET 3
 
 // --- Magnetsensor-Pin ---
-const int buttonPin = 8;
+const int buttonPin = 1;
+
+// --- LED-Pin ---
+const int LED_PIN = 10; // Deine neue LED an Pin 10
 
 // --- Seriennummer der Box ---
-// WICHTIG: Diese Seriennummer muss mit der Seriennummer in der Datenbank übereinstimmen,
-// die dem Benutzer zugeordnet ist, der diese Box verwenden soll.
-// Beispiele aus der Datenbank: Seriennummern beginnen mit 'A' oder 'B', z.B. 'A001', 'B002'
-const char* seriennummer = "550"; // Eindeutige Seriennummer für diese Box
+const char* seriennummer = "550";
 
 // --- Status-Variablen ---
 bool keyPresent = true;
 bool pendingVerification = false;
 unsigned long verificationStartTime = 0;
-const unsigned long verificationTimeout = 5 * 60 * 1000; // 5 Minuten in Millisekunden
+const unsigned long verificationTimeout = 5 * 60 * 1000; // 5 Minuten
+
+// --- LED-Timer Variablen (non-blocking) ---
+bool ledActive = false;
+unsigned long ledStartTime = 0;
+const unsigned long LED_DURATION = 3000; // 3 Sekunden LED-Dauer
+
+// --- Verbindungszustände & Retry-Timer ---
+bool wifiAvailable = false;
+bool nfcAvailable = false;
+unsigned long nextWifiAttempt = 0;
+unsigned long nextNfcAttempt = 0;
+const unsigned long WIFI_RETRY_INTERVAL = 30000UL; // 30 Sekunden
+const unsigned long NFC_RETRY_INTERVAL = 15000UL;  // 15 Sekunden
 
 // PN532-Objekt über Wire
 Adafruit_PN532 nfc(PN532_IRQ, PN532_RESET, &Wire);
 
+// Vorwärtsdeklarationen
+void logResetReason();
+bool connectToWiFi(uint8_t maxAttempts = 5, unsigned long attemptTimeout = 6000);
+bool initializePN532(uint8_t maxAttempts = 3);
+void startSuccessLED();
+void manageLED();
+void blinkStartupLED();
+void sendKeyRemovedEvent();
+void sendKeyReturnedEvent();
+void sendRfidScanEvent(String rfidUid);
+
 void setup() {
   Serial.begin(115200);
-  while (!Serial) delay(10);
+  delay(200); // Seriellen Monitor nicht blockieren
 
-  // 1) WLAN verbinden
-  Serial.printf("Connecting to WiFi '%s' …\n", ssid);
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println();
-  Serial.println("✅ WiFi connected!");
-  Serial.print("🔗 IP address: ");
-  Serial.println(WiFi.localIP());
+  logResetReason();
 
-  // 2) I²C für PN532 initialisieren
-  Wire.begin(SDA_PIN, SCL_PIN);
-  Serial.println("I2C started on SDA=6, SCL=7");
+  delay(2000); // Hardware nach Power-On stabilisieren lassen
 
-  // 3) PN532 initialisieren
-  nfc.begin();
-  uint32_t versiondata = nfc.getFirmwareVersion();
-  if (!versiondata) {
-    Serial.println("❌ Kein PN532 gefunden – Verbindung prüfen.");
-    while (1);
-  }
-  Serial.print("✔️ PN5"); Serial.println((versiondata >> 24) & 0xFF, HEX);
-  Serial.print("   Firmware Version: ");
-  Serial.print((versiondata >> 16) & 0xFF, DEC);
-  Serial.print('.');
-  Serial.println((versiondata >> 8) & 0xFF, DEC);
-  nfc.SAMConfig();
-  Serial.println("Warte auf ein RFID/NFC Tag...");
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW);
 
-  // 4) Magnetsensor-Pin als Input
   pinMode(buttonPin, INPUT_PULLDOWN);
 
-  // 5) Initialen Zustand des Schlüssels prüfen
-  keyPresent = (digitalRead(buttonPin) == 1); // 1 = Schlüssel hängt, 0 = Schlüssel entfernt
+  Wire.begin(SDA_PIN, SCL_PIN);
+  delay(500); // I2C/PN532 Zeit geben
+
+  wifiAvailable = connectToWiFi();
+  nextWifiAttempt = millis() + WIFI_RETRY_INTERVAL;
+
+  nfcAvailable = initializePN532();
+  nextNfcAttempt = millis() + NFC_RETRY_INTERVAL;
+
+  keyPresent = (digitalRead(buttonPin) == HIGH);
   Serial.print("Initialer Schlüsselstatus: ");
   Serial.println(keyPresent ? "Vorhanden" : "Entfernt");
+  blinkStartupLED();
+  Serial.println("✅ System bereit - LED leuchtet nur bei erfolgreicher Verifikation");
 }
 
 void loop() {
-  // --- Magnet­sensor (alle 10 ms) ---
+  manageLED();
+
   static unsigned long lastButtonCheck = 0;
   unsigned long now = millis();
   if (now - lastButtonCheck >= 10) {
     lastButtonCheck = now;
-    int state = digitalRead(buttonPin);
-    bool currentKeyPresent = (state == 1); // 1 = Schlüssel hängt, 0 = Schlüssel entfernt
+    bool currentKeyPresent = (digitalRead(buttonPin) == HIGH);
 
-    // Wenn sich der Schlüsselstatus geändert hat
     if (currentKeyPresent != keyPresent) {
       keyPresent = currentKeyPresent;
 
       if (!keyPresent) {
-        // Schlüssel wurde entfernt
         Serial.println("Schlüssel wurde entfernt!");
         pendingVerification = true;
         verificationStartTime = millis();
-
-        // API-Aufruf für Schlüsselentnahme
         sendKeyRemovedEvent();
       } else {
-        // Schlüssel wurde zurückgegeben
         Serial.println("Schlüssel wurde zurückgegeben!");
         pendingVerification = false;
-
-        // API-Aufruf für Schlüsselrückgabe
         sendKeyReturnedEvent();
       }
     }
   }
 
-  // Prüfen, ob die Verifikationszeit abgelaufen ist
   if (pendingVerification && (millis() - verificationStartTime > verificationTimeout)) {
     Serial.println("Verifikationszeit abgelaufen! Schlüssel gilt als unrechtmäßig entnommen.");
     pendingVerification = false;
-    // Hier könnte ein Alarm ausgelöst werden
   }
 
-  // --- RFID/NFC nicht-blockierend (50 ms Timeout) ---
-  uint8_t success;
-  uint8_t uid[7];
-  uint8_t uidLength;
-  success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength, 50);
-  if (success) {
-    // RFID-Tag erkannt
-    String rfidUid = "";
-    for (uint8_t i = 0; i < uidLength; i++) {
-      char hex[3];
-      sprintf(hex, "%02X", uid[i]);
-      rfidUid += hex;
-    }
+  if (wifiAvailable && WiFi.status() != WL_CONNECTED) {
+    Serial.println("⚠️ WiFi-Verbindung verloren.");
+    wifiAvailable = false;
+    WiFi.disconnect(true);
+    nextWifiAttempt = millis() + 1000;
+  }
 
-    Serial.print("Tag erkannt, UID: ");
-    Serial.println(rfidUid);
+  if (!wifiAvailable && millis() >= nextWifiAttempt) {
+    wifiAvailable = connectToWiFi();
+    nextWifiAttempt = millis() + WIFI_RETRY_INTERVAL;
+  }
 
-    // Wenn eine Verifikation aussteht und der Schlüssel entfernt wurde
-    if (pendingVerification && !keyPresent) {
-      Serial.println("RFID-Verifikation für Schlüsselentnahme!");
-      sendRfidScanEvent(rfidUid);
-      pendingVerification = false; // Verifikation abgeschlossen
+  if (!nfcAvailable && millis() >= nextNfcAttempt) {
+    nfcAvailable = initializePN532(1);
+    nextNfcAttempt = millis() + NFC_RETRY_INTERVAL;
+  }
+
+  if (nfcAvailable) {
+    uint8_t uid[7];
+    uint8_t uidLength;
+    bool success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength, 50);
+
+    if (success) {
+      String rfidUid;
+      for (uint8_t i = 0; i < uidLength; i++) {
+        if (uid[i] < 0x10) {
+          rfidUid += '0';
+        }
+        rfidUid += String(uid[i], HEX);
+      }
+      rfidUid.toUpperCase();
+
+      Serial.print("Tag erkannt, UID: ");
+      Serial.println(rfidUid);
+
+      if (pendingVerification && !keyPresent) {
+        Serial.println("RFID-Verifikation für Schlüsselentnahme!");
+        startSuccessLED();
+        sendRfidScanEvent(rfidUid);
+        pendingVerification = false;
+      }
     }
   }
 
-  // Kurze Pause, um den Serial-Output nicht zu überfluten
   delay(5);
+}
+
+void logResetReason() {
+  esp_reset_reason_t reason = esp_reset_reason();
+  Serial.print("Reset-Grund: ");
+  switch (reason) {
+    case ESP_RST_POWERON:
+      Serial.println("Power-On Reset (Stromzufuhr)");
+      break;
+    case ESP_RST_SW:
+      Serial.println("Software Reset");
+      break;
+    case ESP_RST_BROWNOUT:
+      Serial.println("Brownout Reset (Unterspannung)");
+      break;
+    case ESP_RST_DEEPSLEEP:
+      Serial.println("Aufwachen aus Deep Sleep");
+      break;
+    default:
+      Serial.println(reason);
+      break;
+  }
+}
+
+bool connectToWiFi(uint8_t maxAttempts, unsigned long attemptTimeout) {
+  WiFi.mode(WIFI_STA);
+
+  for (uint8_t attempt = 1; attempt <= maxAttempts; ++attempt) {
+    Serial.printf("📡 WiFi-Verbindungsversuch %u/%u\n", attempt, maxAttempts);
+    WiFi.begin(ssid, password);
+
+    unsigned long start = millis();
+    while (WiFi.status() != WL_CONNECTED && (millis() - start) < attemptTimeout) {
+      delay(200);
+      Serial.print('.');
+    }
+    Serial.println();
+
+    if (WiFi.status() == WL_CONNECTED) {
+      Serial.print("✅ WiFi verbunden, IP: ");
+      Serial.println(WiFi.localIP());
+      return true;
+    }
+
+    Serial.println("❌ WiFi-Verbindung fehlgeschlagen");
+    WiFi.disconnect(true);
+    delay(500);
+  }
+
+  Serial.println("⚠️ WiFi offline – System arbeitet lokal weiter.");
+  return false;
+}
+
+bool initializePN532(uint8_t maxAttempts) {
+  for (uint8_t attempt = 1; attempt <= maxAttempts; ++attempt) {
+    Serial.printf("🔧 NFC-Initialisierung Versuch %u/%u\n", attempt, maxAttempts);
+    nfc.begin();
+    delay(700); // PN532 ausreichend Zeit geben
+
+    uint32_t versiondata = nfc.getFirmwareVersion();
+    if (versiondata) {
+      Serial.print("✔️ PN5");
+      Serial.println((versiondata >> 24) & 0xFF, HEX);
+      Serial.print("   Firmware Version: ");
+      Serial.print((versiondata >> 16) & 0xFF, DEC);
+      Serial.print('.');
+      Serial.println((versiondata >> 8) & 0xFF, DEC);
+      nfc.SAMConfig();
+      Serial.println("NFC erfolgreich initialisiert.");
+      return true;
+    }
+
+    Serial.println("❌ PN532 nicht erreichbar – erneuter Versuch folgt.");
+    delay(800);
+  }
+
+  Serial.println("⚠️ NFC offline – RFID-Scans werden übersprungen.");
+  return false;
+}
+
+void blinkStartupLED() {
+  const uint8_t blinkCount = 2;
+  const unsigned long blinkDuration = 120;
+  for (uint8_t i = 0; i < blinkCount; ++i) {
+    digitalWrite(LED_PIN, HIGH);
+    delay(blinkDuration);
+    digitalWrite(LED_PIN, LOW);
+    delay(blinkDuration);
+  }
+}
+
+// LED für erfolgreiche Verifikation starten (non-blocking)
+void startSuccessLED() {
+  if (!ledActive) {
+    Serial.println("✅ LED: Erfolgreiche Verifikation - LED startet für 3 Sekunden");
+    digitalWrite(LED_PIN, HIGH);
+  }
+  ledActive = true;
+  ledStartTime = millis();
+}
+
+// LED-Timer verwalten (non-blocking)
+void manageLED() {
+  if (ledActive && (millis() - ledStartTime >= LED_DURATION)) {
+    digitalWrite(LED_PIN, LOW);
+    ledActive = false;
+    Serial.println("💡 LED: Aus (3 Sekunden abgelaufen)");
+  }
 }
 
 // Sendet ein Ereignis "Schlüssel entfernt" an den Server
 void sendKeyRemovedEvent() {
-  if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("Keine WLAN-Verbindung!");
+  if (!wifiAvailable || WiFi.status() != WL_CONNECTED) {
+    Serial.println("Keine WLAN-Verbindung – Event 'key_removed' wird nicht gesendet.");
     return;
   }
 
@@ -162,7 +289,6 @@ void sendKeyRemovedEvent() {
   http.addHeader("Content-Type", "application/json");
   http.addHeader("X-Api-Key", API_KEY);
 
-  // JSON-Daten erstellen
   StaticJsonDocument<200> doc;
   doc["event_type"] = "key_removed";
   doc["seriennummer"] = seriennummer;
@@ -186,8 +312,8 @@ void sendKeyRemovedEvent() {
 
 // Sendet ein Ereignis "Schlüssel zurückgegeben" an den Server
 void sendKeyReturnedEvent() {
-  if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("Keine WLAN-Verbindung!");
+  if (!wifiAvailable || WiFi.status() != WL_CONNECTED) {
+    Serial.println("Keine WLAN-Verbindung – Event 'key_returned' wird nicht gesendet.");
     return;
   }
 
@@ -196,7 +322,6 @@ void sendKeyReturnedEvent() {
   http.addHeader("Content-Type", "application/json");
   http.addHeader("X-Api-Key", API_KEY);
 
-  // JSON-Daten erstellen
   StaticJsonDocument<200> doc;
   doc["event_type"] = "key_returned";
   doc["seriennummer"] = seriennummer;
@@ -220,8 +345,8 @@ void sendKeyReturnedEvent() {
 
 // Sendet ein Ereignis "RFID-Scan" an den Server
 void sendRfidScanEvent(String rfidUid) {
-  if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("Keine WLAN-Verbindung!");
+  if (!wifiAvailable || WiFi.status() != WL_CONNECTED) {
+    Serial.println("Keine WLAN-Verbindung – RFID-Scan wird nicht gesendet.");
     return;
   }
 
@@ -230,7 +355,6 @@ void sendRfidScanEvent(String rfidUid) {
   http.addHeader("Content-Type", "application/json");
   http.addHeader("X-Api-Key", API_KEY);
 
-  // JSON-Daten erstellen
   StaticJsonDocument<200> doc;
   doc["event_type"] = "rfid_scan";
   doc["seriennummer"] = seriennummer;

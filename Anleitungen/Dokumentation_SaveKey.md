@@ -81,30 +81,38 @@ Die Kommunikation zwischen den Komponenten erfolgt über HTTP/HTTPS mit JSON als
 ## Hardware-Komponenten
 
 ### Benötigte Hardware
-- **Arduino-kompatibles Board** (z.B. ESP32)
+- **ESP32 C6 DevKitC-1-N8** (8 MB SPI Flash)
 - **Magnetsensor (Reed-Kontakt)** zur Erkennung der Schlüsselentnahme
 - **RFID/NFC-Leser** (PN532) für die Benutzerauthentifizierung
-- **WLAN-Modul** (bei ESP32 bereits integriert)
-- **Netzteil mit Backup-Kondensator** für Stromausfallschutz
+- **Status-LED** für visuelles Feedback bei Initialisierung und erfolgreicher Verifikation
+- **USB-Stromversorgung** direkt über den USB-Port des ESP32 C6 (keine externe Batterie nötig)
+- **WLAN-Modul** (bereits im ESP32 C6 integriert)
 
-### Anschlussplan
-- **Magnetsensor**: An Pin 8 (LOW = Schlüssel vorhanden, HIGH = Schlüssel entfernt)
-- **PN532 RFID/NFC-Leser**:
-  - SDA: Pin 6
-  - SCL: Pin 7
+### Anschlussplan (ESP32 C6)
+- **Magnetsensor**: An Pin 1 (INPUT_PULLDOWN - LOW = Schlüssel vorhanden, HIGH = Schlüssel entfernt)
+- **Status-LED**: An Pin 10 (für visuelles Feedback)
+- **PN532 RFID/NFC-Leser** (I²C-Verbindung):
+  - SDA: Pin 4
+  - SCL: Pin 5
   - IRQ: Pin 2
   - RESET: Pin 3
+- **Stromversorgung**: Direkt über USB-Port des ESP32 C6
 
 ## Software-Komponenten
 
-### Arduino-Firmware
-- Programmiert in C++ mit der Arduino IDE
+### Arduino-Firmware (ESP32 C6)
+- Programmiert in C++ mit der Arduino IDE für ESP32 C6
 - Benötigte Bibliotheken:
   - WiFi (für ESP32)
   - HTTPClient (für ESP32)
   - ArduinoJson
   - Adafruit_PN532
+  - Wire (I²C-Kommunikation)
 - Implementiert als Finite State Machine (FSM)
+- **LED-Verhalten**: 
+  - Blinkt 2x bei Systeminitialisierung
+  - Leuchtet 3 Sekunden bei erfolgreicher RFID-Verifikation
+- **Non-blocking Design**: Ermöglicht parallele RFID-Scans und LED-Verwaltung
 - Sendet Ereignisse an den Server über HTTP-Requests
 
 ### Backend (PHP)
@@ -191,9 +199,10 @@ Das SaveKey-System unterscheidet zwischen zwei Benutzerrollen:
    UPDATE benutzer SET is_admin = TRUE WHERE benutzername = 'admin';
    ```
 
-### 2. Arduino-Setup
+### 2. ESP32 C6-Setup
 1. Installiere die erforderlichen Bibliotheken in der Arduino IDE
-2. Passe die WLAN- und API-Daten in der `arduino.ino` Datei an:
+2. Wähle "ESP32 C6 Dev Module" als Board in der Arduino IDE
+3. Passe die WLAN- und API-Daten in der `savekey.ino` Datei an:
    ```cpp
    // --- WLAN-Credentials ---
    const char* ssid     = "dein_wlan_name";
@@ -204,9 +213,19 @@ Das SaveKey-System unterscheidet zwischen zwei Benutzerrollen:
    const char* API_KEY = "sk_hardware_savekey_12345";
 
    // --- Seriennummer der Box ---
-   const char* seriennummer = "A001"; // Muss mit der Seriennummer in der Datenbank übereinstimmen
+   const char* seriennummer = "550"; // Muss mit der Seriennummer in der Datenbank übereinstimmen
    ```
-3. Lade den Arduino-Code auf dein ESP32-Board hoch
+4. Überprüfe die Pin-Konfiguration:
+   ```cpp
+   #define SDA_PIN     4    // I²C Data
+   #define SCL_PIN     5    // I²C Clock
+   #define PN532_IRQ   2    // NFC Interrupt
+   #define PN532_RESET 3    // NFC Reset
+   const int buttonPin = 1; // Magnetsensor
+   const int LED_PIN = 10;  // Status-LED
+   ```
+5. Lade den Code auf dein ESP32 C6 Board hoch
+6. Verbinde die Stromversorgung über USB-Port
 
 ### 3. Webserver-Setup
 1. Kopiere alle Dateien auf deinen Webserver

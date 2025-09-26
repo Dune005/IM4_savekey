@@ -32,21 +32,23 @@ Unser Projekt erweitert die klassische Schlüsselbox um eine digitale Überwachu
 
 * **Hardware**
 
-  * **Magnetsensor** (Reed-Kontakt) zur zuverlässigen Erkennung, ob der Schlüssel in der Halterung hängt.
+  * **Magnetsensor** (Reed-Kontakt) zur zuverlässigen Erkennung, ob der Schlüssel in der Halterung hängt (Pin 1).
 
-  * **RFID-/NFC-Reader** für die Identifikation und Quittierung durch registrierte Personen.
+  * **RFID-/NFC-Reader** (PN532) für die Identifikation und Quittierung durch registrierte Personen via I²C (Pins 4/5).
 
-  * **Arduino-kompatibles Microcontroller-Board** im Maker-Kit als zentrale Steuereinheit.
+  * **ESP32 C6 DevKitC-1-N8** (8MB Flash) als zentrale Steuereinheit mit integriertem WLAN.
 
-  * **WLAN-Modul** (integriert oder als externes Shield), um Sensordaten und Statusmeldungen an einen Server oder direkt in die Cloud zu übertragen.
+  * **Status-LED** (Pin 10) für visuelles Feedback bei Initialisierung und erfolgreicher Verifikation.
 
-  * **Spannungsversorgung** über Akku. Kommt mehr als 1 Minute kein Ping vom Arduino, geht eine Meldung raus.
+  * **USB-Stromversorgung** direkt über den USB-Port des ESP32 C6 (keine externe Batterie nötig).
 
 * **Firmware & Kommunikation**
 
-  * Arduino-Sketch steuert die Sensoren, liest RFID-Daten aus, managt den Countdown und sendet alle Ereignisse per HTTP/HTTPS an einen Web-Service.
+  * ESP32 C6-Sketch steuert die Sensoren, liest RFID-Daten aus, managt LED-Feedback, steuert den Countdown und sendet alle Ereignisse per HTTP/HTTPS an einen Web-Service.
 
-  * Abarbeitung der Zustände als einfacher endlicher Automat (Finite State Machine), um zuverlässige Übergänge zwischen „Schlüssel da“, „Entnommen – Bestätigung ausstehend“, „Bestätigt“, „Alarm“ und „Stromausfall“ zu gewährleisten.
+  * **LED-Verhalten**: Blinkt 2x bei Systeminitialisierung, leuchtet 3 Sekunden bei erfolgreicher RFID-Verifikation.
+
+  * Abarbeitung der Zustände als einfacher endlicher Automat (Finite State Machine), um zuverlässige Übergänge zwischen „Schlüssel da", „Entnommen – Bestätigung ausstehend", „Bestätigt", „Alarm" und „Stromausfall" zu gewährleisten.
 
 * **Backend & Web-Interface**
 
