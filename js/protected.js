@@ -890,8 +890,8 @@ function startRfidScanPolling() {
   // Sofort beim Start einmal ausführen
   checkForNewRfidScans();
 
-  // Dann alle 2 Sekunden wiederholen
-  rfidScanPollingInterval = setInterval(checkForNewRfidScans, 2000);
+  // Dann jede Sekunde wiederholen für schnellere Erkennung
+  rfidScanPollingInterval = setInterval(checkForNewRfidScans, 1000);
 }
 
 // Globale Variable für den Timer zum Ausblenden der RFID-Anzeige
@@ -956,7 +956,7 @@ async function checkForNewRfidScans() {
     }
   } catch (error) {
     console.error("Fehler beim Abrufen der zuletzt gescannten RFID-UID:", error);
-    // Fehler still behandeln, da dies im Hintergrund läuft und den Benutzer nicht stören soll
+    // Fehler nicht propagieren - Polling läuft beim nächsten Intervall weiter
   }
 }
 

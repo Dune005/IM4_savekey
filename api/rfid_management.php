@@ -16,16 +16,9 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Überprüfen, ob der Benutzer ein Administrator ist für Zuweisungs- und Entfernungsaktionen
+// Alle authentifizierten Benutzer können ihre eigene RFID/NFC-UID verwalten
+// (Zuweisen, Entfernen, Abrufen)
 $action = $_POST['action'] ?? '';
-if (($action === 'assign_rfid' || $action === 'remove_rfid') &&
-    (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true)) {
-    http_response_code(403);
-    echo json_encode(["status" => "error", "message" => "Nur Administratoren können RFID/NFC-UIDs zuweisen oder entfernen"]);
-    exit;
-}
-
-// Aktion wurde bereits oben aus der Anfrage gelesen
 
 switch ($action) {
     case 'assign_rfid':

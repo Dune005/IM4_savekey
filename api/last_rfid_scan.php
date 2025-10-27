@@ -16,12 +16,8 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Überprüfen, ob der Benutzer ein Administrator ist
-if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
-    http_response_code(403);
-    echo json_encode(["status" => "error", "message" => "Nur Administratoren können auf diese Funktion zugreifen"]);
-    exit;
-}
+// Alle authentifizierten Benutzer dürfen ihre eigene Box-RFID sehen
+// (Die Seriennummer wird unten geprüft, sodass nur Scans der eigenen Box sichtbar sind)
 
 // Aktion aus der Anfrage lesen
 $action = $_POST['action'] ?? 'get';
@@ -69,8 +65,8 @@ function getLastRfidScan($pdo) {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if ($result) {
-            // Prüfen, ob der Scan innerhalb der letzten 10 Sekunden erfolgt ist
-            if ($result['seconds_ago'] <= 10) {
+            // Prüfen, ob der Scan innerhalb der letzten 30 Sekunden erfolgt ist
+            if ($result['seconds_ago'] <= 30) {
                 echo json_encode([
                     "status" => "success",
                     "has_recent_scan" => true,
