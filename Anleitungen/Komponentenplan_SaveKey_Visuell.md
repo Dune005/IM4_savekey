@@ -13,7 +13,13 @@
 |  | Pin 1       |      | I²C (4/5)    |    |
 |  +------+------+      +------+------+    |
 |         |                     |           |
-|         v                     v           |
+|         |      +-------------+|           |
+|         |      | Servo-Motor ||           |
+|         |      | SG90 9g     ||           |
+|         |      | Pin 6 (PWM) ||           |
+|         |      +------+------+|           |
+|         |             |       |           |
+|         v             v       v           |
 |  +----------------------------------+    |
 |  |      ESP32 C6 DevKitC-1-N8       |    |
 |  | (8MB Flash, USB-Stromversorgung)  |    |
@@ -90,11 +96,22 @@
   - SCL: Pin 5  
   - IRQ: Pin 2
   - RESET: Pin 3
+- **Micro Servo 9g SG90** (Automatischer Verschluss):
+  - Signal: Pin 6 (PWM)
+  - VCC: 3.3V
+  - GND: Ground
+  - Geschlossen: 0°, Geöffnet: 90°
 
 ### LED-Verhalten
 - **Initialisierung**: 2x Blinken beim Systemstart
 - **Erfolgreiche Verifikation**: 3 Sekunden durchgehend leuchtend
 - **Non-blocking**: LED-Verwaltung erfolgt parallel zu anderen Aufgaben
+
+### Servo-Verhalten
+- **Initialisierung**: Startposition geschlossen (0°)
+- **Bei erfolgreicher RFID-Verifikation**: Toggle zwischen 0° (geschlossen) und 90° (geöffnet)
+- **Bewegungsdauer**: 500ms Verzögerung für Positionierung
+- **Stromversorgung**: 3.3V über ESP32 C6
 
 ### Stromversorgung
 - **USB-Port**: Direkte Stromversorgung über ESP32 C6 USB-Port

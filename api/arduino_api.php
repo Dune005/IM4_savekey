@@ -93,6 +93,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         // Process based on event type
         switch ($eventType) {
+            case 'rfid_auth_request':
+                // RFID scan BEFORE key removal - check if user is authorized to open box
+                handleRfidAuthRequest($pdo, $data);
+                break;
+
             case 'key_removed':
                 // Key physically removed but not yet verified with RFID
                 handleKeyRemoved($pdo, $data);
@@ -196,6 +201,65 @@ function sendPushNotificationsForSeriennummer($pdo, $seriennummer, $payload) {
         error_log("Fehler beim Senden der Push-Benachrichtigungen: " . $e->getMessage());
         return ['status' => 'error', 'message' => 'Fehler beim Senden der Benachrichtigungen: ' . $e->getMessage()];
     }
+}
+
+// Handle RFID authorization request (BEFORE key removal)
+function handleRfidAuthRequest($pdo, $data) {
+    $seriennummer = $data['seriennummer'];
+    $rfidUid = $data['rfid_uid'] ?? '';
+
+    if (empty($rfidUid)) {
+        echo json_encode([
+            "status" => "error",
+            "authorized" => false,
+            "message" => "Missing RFID UID"
+        ]);
+        return;
+    }
+
+    // Find user with this RFID UID and matching serial number
+    $stmt = $pdo->prepare("
+        SELECT benutzername, user_id, vorname, nachname, seriennummer
+        FROM benutzer
+        WHERE rfid_uid = :rfid_uid
+    ");
+
+    $stmt->execute([':rfid_uid' => $rfidUid]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$user) {
+        error_log("RFID-Auth fehlgeschlagen: Kein Benutzer mit UID $rfidUid gefunden");
+        echo json_encode([
+            "status" => "error",
+            "authorized" => false,
+            "message" => "No user found with this RFID UID"
+        ]);
+        return;
+    }
+
+    // Check if user's serial number matches the box
+    if ($user['seriennummer'] !== $seriennummer) {
+        error_log("RFID-Auth fehlgeschlagen: Benutzer {$user['benutzername']} hat Seriennummer {$user['seriennummer']}, Box hat $seriennummer");
+        echo json_encode([
+            "status" => "error",
+            "authorized" => false,
+            "message" => "User is not authorized for this box"
+        ]);
+        return;
+    }
+
+    // User is authorized!
+    error_log("RFID-Auth erfolgreich: Benutzer {$user['benutzername']} für Box $seriennummer autorisiert");
+    echo json_encode([
+        "status" => "success",
+        "authorized" => true,
+        "message" => "User authorized to open box",
+        "user" => [
+            "benutzername" => $user['benutzername'],
+            "vorname" => $user['vorname'],
+            "nachname" => $user['nachname']
+        ]
+    ]);
 }
 
 // Handle key removal event

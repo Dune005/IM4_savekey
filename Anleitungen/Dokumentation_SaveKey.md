@@ -85,6 +85,7 @@ Die Kommunikation zwischen den Komponenten erfolgt über HTTP/HTTPS mit JSON als
 - **Magnetsensor (Reed-Kontakt)** zur Erkennung der Schlüsselentnahme
 - **RFID/NFC-Leser** (PN532) für die Benutzerauthentifizierung
 - **Status-LED** für visuelles Feedback bei Initialisierung und erfolgreicher Verifikation
+- **Micro Servo 9g SG90** für automatischen Verschlussmechanismus
 - **USB-Stromversorgung** direkt über den USB-Port des ESP32 C6 (keine externe Batterie nötig)
 - **WLAN-Modul** (bereits im ESP32 C6 integriert)
 
@@ -96,6 +97,12 @@ Die Kommunikation zwischen den Komponenten erfolgt über HTTP/HTTPS mit JSON als
   - SCL: Pin 5
   - IRQ: Pin 2
   - RESET: Pin 3
+- **Micro Servo 9g SG90** (Automatischer Verschluss):
+  - Signal: Pin 6 (PWM)
+  - VCC: 3.3V Pin
+  - GND: Ground Pin
+  - Position geschlossen: 0°
+  - Position geöffnet: 90° (Vierteldrehung)
 - **Stromversorgung**: Direkt über USB-Port des ESP32 C6
 
 ## Software-Komponenten
@@ -108,11 +115,16 @@ Die Kommunikation zwischen den Komponenten erfolgt über HTTP/HTTPS mit JSON als
   - ArduinoJson
   - Adafruit_PN532
   - Wire (I²C-Kommunikation)
+  - ESP32Servo (für Servo-Motor-Steuerung)
 - Implementiert als Finite State Machine (FSM)
 - **LED-Verhalten**: 
   - Blinkt 2x bei Systeminitialisierung
   - Leuchtet 3 Sekunden bei erfolgreicher RFID-Verifikation
-- **Non-blocking Design**: Ermöglicht parallele RFID-Scans und LED-Verwaltung
+- **Servo-Verhalten**:
+  - Startet in geschlossener Position (0°)
+  - Öffnet auf 90° bei erfolgreicher RFID-Verifikation
+  - Toggle-Mechanismus: abwechselndes Öffnen/Schließen
+- **Non-blocking Design**: Ermöglicht parallele RFID-Scans, LED-Verwaltung und Servo-Steuerung
 - Sendet Ereignisse an den Server über HTTP-Requests
 
 ### Backend (PHP)
@@ -223,8 +235,9 @@ Das SaveKey-System unterscheidet zwischen zwei Benutzerrollen:
    #define PN532_RESET 3    // NFC Reset
    const int buttonPin = 1; // Magnetsensor
    const int LED_PIN = 10;  // Status-LED
+   #define SERVO_PIN 6      // Servo-Motor (PWM)
    ```
-5. Lade den Code auf dein ESP32 C6 Board hoch
+5. Lade den Code auf dein ESP32 C6 Board hoch (verwende `savekey_neu_Servo.ino` für Servo-Unterstützung)
 6. Verbinde die Stromversorgung über USB-Port
 
 ### 3. Webserver-Setup
