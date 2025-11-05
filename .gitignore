@@ -49,3 +49,4 @@ temp_uploads/
 # Weitere Dateien
 .github
 copilot-instructions.md
+.spec-workflow

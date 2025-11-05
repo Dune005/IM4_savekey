@@ -56,6 +56,19 @@ function getRequestData() {
     return $data;
 }
 
+// Handle GET request for reset check
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    verifyApiKey();
+    
+    $action = $_GET['action'] ?? '';
+    $seriennummer = $_GET['seriennummer'] ?? '';
+    
+    if ($action === 'check_reset' && !empty($seriennummer)) {
+        checkResetCommand($pdo, $seriennummer);
+        exit;
+    }
+}
+
 // Main processing logic
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Verify API key
@@ -573,5 +586,60 @@ function handleRfidScan($pdo, $data) {
         "message" => "RFID verification successful. Key removal logged.",
         "user" => $user['benutzername']
     ]);
+}
+
+// Neue Funktion: Prüfen ob Reset-Befehl vorliegt
+function checkResetCommand($pdo, $seriennummer) {
+    try {
+        // Prüfen, ob die Tabelle existiert
+        $checkTable = $pdo->query("SHOW TABLES LIKE 'device_reset_commands'");
+        if ($checkTable->rowCount() == 0) {
+            echo json_encode([
+                "reset" => false,
+                "message" => "No reset system configured"
+            ]);
+            return;
+        }
+
+        // Prüfen, ob ein Reset-Befehl für diese Seriennummer vorliegt
+        $stmt = $pdo->prepare("
+            SELECT id FROM device_reset_commands
+            WHERE seriennummer = :seriennummer
+            AND executed = 0
+            ORDER BY created_at DESC
+            LIMIT 1
+        ");
+        
+        $stmt->execute([':seriennummer' => $seriennummer]);
+        $resetCommand = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($resetCommand) {
+            // Befehl als ausgeführt markieren
+            $updateStmt = $pdo->prepare("
+                UPDATE device_reset_commands
+                SET executed = 1, executed_at = NOW()
+                WHERE id = :id
+            ");
+            $updateStmt->execute([':id' => $resetCommand['id']]);
+            
+            error_log("Reset-Befehl für Seriennummer $seriennummer wird ausgeführt (ID: {$resetCommand['id']})");
+            
+            echo json_encode([
+                "reset" => true,
+                "message" => "Reset command received, device will restart"
+            ]);
+        } else {
+            echo json_encode([
+                "reset" => false,
+                "message" => "No reset command pending"
+            ]);
+        }
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode([
+            "reset" => false,
+            "error" => $e->getMessage()
+        ]);
+    }
 }
 ?>
