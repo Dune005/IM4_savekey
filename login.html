@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - SaveKey System</title>
+    <title>Login – VR-Igloo</title>
     
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
@@ -14,75 +14,39 @@
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="js/global-auth.js"></script>
-    <style>
-      /* Back-to-home Button Styling - blau aber kompakt */
-      .back-to-home {
-        display: inline-block;
-        margin: 1rem auto 0.5rem auto;
-        padding: 8px 16px;
-        background-color: var(--primary-color);
-        color: white;
-        text-decoration: none;
-        border-radius: 6px;
-        font-size: 0.9em;
-        font-weight: 400;
-        transition: all 0.3s ease;
-        border: 1px solid var(--primary-color);
-      }
-      
-      .back-to-home:hover {
-        background-color: #1A4F8F;
-        color: white;
-        border-color: #1A4F8F;
-        text-decoration: none;
-      }
-      
-      .back-to-home i {
-        margin-right: 8px;
-        font-size: 0.8em;
-      }
-      
-      /* Container für den Back-Button */
-      .back-button-container {
-        text-align: center;
-        margin-bottom: 1rem;
-        display: block;
-        margin: 1rem auto 0.5rem auto;
-      }
-      
-      /* Login Container Optimierung */
-      .login-container {
-        margin-top: 1rem !important;
-      }
-    </style>
   </head>
-  <body class="login-body">
-    <div class="back-button-container">
-      <a href="index.html" class="back-to-home">
-        <i class="fas fa-arrow-left"></i> Zurück zur Startseite
+  <body class="login-body modern">
+    <div class="login-wrapper">
+      <a href="index.html" class="back-link-modern">
+        <i class="fas fa-arrow-left"></i> Zurück
       </a>
-    </div>
-    <div class="login-container">
-      <img src="images/logo_savekey.svg" alt="SaveKey Logo" class="logo login-logo" style="display: block; margin: 0 auto 40px; max-width: 250px;">
-      <h1>Anmelden bei SaveKey</h1>
       
-      <!-- Live-Region für Statusmeldungen -->
-      <div id="form-messages" aria-live="polite" aria-atomic="true" class="sr-only"></div>
-      
-      <form id="loginForm" novalidate>
-        <div>
-          <label for="benutzername">Benutzername</label>
-          <input type="text" id="benutzername" name="benutzername" required aria-required="true" aria-describedby="benutzername-error" />
-          <div id="benutzername-error" class="error-message" aria-live="polite" style="display: none;"></div>
+      <div class="login-container modern">
+        <div class="login-header">
+          <span class="login-badge">VR-Igloo</span>
+          <h1>Willkommen zurück</h1>
+          <p class="login-subtitle">Melde dich an, um auf die Schlüsselbox zuzugreifen.</p>
         </div>
-        <div>
-          <label for="password">Passwort</label>
-          <input type="password" id="password" name="password" required aria-required="true" aria-describedby="password-error" />
-          <div id="password-error" class="error-message" aria-live="polite" style="display: none;"></div>
-        </div>
-        <button type="submit" class="button-primary">Login</button>
-      </form>
-      <p class="register-link">Sie sind neu hier? <a href="register.html">Jetzt bei SaveKey registrieren</a>.</p>
+        
+        <!-- Live-Region für Statusmeldungen -->
+        <div id="form-messages" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+        
+        <form id="loginForm" novalidate>
+          <div class="form-group">
+            <label for="benutzername">Benutzername</label>
+            <input type="text" id="benutzername" name="benutzername" placeholder="Dein Benutzername" required aria-required="true" aria-describedby="benutzername-error" />
+            <div id="benutzername-error" class="error-message" aria-live="polite" style="display: none;"></div>
+          </div>
+          <div class="form-group">
+            <label for="password">Passwort</label>
+            <input type="password" id="password" name="password" placeholder="Dein Passwort" required aria-required="true" aria-describedby="password-error" />
+            <div id="password-error" class="error-message" aria-live="polite" style="display: none;"></div>
+          </div>
+          <button type="submit" class="button-primary">Anmelden</button>
+        </form>
+        
+        <p class="register-link">Noch kein Account? <a href="register.html">Jetzt registrieren</a></p>
+      </div>
     </div>
     <script src="js/login.js"></script>
   </body>

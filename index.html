@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SaveKey System - Ihre intelligente Schlüsselverwaltung</title>
-    <meta name="description" content="SaveKey - Die sichere und einfache Lösung für Ihre Schlüsselverwaltung. Jederzeit wissen, wo Ihre Schlüssel sind.">
+    <title>VR-Igloo Schlüsselbox</title>
+    <meta name="description" content="Schlüsselverwaltung für das VR-Igloo. Sicher, smart und immer im Blick.">
     
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
@@ -18,10 +18,10 @@
     <script src="js/mobile-nav.js"></script>
   </head>
   <body class="landing-body">
-    <header>
+    <header class="header-modern">
       <div class="container">
-        <a href="index.html">
-          <img src="images/logo_savekey_text_white.svg" alt="SaveKey Logo" class="logo">
+        <a href="index.html" class="logo-link">
+          <img src="images/logo_savekey_text.svg" alt="SaveKey Logo" class="logo">
         </a>
         <!-- Hamburger-Menü für mobile Geräte (nur für nicht eingeloggte Nutzer) -->
         <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Menü öffnen" aria-expanded="false" aria-controls="navigation">
@@ -37,36 +37,53 @@
     </header>
 
     <main>
-      <div class="container landing-container">
+      <div class="container landing-container modern">
         <!-- Hero Section -->
-        <div class="hero-section">
-          <h1>Willkommen bei savekey-Systems</h1>
-          <p class="subtitle">Ihrer intelligenten Schlüsselverwaltung</p>
+        <div class="hero-section modern">
+          <span class="hero-badge">VR-Igloo</span>
+          <h1>Dein Zugang zum Igloo</h1>
+          <p class="subtitle">Ganz einfach mit deiner Studentenkarte.</p>
+          
+          <div class="hero-cta">
+            <a href="login.html" class="action-button primary modern">
+              Jetzt starten <i class="fas fa-arrow-right" aria-hidden="true"></i>
+            </a>
+          </div>
         </div>
 
-        <!-- Hauptinformationen -->
-        <section class="landing-info-section" aria-labelledby="info-heading">
-          <h2 id="info-heading">Sicher und einfach Ihre Schlüssel verwalten</h2>
-          <p><strong>Schön, dass Sie hier sind!</strong> Mit Ihrem SaveKey System haben Sie stets die Gewissheit, dass Ihre Schlüssel sicher verwahrt sind. Diese Seite ist Ihr persönlicher Zugang, um alle Vorgänge rund um Ihre Schlüsselbox einzusehen und zu verwalten.</p>
-          <p>Melden Sie sich einfach an, um auf Ihr persönliches Dashboard zuzugreifen. Dort sehen Sie jederzeit, wer einen Schlüssel entnommen hat und ob die Entnahme bestätigt wurde. <strong>Alles wird für Sie übersichtlich und lückenlos protokolliert.</strong></p>
-          <p>Ihre Sicherheit und Ihr Komfort stehen für uns an erster Stelle. Verlassen Sie sich auf SaveKey – Ihre intelligente Schlüsselverwaltung.</p>
-        </section>
-        
-        <!-- Action Buttons -->
-        <section class="action-buttons" aria-label="Aktionen">
-          <a href="login.html" class="action-button primary">
-            <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Jetzt anmelden
-          </a>
-          <a href="einrichtungsanleitung.html" class="action-button secondary">
-            <i class="fas fa-question-circle" aria-hidden="true"></i> Hilfe bei der Einrichtung
-          </a>
+        <!-- How it works -->
+        <section class="steps-section" aria-labelledby="steps-heading">
+          <h2 id="steps-heading">So funktioniert's</h2>
+          
+          <div class="steps-grid">
+            <div class="step-card">
+              <div class="step-number">1</div>
+              <h3>Registrieren</h3>
+              <p>Erstelle deinen Account in wenigen Sekunden.</p>
+            </div>
+            <div class="step-card">
+              <div class="step-number">2</div>
+              <h3>Karte hinterlegen</h3>
+              <p>Verbinde deine Studentenkarte als Verifizierung.</p>
+            </div>
+            <div class="step-card">
+              <div class="step-number">3</div>
+              <h3>Karte scannen</h3>
+              <p>Halte deine Karte an den Reader – Box öffnet sich.</p>
+            </div>
+          </div>
+          
+          <p class="steps-hint">
+            <i class="fas fa-question-circle" aria-hidden="true"></i>
+            Fragen? Schau in die <a href="einrichtungsanleitung.html">Setup-Anleitung</a>.
+          </p>
         </section>
       </div>
     </main>
 
-    <footer class="landing-footer">
+    <footer class="landing-footer modern">
       <div class="container">
-        <p>© 2025 savekey-Systems - Ihre vertrauensvolle Schlüsselverwaltung</p>
+        <p>© 2025 savekey</p>
       </div>
     </footer>
   </body>
