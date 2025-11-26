@@ -62,6 +62,13 @@ async function checkAuth() {
             <span class="btn-text">Schlüssel<br>zurückgeben</span>
           </button>
         </div>
+        <div class="admin-actions">
+          <button id="resetDeviceBtn" class="action-btn reset-btn" aria-label="Schlüsselbox neu starten">
+            <i class="fas fa-sync-alt" aria-hidden="true"></i>
+            <span class="btn-text">Box neu starten</span>
+          </button>
+          <div id="resetStatus" class="reset-status" style="display: none;" aria-live="polite"></div>
+        </div>
         ` : ''}
       </div>
 
@@ -126,6 +133,36 @@ async function checkAuth() {
           <p id="pushStatus">Initialisiere...</p>
         </div>
       </div>
+
+      <!-- Reset Confirmation Modal -->
+      <div id="resetModal" class="custom-modal" style="display: none;" role="dialog" aria-labelledby="resetModalTitle" aria-describedby="resetModalDescription" aria-modal="true">
+        <div class="modal-overlay" id="resetModalOverlay"></div>
+        <div class="modal-content">
+          <div class="modal-header">
+            <div class="modal-icon warning">
+              <i class="fas fa-sync-alt fa-spin"></i>
+            </div>
+            <h3 id="resetModalTitle">Schlüsselbox neu starten?</h3>
+          </div>
+          <div class="modal-body">
+            <p id="resetModalDescription" class="modal-description">
+              Die Schlüsselbox wird neu gestartet und ist für ca. 10-15 Sekunden offline.
+            </p>
+            <div class="modal-info">
+              <i class="fas fa-info-circle"></i>
+              <span>Alle Sensoren und Verbindungen werden neu initialisiert.</span>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="resetModalCancel" class="modal-btn cancel-btn">
+              <i class="fas fa-times"></i> Abbrechen
+            </button>
+            <button id="resetModalConfirm" class="modal-btn confirm-btn">
+              <i class="fas fa-sync-alt"></i> Jetzt neu starten
+            </button>
+          </div>
+        </div>
+      </div>
     `;
 
     // Lade den Schlüsselstatus und die Historie
@@ -177,6 +214,12 @@ async function checkAuth() {
       const returnKeyBtn = document.getElementById('returnKeyBtn');
       if (returnKeyBtn) {
         returnKeyBtn.addEventListener('click', () => returnKey());
+      }
+
+      // Event-Listener für den Reset-Button
+      const resetDeviceBtn = document.getElementById('resetDeviceBtn');
+      if (resetDeviceBtn) {
+        resetDeviceBtn.addEventListener('click', () => resetDevice());
       }
     }
 
@@ -997,6 +1040,11 @@ window.addEventListener("beforeunload", () => {
   if (rfidDisplayTimer) {
     clearTimeout(rfidDisplayTimer);
   }
+  
+  // Reset-Status-Polling stoppen
+  if (resetStatusPollingInterval) {
+    clearInterval(resetStatusPollingInterval);
+  }
 });
 
 // Helper function to get user initials (wird auch von global-auth.js verwendet)
@@ -1053,6 +1101,193 @@ function initializeHistoryToggle() {
       }
     }
   }
+}
+
+// Funktion zum Zurücksetzen der Box
+async function resetDevice() {
+  // Zeige Custom-Modal für Bestätigung
+  const confirmed = await showResetConfirmationModal();
+  
+  if (!confirmed) {
+    return;
+  }
+  
+  try {
+
+    // Button deaktivieren und Status anzeigen
+    const resetDeviceBtn = document.getElementById('resetDeviceBtn');
+    const resetStatus = document.getElementById('resetStatus');
+    const originalButtonContent = resetDeviceBtn.innerHTML;
+    
+    resetDeviceBtn.disabled = true;
+    resetDeviceBtn.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> <span class="btn-text">Wird ausgeführt...</span>';
+    resetStatus.style.display = 'block';
+    resetStatus.className = 'reset-status pending';
+    resetStatus.innerHTML = '<i class="fas fa-clock"></i> Reset-Befehl wird gesendet...';
+
+    // API-Anfrage senden
+    const response = await fetch('api/reset_device.php', {
+      method: 'POST',
+      credentials: "include"
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP-Fehler: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (data.status === "success") {
+      resetStatus.className = 'reset-status success';
+      resetStatus.innerHTML = '<i class="fas fa-check-circle"></i> Reset-Befehl gesendet! Die Box startet innerhalb von 30 Sekunden neu.';
+      
+      announceToScreenReader('Reset-Befehl erfolgreich gesendet. Box startet innerhalb von 30 Sekunden neu.');
+      
+      // Starte Polling für Reset-Status
+      startResetStatusPolling();
+    } else {
+      throw new Error(data.message || "Fehler beim Senden des Reset-Befehls");
+    }
+  } catch (error) {
+    console.error("Fehler beim Zurücksetzen der Box:", error);
+    const resetStatus = document.getElementById('resetStatus');
+    resetStatus.className = 'reset-status error';
+    resetStatus.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Fehler: ${error.message}`;
+    
+    announceToScreenReader('Fehler beim Zurücksetzen der Box.');
+    
+    // Button zurücksetzen
+    const resetDeviceBtn = document.getElementById('resetDeviceBtn');
+    resetDeviceBtn.disabled = false;
+    resetDeviceBtn.innerHTML = originalButtonContent;
+  }
+}
+
+// Globale Variable für das Reset-Status-Polling
+let resetStatusPollingInterval = null;
+
+// Funktion zum Starten des Reset-Status-Pollings
+function startResetStatusPolling() {
+  let secondsElapsed = 0;
+  const resetStatus = document.getElementById('resetStatus');
+  const resetDeviceBtn = document.getElementById('resetDeviceBtn');
+  
+  // Polling alle 2 Sekunden
+  resetStatusPollingInterval = setInterval(async () => {
+    secondsElapsed += 2;
+    
+    try {
+      const response = await fetch('api/reset_device.php?action=check_status', {
+        credentials: "include",
+        cache: 'no-store'
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP-Fehler: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.status === "success" && data.executed) {
+        // Reset wurde ausgeführt
+        resetStatus.className = 'reset-status success';
+        resetStatus.innerHTML = '<i class="fas fa-check-circle"></i> ✅ Box wurde erfolgreich neu gestartet!';
+        
+        announceToScreenReader('Box wurde erfolgreich neu gestartet.');
+        
+        // Polling stoppen
+        clearInterval(resetStatusPollingInterval);
+        resetStatusPollingInterval = null;
+        
+        // Button zurücksetzen nach 3 Sekunden
+        setTimeout(() => {
+          resetDeviceBtn.disabled = false;
+          resetDeviceBtn.innerHTML = '<i class="fas fa-sync-alt" aria-hidden="true"></i> <span class="btn-text">Box neu starten</span>';
+          resetStatus.style.display = 'none';
+        }, 3000);
+      } else {
+        // Noch nicht ausgeführt - Countdown anzeigen
+        const remainingTime = Math.max(0, 30 - secondsElapsed);
+        resetStatus.className = 'reset-status pending';
+        resetStatus.innerHTML = `<i class="fas fa-spinner fa-pulse"></i> Warte auf Neustart... (${remainingTime}s)`;
+      }
+      
+      // Nach 60 Sekunden abbrechen (Timeout)
+      if (secondsElapsed >= 60) {
+        resetStatus.className = 'reset-status warning';
+        resetStatus.innerHTML = '<i class="fas fa-exclamation-circle"></i> Timeout: Box antwortet nicht. Bitte manuell prüfen.';
+        
+        clearInterval(resetStatusPollingInterval);
+        resetStatusPollingInterval = null;
+        
+        resetDeviceBtn.disabled = false;
+        resetDeviceBtn.innerHTML = '<i class="fas fa-sync-alt" aria-hidden="true"></i> <span class="btn-text">Box neu starten</span>';
+      }
+    } catch (error) {
+      console.error("Fehler beim Polling:", error);
+      // Bei Fehler Polling stoppen
+      clearInterval(resetStatusPollingInterval);
+      resetStatusPollingInterval = null;
+      
+      resetStatus.className = 'reset-status error';
+      resetStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Fehler beim Überprüfen des Status.';
+      
+      resetDeviceBtn.disabled = false;
+      resetDeviceBtn.innerHTML = '<i class="fas fa-sync-alt" aria-hidden="true"></i> <span class="btn-text">Box neu starten</span>';
+    }
+  }, 2000);
+}
+
+// Funktion zum Anzeigen des Reset-Bestätigungs-Modals
+function showResetConfirmationModal() {
+  return new Promise((resolve) => {
+    const modal = document.getElementById('resetModal');
+    const overlay = document.getElementById('resetModalOverlay');
+    const confirmBtn = document.getElementById('resetModalConfirm');
+    const cancelBtn = document.getElementById('resetModalCancel');
+    
+    // Modal anzeigen mit Animation
+    modal.style.display = 'block';
+    setTimeout(() => {
+      modal.classList.add('show');
+    }, 10);
+    
+    // Focus auf Confirm-Button setzen
+    setTimeout(() => {
+      confirmBtn.focus();
+    }, 100);
+    
+    // Funktion zum Schließen des Modals
+    const closeModal = (confirmed) => {
+      modal.classList.remove('show');
+      setTimeout(() => {
+        modal.style.display = 'none';
+      }, 300);
+      
+      // Event Listener entfernen
+      confirmBtn.removeEventListener('click', handleConfirm);
+      cancelBtn.removeEventListener('click', handleCancel);
+      overlay.removeEventListener('click', handleCancel);
+      document.removeEventListener('keydown', handleEscape);
+      
+      resolve(confirmed);
+    };
+    
+    // Event Handler
+    const handleConfirm = () => closeModal(true);
+    const handleCancel = () => closeModal(false);
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        closeModal(false);
+      }
+    };
+    
+    // Event Listener hinzufügen
+    confirmBtn.addEventListener('click', handleConfirm);
+    cancelBtn.addEventListener('click', handleCancel);
+    overlay.addEventListener('click', handleCancel);
+    document.addEventListener('keydown', handleEscape);
+  });
 }
 
 // Initialisiert die Toggle-Funktionalität für RFID-Management

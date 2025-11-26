@@ -2354,6 +2354,18 @@ header nav ul li.header-user-dropdown {
   margin-right: auto;
 }
 
+.key-status-container.prominent .admin-actions {
+  display: flex;
+  gap: 1em;
+  margin-top: 1.5em;
+  padding-top: 1.5em;
+  border-top: 1px solid rgba(255, 152, 0, 0.2);
+  justify-content: center;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .key-status-container.prominent .action-btn {
   flex: 1;
   display: flex;
@@ -2368,7 +2380,329 @@ header nav ul li.header-user-dropdown {
   cursor: pointer;
   transition: all 0.3s ease;
   text-transform: none;
+  text-decoration: none;
 }
+
+.key-status-container.prominent .reset-btn {
+  background: linear-gradient(135deg, #FF9800, #F57C00);
+  color: white;
+  box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+}
+
+.key-status-container.prominent .reset-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+  background: linear-gradient(135deg, #FB8C00, #EF6C00);
+}
+
+.key-status-container.prominent .reset-btn i {
+  font-size: 1.2em;
+}
+
+/* Reset Status Anzeige */
+.reset-status {
+  margin-top: 1em;
+  padding: 1em 1.5em;
+  border-radius: 8px;
+  font-size: 1em;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  text-align: left;
+  animation: fadeIn 0.3s ease;
+}
+
+.reset-status i {
+  font-size: 1.2em;
+}
+
+.reset-status.pending {
+  background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+  border: 2px solid #FF9800;
+  color: #E65100;
+}
+
+.reset-status.success {
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  border: 2px solid #4CAF50;
+  color: #1B5E20;
+}
+
+.reset-status.error {
+  background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+  border: 2px solid #F44336;
+  color: #B71C1C;
+}
+
+.reset-status.warning {
+  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+  border: 2px solid #FF9800;
+  color: #E65100;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================
+   CUSTOM MODAL STYLING
+   ======================================== */
+
+/* Modal Container */
+.custom-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  overflow-y: auto;
+}
+
+.custom-modal.show {
+  opacity: 1;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  animation: fadeInOverlay 0.3s ease;
+}
+
+@keyframes fadeInOverlay {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Modal Content */
+.modal-content {
+  position: relative;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 500px;
+  width: 90%;
+  margin: auto;
+  animation: slideInModal 0.3s ease;
+  overflow: hidden;
+}
+
+@keyframes slideInModal {
+  from {
+    transform: scale(0.9) translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Modal Header */
+.modal-header {
+  padding: 2em 2em 1em 2em;
+  text-align: center;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.modal-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1em auto;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5em;
+}
+
+.modal-icon.warning {
+  background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+  color: #FF9800;
+  box-shadow: 0 8px 20px rgba(255, 152, 0, 0.2);
+}
+
+.modal-icon i {
+  animation: iconPulse 2s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.5em;
+  color: #333;
+  font-weight: 600;
+}
+
+/* Modal Body */
+.modal-body {
+  padding: 1.5em 2em;
+}
+
+.modal-description {
+  font-size: 1.1em;
+  line-height: 1.6;
+  color: #555;
+  margin: 0 0 1em 0;
+  text-align: center;
+}
+
+.modal-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+  background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+  padding: 1em 1.25em;
+  border-radius: 8px;
+  border-left: 4px solid #2196F3;
+  font-size: 0.95em;
+  color: #1565C0;
+}
+
+.modal-info i {
+  font-size: 1.3em;
+  flex-shrink: 0;
+}
+
+/* Modal Footer */
+.modal-footer {
+  padding: 1.5em 2em 2em 2em;
+  display: flex;
+  gap: 1em;
+  justify-content: center;
+}
+
+.modal-btn {
+  flex: 1;
+  padding: 1em 1.5em;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.05em;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  transition: all 0.3s ease;
+  min-height: 50px;
+}
+
+.modal-btn i {
+  font-size: 1.1em;
+}
+
+.cancel-btn {
+  background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+  color: #555;
+  border: 2px solid #ddd;
+}
+
+.cancel-btn:hover {
+  background: linear-gradient(135deg, #e0e0e0, #d0d0d0);
+  border-color: #ccc;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.confirm-btn {
+  background: linear-gradient(135deg, #FF9800, #F57C00);
+  color: white;
+  border: 2px solid #F57C00;
+  box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+}
+
+.confirm-btn:hover {
+  background: linear-gradient(135deg, #FB8C00, #EF6C00);
+  border-color: #EF6C00;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+}
+
+.modal-btn:active {
+  transform: translateY(0);
+}
+
+/* Responsive Modal */
+@media (max-width: 600px) {
+  .custom-modal {
+    padding: 10px;
+  }
+  
+  .modal-content {
+    width: 100%;
+    max-width: 100%;
+    margin: auto;
+  }
+  
+  .modal-header {
+    padding: 1.5em 1.5em 1em 1.5em;
+  }
+  
+  .modal-icon {
+    width: 70px;
+    height: 70px;
+    font-size: 2em;
+  }
+  
+  .modal-header h3 {
+    font-size: 1.3em;
+  }
+  
+  .modal-body {
+    padding: 1em 1.5em;
+  }
+  
+  .modal-description {
+    font-size: 1em;
+  }
+  
+  .modal-footer {
+    padding: 1em 1.5em 1.5em 1.5em;
+    flex-direction: column;
+  }
+  
+  .modal-btn {
+    width: 100%;
+  }
+}
+
+/* ========================================
+   END CUSTOM MODAL STYLING
+   ======================================== */
 
 .key-status-container.prominent .take-btn {
   background: linear-gradient(135deg, #ff0000, #f50000);
@@ -2487,6 +2821,17 @@ header nav ul li.header-user-dropdown {
     flex-direction: row;
     gap: 0.75em;
     max-width: none;
+  }
+
+  .key-status-container.prominent .admin-actions {
+    flex-direction: column;
+    gap: 0.75em;
+    max-width: none;
+  }
+
+  .reset-status {
+    padding: 0.75em 1em;
+    font-size: 0.9em;
   }
   
    
