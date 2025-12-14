@@ -36,95 +36,104 @@ async function checkAuth() {
     // Prüfen, ob der Benutzer ein Administrator ist
     const isAdmin = result.is_admin === true;
 
-    // Zeige das Dashboard mit prominenter Statusanzeige an
+    // Zeige das Dashboard im VR-Igloo Stil an (IDs/Klassen bleiben stabil für JS)
     protectedContent.innerHTML = `
-      <div class="dashboard-welcome">
-        <div class="welcome-message">
-          <h2>Willkommen zurück, ${result.vorname}!</h2>
-          <p class="welcome-subtitle">Hier ist der aktuelle Status Ihrer Schlüsselbox <strong>${seriennummer}</strong></p>
-        </div>
+      <div class="dashboard-hero modern">
+        <span class="hero-badge">VR-Igloo</span>
+        <h1>Hi ${result.vorname}!</h1>
+        <p class="subtitle">Schlüsselbox <span class="dashboard-chip">${seriennummer}</span> – Status, Historie und Verifizierung auf einen Blick.</p>
       </div>
 
-      <div class="key-status-container prominent">
-        <div class="status-header">
-          <div class="status-title">
-            <h2>Schlüsselstatus</h2>
-            <p class="status-subtitle">Aktueller Zustand Ihres Schlüssels</p>
+      <div class="dashboard-grid">
+        <section class="key-status-container prominent dashboard-card" aria-label="Schlüsselstatus">
+          <div id="keyStatus" class="key-status" aria-live="polite" aria-atomic="true">Lade Status...</div>
+          ${isAdmin ? `
+          <div class="key-actions" aria-label="Aktionen">
+            <button id="takeKeyBtn" class="action-btn take-btn" aria-label="Schlüssel aus der Box entnehmen">
+              <i class="fas fa-hand" aria-hidden="true"></i>
+              <span class="btn-text">Entnehmen</span>
+            </button>
+            <button id="returnKeyBtn" class="action-btn return-btn" aria-label="Schlüssel in die Box zurückgeben">
+              <i class="fas fa-box" aria-hidden="true"></i>
+              <span class="btn-text">Zurückgeben</span>
+            </button>
           </div>
-        </div>
-        <div id="keyStatus" class="key-status" aria-live="polite" aria-atomic="true">Lade Status...</div>
-        ${isAdmin ? `
-        <div class="key-actions">
-          <button id="takeKeyBtn" class="action-btn take-btn" aria-label="Schlüssel aus der Box entnehmen">
-            <span class="btn-text">Schlüssel<br>entnehmen</span>
-          </button>
-          <button id="returnKeyBtn" class="action-btn return-btn" aria-label="Schlüssel in die Box zurückgeben">
-            <span class="btn-text">Schlüssel<br>zurückgeben</span>
-          </button>
-        </div>
-        ` : ''}
-      </div>
+          ` : ''}
+        </section>
 
-      <div class="key-history-container">
-        <div class="history-header" id="historyToggle" role="button" tabindex="0" aria-expanded="false" aria-controls="keyHistory" aria-label="Schlüsselhistorie anzeigen">
-          <h3>Schlüsselhistorie</h3>
-          <i class="fas fa-chevron-down history-arrow" aria-hidden="true"></i>
-        </div>
-        <div id="keyHistory" class="key-history collapsed">Lade Historie...</div>
-      </div>
-
-      <div class="rfid-management-container">
-        <div class="rfid-header" id="rfidToggle" role="button" tabindex="0" aria-expanded="false" aria-controls="rfidContent" aria-label="RFID-Verwaltung anzeigen">
-          <h3><i class="fas fa-credit-card" aria-hidden="true"></i> Meine Verifizierungsmethode</h3>
-          <i class="fas fa-chevron-down rfid-arrow" aria-hidden="true"></i>
-        </div>
-        
-        <div id="rfidContent" class="rfid-content collapsed">
-          <div id="rfidStatus" class="rfid-status">Lade Status Ihrer Zutrittskarte...</div>
-          
-          <div id="lastScannedRfid" class="last-scanned-rfid" style="display: none;" aria-live="polite">
-            <div class="scanned-card-info">
-              <h4><i class="fas fa-check-circle" aria-hidden="true"></i> Neue Karte erkannt!</h4>
-              <p>Karten-ID: <code id="lastScannedRfidUid"></code></p>
-              <button id="useScannedRfidBtn" class="action-btn use-card-btn" aria-label="Diese erkannte Karte als Zutrittskarte verwenden">
-                <i class="fas fa-plus-circle" aria-hidden="true"></i> Diese Karte verwenden
-              </button>
+        <section class="key-history-container dashboard-card" aria-label="Schlüsselhistorie">
+          <div class="history-header" id="historyToggle" role="button" tabindex="0" aria-expanded="false" aria-controls="keyHistory" aria-label="Schlüsselhistorie anzeigen">
+            <div class="card-title-row">
+              <h3><i class="fas fa-clock-rotate-left" aria-hidden="true"></i> Historie</h3>
+              <p class="card-subtitle">Letzte Aktionen</p>
             </div>
+            <i class="fas fa-chevron-down history-arrow" aria-hidden="true"></i>
+          </div>
+          <div id="keyHistory" class="key-history collapsed">Lade Historie...</div>
+        </section>
+
+        <section class="rfid-management-container dashboard-card" aria-label="Verifizierung">
+          <div class="rfid-header" id="rfidToggle" role="button" tabindex="0" aria-expanded="false" aria-controls="rfidContent" aria-label="RFID-Verwaltung anzeigen">
+            <div class="card-title-row">
+              <h3><i class="fas fa-credit-card" aria-hidden="true"></i> Verifizierung</h3>
+              <p class="card-subtitle">Karte/Badge verwalten</p>
+            </div>
+            <i class="fas fa-chevron-down rfid-arrow" aria-hidden="true"></i>
           </div>
           
-          <div class="rfid-form-section">
-            <h4>Karte oder Badge zuweisen</h4>
-            <div class="rfid-form">
-              <input type="text" id="rfidUid" placeholder="Karten-ID eingeben (z.B. 04:A3:2B:1E)" class="rfid-input" />
-              <div class="button-group">
-                <button id="assignRfidBtn" class="action-btn rfid-btn" aria-label="Eingegebene Karten-ID zuweisen">
-                  <i class="fas fa-link" aria-hidden="true"></i> Zuweisen
-                </button>
-                <button id="removeRfidBtn" class="action-btn rfid-remove-btn" aria-label="Zugewiesene Karte entfernen">
-                  <i class="fas fa-unlink" aria-hidden="true"></i> Entfernen
+          <div id="rfidContent" class="rfid-content collapsed">
+            <div id="rfidStatus" class="rfid-status">Lade Status deiner Zutrittskarte...</div>
+            
+            <div id="lastScannedRfid" class="last-scanned-rfid" style="display: none;" aria-live="polite">
+              <div class="scanned-card-info">
+                <h4><i class="fas fa-check-circle" aria-hidden="true"></i> Neue Karte erkannt</h4>
+                <p>Karten-ID: <code id="lastScannedRfidUid"></code></p>
+                <button id="useScannedRfidBtn" class="action-btn use-card-btn" aria-label="Diese erkannte Karte als Zutrittskarte verwenden">
+                  <i class="fas fa-plus-circle" aria-hidden="true"></i> Diese Karte verwenden
                 </button>
               </div>
             </div>
-          </div>
+            
+            <div class="rfid-form-section">
+              <h4>Karte oder Badge zuweisen</h4>
+              <div class="rfid-form">
+                <input type="text" id="rfidUid" placeholder="Karten-ID (z.B. 04:A3:2B:1E)" class="rfid-input" />
+                <div class="button-group">
+                  <button id="assignRfidBtn" class="action-btn rfid-btn" aria-label="Eingegebene Karten-ID zuweisen">
+                    <i class="fas fa-link" aria-hidden="true"></i> Zuweisen
+                  </button>
+                  <button id="removeRfidBtn" class="action-btn rfid-remove-btn" aria-label="Zugewiesene Karte entfernen">
+                    <i class="fas fa-unlink" aria-hidden="true"></i> Entfernen
+                  </button>
+                </div>
+              </div>
+            </div>
 
-          <div class="rfid-instructions">
-            <h4><i class="fas fa-info-circle" aria-hidden="true"></i> So funktioniert es:</h4>
-            <ol class="instruction-steps">
-              <li>Halten Sie Ihre Karte an das Lesegerät der Schlüsselbox</li>
-              <li>Die Karten-ID erscheint automatisch hier im Dashboard</li>
-              <li>Klicken Sie auf "Diese Karte verwenden" um sie zu aktivieren</li>
-            </ol>
+            <div class="rfid-instructions">
+              <h4><i class="fas fa-info-circle" aria-hidden="true"></i> So klappt’s</h4>
+              <ol class="instruction-steps">
+                <li>Halte deine Karte ans Lesegerät der Schlüsselbox</li>
+                <li>Die Karten-ID erscheint automatisch hier im Dashboard</li>
+                <li>Klicke auf „Diese Karte verwenden“, um sie zu aktivieren</li>
+              </ol>
+            </div>
           </div>
-        </div>
-      </div>
+        </section>
 
-      <div class="push-notification-container compact">
-        <div class="push-notification-controls">
-          <button id="subscribeButton" disabled>
-            <i class="fas fa-bell"></i> Push-Benachrichtigungen aktivieren
-          </button>
-          <p id="pushStatus">Initialisiere...</p>
-        </div>
+        <section class="push-notification-container compact dashboard-card" aria-label="Push-Benachrichtigungen">
+          <div class="card-header compact">
+            <div class="card-title">
+              <h3><i class="fas fa-bell" aria-hidden="true"></i> Push</h3>
+              <p class="card-subtitle">Updates direkt aufs Handy</p>
+            </div>
+          </div>
+          <div class="push-notification-controls">
+            <button id="subscribeButton" disabled>
+              Push-Benachrichtigungen aktivieren
+            </button>
+            <p id="pushStatus">Initialisiere...</p>
+          </div>
+        </section>
       </div>
     `;
 
@@ -225,14 +234,20 @@ async function loadKeyStatus() {
       const returnKeyBtn = document.getElementById('returnKeyBtn');
 
       // Container-Element für die Farbänderung basierend auf dem Status
+      // WICHTIG: Keine komplette className-Zuweisung, sonst verlieren wir Layout-Klassen wie "dashboard-card".
       const keyStatusContainer = document.querySelector('.key-status-container.prominent');
+      const statusClasses = ['status-available', 'status-unavailable', 'status-pending', 'status-stolen'];
+
+      const setContainerStatus = (statusClass) => {
+        if (!keyStatusContainer) return;
+        keyStatusContainer.classList.remove(...statusClasses);
+        if (statusClass) keyStatusContainer.classList.add(statusClass);
+      };
 
       // Wenn der Schlüssel verfügbar ist
       if (isAvailable) {
         // Container-Klassen für Status-Styling setzen
-        if (keyStatusContainer) {
-          keyStatusContainer.className = 'key-status-container prominent status-available';
-        }
+        setContainerStatus('status-available');
 
         // Nur Button-Eigenschaften ändern, wenn die Buttons existieren (für Admins)
         if (takeKeyBtn) takeKeyBtn.disabled = false;
@@ -262,9 +277,7 @@ async function loadKeyStatus() {
       // Wenn es eine ausstehende Entnahme gibt
       else if (pendingRemoval) {
         // Container-Klassen für Status-Styling setzen
-        if (keyStatusContainer) {
-          keyStatusContainer.className = 'key-status-container prominent status-pending';
-        }
+        setContainerStatus('status-pending');
 
         // Nur Button-Eigenschaften ändern, wenn die Buttons existieren (für Admins)
         if (takeKeyBtn) takeKeyBtn.disabled = true;
@@ -307,9 +320,7 @@ async function loadKeyStatus() {
       // Wenn es eine abgelaufene, nicht verifizierte Entnahme gibt
       else if (unverifiedRemoval) {
         // Container-Klassen für Status-Styling setzen
-        if (keyStatusContainer) {
-          keyStatusContainer.className = 'key-status-container prominent status-stolen';
-        }
+        setContainerStatus('status-stolen');
 
         // Nur Button-Eigenschaften ändern, wenn die Buttons existieren (für Admins)
         if (takeKeyBtn) takeKeyBtn.disabled = true;
@@ -345,9 +356,7 @@ async function loadKeyStatus() {
       // Wenn der Schlüssel von jemandem entnommen wurde
       else {
         // Container-Klassen für Status-Styling setzen
-        if (keyStatusContainer) {
-          keyStatusContainer.className = 'key-status-container prominent status-unavailable';
-        }
+        setContainerStatus('status-unavailable');
 
         // Nur Button-Eigenschaften ändern, wenn die Buttons existieren (für Admins)
         if (takeKeyBtn) takeKeyBtn.disabled = true;
@@ -556,7 +565,12 @@ async function takeKey() {
     // Button deaktivieren, um mehrfache Klicks zu verhindern
     const takeKeyBtn = document.getElementById('takeKeyBtn');
     takeKeyBtn.disabled = true;
-    takeKeyBtn.textContent = "Wird verarbeitet...";
+    const takeKeyBtnText = takeKeyBtn.querySelector('.btn-text');
+    if (takeKeyBtnText) {
+      takeKeyBtnText.textContent = 'Wird verarbeitet...';
+    } else {
+      takeKeyBtn.textContent = 'Wird verarbeitet...';
+    }
 
     // API-Anfrage senden, um den Schlüssel zu entnehmen
     console.log('Sende Anfrage zum Entnehmen des Schlüssels...');
@@ -592,7 +606,12 @@ async function takeKey() {
     } else {
       alert(data.message || "Fehler beim Entnehmen des Schlüssels");
       takeKeyBtn.disabled = false;
-      takeKeyBtn.textContent = "Schlüssel entnehmen";
+      const takeKeyBtnTextReset = takeKeyBtn.querySelector('.btn-text');
+      if (takeKeyBtnTextReset) {
+        takeKeyBtnTextReset.textContent = 'Entnehmen';
+      } else {
+        takeKeyBtn.textContent = 'Schlüssel entnehmen';
+      }
     }
   } catch (error) {
     console.error("Fehler beim Entnehmen des Schlüssels:", error);
@@ -600,7 +619,12 @@ async function takeKey() {
 
     const takeKeyBtn = document.getElementById('takeKeyBtn');
     takeKeyBtn.disabled = false;
-    takeKeyBtn.textContent = "Schlüssel entnehmen";
+    const takeKeyBtnTextReset = takeKeyBtn.querySelector('.btn-text');
+    if (takeKeyBtnTextReset) {
+      takeKeyBtnTextReset.textContent = 'Entnehmen';
+    } else {
+      takeKeyBtn.textContent = 'Schlüssel entnehmen';
+    }
   }
 }
 
@@ -615,7 +639,12 @@ async function returnKey() {
     // Button deaktivieren, um mehrfache Klicks zu verhindern
     const returnKeyBtn = document.getElementById('returnKeyBtn');
     returnKeyBtn.disabled = true;
-    returnKeyBtn.textContent = "Wird verarbeitet...";
+    const returnKeyBtnText = returnKeyBtn.querySelector('.btn-text');
+    if (returnKeyBtnText) {
+      returnKeyBtnText.textContent = 'Wird verarbeitet...';
+    } else {
+      returnKeyBtn.textContent = 'Wird verarbeitet...';
+    }
 
     // API-Anfrage senden, um den Schlüssel zurückzugeben
     console.log('Sende Anfrage zum Zurückgeben des Schlüssels...');
@@ -651,7 +680,12 @@ async function returnKey() {
     } else {
       alert(data.message || "Fehler beim Zurückgeben des Schlüssels");
       returnKeyBtn.disabled = false;
-      returnKeyBtn.textContent = "Schlüssel zurückgeben";
+      const returnKeyBtnTextReset = returnKeyBtn.querySelector('.btn-text');
+      if (returnKeyBtnTextReset) {
+        returnKeyBtnTextReset.textContent = 'Zurückgeben';
+      } else {
+        returnKeyBtn.textContent = 'Schlüssel zurückgeben';
+      }
     }
   } catch (error) {
     console.error("Fehler beim Zurückgeben des Schlüssels:", error);
@@ -659,7 +693,12 @@ async function returnKey() {
 
     const returnKeyBtn = document.getElementById('returnKeyBtn');
     returnKeyBtn.disabled = false;
-    returnKeyBtn.textContent = "Schlüssel zurückgeben";
+    const returnKeyBtnTextReset = returnKeyBtn.querySelector('.btn-text');
+    if (returnKeyBtnTextReset) {
+      returnKeyBtnTextReset.textContent = 'Zurückgeben';
+    } else {
+      returnKeyBtn.textContent = 'Schlüssel zurückgeben';
+    }
   }
 }
 

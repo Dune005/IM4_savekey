@@ -11,6 +11,11 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
     <link rel="manifest" href="/assets/site.webmanifest">
+
+    <!-- Typography: Open Sans (VR-Igloo Design) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -18,19 +23,15 @@
     <script src="js/mobile-nav.js"></script>
   </head>
   <body class="landing-body">
-    <header class="header-modern">
+    <header class="header-dashboard" role="banner">
       <div class="container">
-        <a href="index.html" class="logo-link">
+        <a href="index.html">
           <img src="images/logo_savekey_text.svg" alt="SaveKey Logo" class="logo">
         </a>
-        <!-- Hamburger-Menü für mobile Geräte (nur für nicht eingeloggte Nutzer) -->
-        <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Menü öffnen" aria-expanded="false" aria-controls="navigation">
-          <i class="fas fa-bars"></i>
-        </button>
-        <nav id="navigation" role="navigation" aria-label="Hauptnavigation">
+        <nav role="navigation" aria-label="Hauptnavigation">
           <ul>
-            <li><a href="login.html">Login</a></li>
-            <li><a href="register.html">Registrieren</a></li>
+            <li><a href="login.html" class="nav-link">Login</a></li>
+            <li><a href="register.html" class="nav-link">Registrieren</a></li>
           </ul>
         </nav>
       </div>

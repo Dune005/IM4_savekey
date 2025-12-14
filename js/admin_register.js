@@ -4,7 +4,10 @@
 function showFormMessage(message, type = 'error') {
   const messageContainer = document.getElementById('form-messages');
   messageContainer.textContent = message;
-  messageContainer.className = type === 'success' ? 'success-message' : 'error-message';
+  messageContainer.classList.remove('error-message', 'success-message', 'info-message');
+  messageContainer.classList.add(
+    type === 'success' ? 'success-message' : type === 'info' ? 'info-message' : 'error-message'
+  );
   messageContainer.classList.remove('sr-only');
   
   // Nach 5 Sekunden wieder verstecken

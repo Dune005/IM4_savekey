@@ -3,24 +3,29 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SaveKey Dashboard - Ihre intelligente Schlüsselverwaltung</title>
-    <meta name="description" content="SaveKey Dashboard - Verwalten Sie Ihre Schlüssel sicher und einfach. Überblick über Status und Historie.">
+    <title>Dashboard – VR-Igloo</title>
+    <meta name="description" content="VR-Igloo Dashboard – Status, Historie und Verifizierung deiner Schlüsselbox.">
     
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
     <link rel="manifest" href="/assets/site.webmanifest">
+
+    <!-- Typography: Open Sans (VR-Igloo Design) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="js/global-auth.js"></script>
   </head>
-  <body>
-    <header>
+  <body class="protected-body modern">
+    <header class="header-dashboard" role="banner">
       <div class="container">
         <a href="index.html">
-          <img src="images/logo_savekey_text_white.svg" alt="SaveKey Logo" class="logo">
+          <img src="images/logo_savekey_text.svg" alt="SaveKey Logo" class="logo">
         </a>
         <nav role="navigation" aria-label="Benutzernavigation">
           <ul>
@@ -96,7 +101,7 @@
       </div>
     </header>
 
-    <main class="protected-main">
+    <main class="protected-main" role="main">
       <div class="container">
         
         <!-- Live Region für Statusmeldungen -->
@@ -107,9 +112,9 @@
       </div>
     </main>
 
-    <footer>
+    <footer class="footer-modern">
       <div class="container">
-        <p>© 2024 IM4 SaveKey System - Ihre vertrauensvolle Schlüsselverwaltung</p>
+        <p>© 2025 SaveKey – VR-Igloo</p>
       </div>
     </footer>
 

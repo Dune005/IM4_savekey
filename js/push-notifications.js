@@ -221,7 +221,7 @@ if (window.location.pathname.includes('protected.html')) {
         const subscribeButton = document.getElementById('subscribeButton');
         const pushStatus = document.getElementById('pushStatus');
 
-        if (protectedContent && protectedContent.innerHTML.includes('Willkommen') && subscribeButton && pushStatus) {
+        if (protectedContent && subscribeButton && pushStatus) {
             clearInterval(checkProtectedContent);
             console.log('Protected content loaded, initializing push notifications');
 
