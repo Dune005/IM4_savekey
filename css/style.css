@@ -4423,3 +4423,142 @@ header nav ul li.header-user-dropdown {
     float: none !important;
   }
 }
+/* ==========================================
+   Custom Modal Styles (Modern VR-Igloo)
+   ========================================== */
+
+.custom-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.custom-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.custom-modal {
+  background: white;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  transform: scale(0.9);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+}
+
+.custom-modal-overlay.active .custom-modal {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.custom-modal-header {
+  padding: 1.5rem 1.5rem 0.5rem;
+  text-align: center;
+}
+
+.custom-modal-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  font-size: 1.75rem;
+}
+
+.custom-modal-icon.info {
+  background-color: #e0f2fe;
+  color: var(--primary-color);
+}
+
+.custom-modal-icon.success {
+  background-color: #dcfce7;
+  color: #16a34a;
+}
+
+.custom-modal-icon.warning {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.custom-modal-icon.danger {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.custom-modal-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--secondary-color);
+}
+
+.custom-modal-body {
+  padding: 1rem 1.5rem 1.5rem;
+  text-align: center;
+  color: var(--dark-gray);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.custom-modal-footer {
+  padding: 1rem 1.5rem 1.5rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.custom-modal-btn {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.custom-modal-btn.primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.custom-modal-btn.primary:hover {
+  background-color: #1A4F8F;
+  transform: translateY(-1px);
+}
+
+.custom-modal-btn.secondary {
+  background-color: #f1f5f9;
+  color: var(--secondary-color);
+}
+
+.custom-modal-btn.secondary:hover {
+  background-color: #e2e8f0;
+}
+
+.custom-modal-btn.danger {
+  background-color: #dc2626;
+  color: white;
+}
+
+.custom-modal-btn.danger:hover {
+  background-color: #b91c1c;
+}
