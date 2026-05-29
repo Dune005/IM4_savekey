@@ -28,10 +28,15 @@
         <a href="index.html">
           <img src="images/logo_savekey_text.svg" alt="SaveKey Logo" class="logo">
         </a>
-        <nav role="navigation" aria-label="Hauptnavigation">
+        
+        <button id="mobileMenuToggle" class="mobile-menu-toggle" aria-label="Menü öffnen">
+          <i class="fas fa-bars"></i>
+        </button>
+
+        <nav id="navigation" role="navigation" aria-label="Hauptnavigation">
           <ul>
-            <li><a href="login.html" class="nav-link">Login</a></li>
-            <li><a href="register.html" class="nav-link">Registrieren</a></li>
+            <li><a href="login.html" class="nav-link" data-text="Login">Login</a></li>
+            <li><a href="register.html" class="nav-link" data-text="Registrieren">Registrieren</a></li>
           </ul>
         </nav>
       </div>

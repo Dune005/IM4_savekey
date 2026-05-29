@@ -294,49 +294,49 @@ header nav ul li {
 }
 
 header nav a {
-  color: #fff;
+  color: var(--secondary-color);
   text-decoration: none;
-  text-transform: none; /* Kein Uppercase für moderneren Look */
-  font-size: 1em; /* Relative Größe zur Basis, also 18px. Oder direkt 18px. */
-  font-weight: 600; /* Etwas dicker für bessere Lesbarkeit auf farbigem Grund */
-  padding: 12px 22px; /* Angepasstes Padding für Klickfläche (ca. 18px + 2*12px = 42px Höhe, plus Zeilenhöhe) */
-  /* Um 44px sicher zu erreichen: */
-  min-height: 20px; /* Texthöhe bei 18px ca 20-22px */
-  line-height: 20px; /* Zentriert Text vertikal bei fester Höhe */
-  display: inline-flex; /* Ermöglicht vertikale Ausrichtung und min-height */
+  text-transform: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 10px 16px;
+  display: inline-flex;
   align-items: center;
-  min-width: 44px; /* Stellt sicher, dass auch schmale Buttons breit genug sind */
-  justify-content: center; /* Text zentrieren, falls Button breiter als Text */
-  border: 1px solid transparent; /* Transparenter Rand initial */
-  border-radius: 25px; /* Stärker abgerundete Ecken */
-  transition: all 0.3s ease;
-  background-color: var(--primary-color); /* Button Hintergrund */
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+  background-color: transparent;
+  box-shadow: none;
 }
 
 header nav a:hover {
-  background-color: #fff;
-  color: var(--primary-color);
-  border-color: var(--primary-color); /* Rand beim Hover */
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-  transform: translateY(-2px); /* Leichter Anhebe-Effekt */
+  background-color: rgba(44, 62, 80, 0.08);
+  color: var(--secondary-color);
+  /* Simuliert Bold ohne Layout-Shift */
+  text-shadow: 0 0 1px var(--secondary-color);
+  transform: none;
+  box-shadow: none;
 }
 
 /* Hamburger-Menü Styles */
 .mobile-menu-toggle {
   display: none !important; /* Standardmäßig versteckt (Desktop) - !important um JavaScript-Override zu verhindern */
-  background: none;
-  border: none;
-  color: white;
-  font-size: 1.5em;
+  background: transparent;
+  border: 1px solid #eee;
+  color: var(--secondary-color);
+  font-size: 1.2em;
   cursor: pointer;
-  padding: 8px;
-  border-radius: 4px;
-  transition: background-color 0.3s ease;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
 .mobile-menu-toggle:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: #f5f5f5;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 /* Mobile Navigation Styles */
@@ -353,16 +353,20 @@ header nav a:hover {
   /* Für Login/Register Links (nicht eingeloggt) */
   header nav {
     position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background-color: var(--secondary-color);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    top: calc(100% + 10px);
+    left: auto;
+    right: 15px;
+    width: 200px;
+    background-color: #ffffff;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     z-index: 1000;
-    transform: translateY(-100%);
+    transform: translateY(-10px);
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease;
+    transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+    border-radius: 12px;
+    border: 1px solid #f0f0f0;
+    padding: 8px;
   }
   
   /* User-Dropdown Navigation bleibt immer sichtbar */
@@ -373,6 +377,17 @@ header nav a:hover {
     visibility: visible;
     background-color: transparent;
     box-shadow: none;
+    border: none;
+    padding: 0;
+    margin-left: auto;
+    flex: 0 0 auto;
+    width: auto;
+  }
+  
+  header.user-logged-in .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
   
   header nav.active {
@@ -383,8 +398,8 @@ header nav a:hover {
   
   header nav ul {
     flex-direction: column;
-    gap: 0;
-    padding: 1rem 0;
+    gap: 4px;
+    padding: 0;
   }
   
   header nav ul li {
@@ -392,24 +407,26 @@ header nav a:hover {
   }
   
   header nav a {
-    display: block;
+    display: flex;
     width: 100%;
-    padding: 15px 20px;
-    border-radius: 0;
+    padding: 12px 16px;
+    border-radius: 8px;
     border: none;
     background-color: transparent;
     box-shadow: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: none;
     justify-content: flex-start;
     min-width: auto;
+    color: var(--secondary-color);
+    font-weight: 600;
+    font-size: 1rem;
   }
   
   header nav a:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: white;
+    background-color: #f5f5f5;
+    color: var(--primary-color);
     transform: none;
     box-shadow: none;
-    border-color: rgba(255, 255, 255, 0.1);
   }
   
   header nav ul li:last-child a {
@@ -418,15 +435,17 @@ header nav a:hover {
   
   /* Mobile User-Dropdown Anpassungen */
   header.user-logged-in nav ul {
-    display: flex;
-    justify-content: flex-end;
-    padding: 0;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: flex-end !important;
+    padding: 0 !important;
+    width: auto !important;
   }
   
   header.user-logged-in nav ul li.header-user-dropdown {
-    width: auto;
+    width: auto !important;
   }
-  
+
   /* User-Info auf Mobile kompakter machen */
   .user-info-trigger {
     padding: 0.4rem 0.6rem;
@@ -447,6 +466,11 @@ header nav a:hover {
     left: auto;
     width: 280px;
     max-width: 90vw;
+  }
+
+  /* User-Icon rechtsbündig auf Mobile */
+  header.user-logged-in .header-user-dropdown {
+    margin-left: auto !important;
   }
 }
 
