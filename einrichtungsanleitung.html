@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Einrichtungsanleitung - SaveKey System</title>
+    <title>So verwendest du die VR-Igloo Box – SaveKey</title>
+    <meta name="description" content="Schnellanleitung zur Nutzung der VR-Igloo Schlüsselbox für Studierende.">
     
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
@@ -11,991 +12,949 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
     <link rel="manifest" href="/assets/site.webmanifest">
     
+    <!-- Typography: Open Sans (VR-Igloo Design) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="js/global-auth.js"></script>
+    <script src="js/mobile-nav.js"></script>
     <style>
-      /* Basis-Einstellungen für 50+ Zielgruppe */
-      body {
-        font-size: 19px; /* Erhöhte Basis-Schriftgröße */
-        line-height: 1.8; /* Mehr Zeilenabstand für bessere Lesbarkeit */
-        overflow-x: hidden; /* Verhindert horizontales Scrollen */
+      :root {
+        --background-modern: #fafafa;
+        --accent-orange: #f97316;
+        --accent-orange-dark: #ea580c;
+        --success-color: #22c55e;
+        --warning-color: #f59e0b;
+        --info-color: #3b82f6;
+      }
+
+      * {
+        box-sizing: border-box;
       }
       
       html {
-        overflow-x: hidden; /* Verhindert horizontales Scrollen auf HTML-Ebene */
+        overflow-x: hidden;
       }
-      
-      * {
-        box-sizing: border-box; /* Stellt sicher, dass Padding in der Breite enthalten ist */
-      }
-      
-      .container {
-        max-width: 800px; /* Schmaler für weniger Augen-Bewegung */
-        padding: 0 30px; /* Mehr seitlicher Abstand */
-        width: 100%; /* Stellt sicher, dass Container nie über 100% geht */
-        margin: 0 auto; /* Zentriert den Container */
-        box-sizing: border-box; /* Padding wird in die Breite eingerechnet */
-      }
-      
-      h1 {
-        font-size: 2.2em;
-        color: var(--secondary-color);
-        margin-bottom: 2rem;
-        text-align: center;
-        font-weight: 600;
-      }
-      
-      /* Spezifische Stile für die Anleitung */
-      .step-container {
-        margin: 4rem auto; /* auto für Zentrierung */
-        max-width: 800px; /* Gleiche Breite wie Container */
-      }
-      
-      .step {
-        background-color: var(--card-bg);
-        padding: 1.8rem; /* Reduziert von 2.5rem */
-        border-radius: 15px;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-        margin-bottom: 2.5rem; /* Reduziert von 3rem */
-        position: relative;
-        border: 2px solid #e8f2f7; /* Subtiler Rahmen für bessere Abgrenzung */
-        width: 100%; /* Stelle sicher, dass die volle Container-Breite genutzt wird */
-        box-sizing: border-box; /* Padding wird in die Breite eingerechnet */
-      }
-      
-      .step-number {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 65px; /* Größer für bessere Sichtbarkeit */
-        height: 65px;
-        background-color: var(--primary-color);
-        color: white;
-        border-radius: 50%;
-        font-weight: bold;
-        font-size: 1.8em; /* Größere Zahlen */
-        position: absolute;
-        top: -32px;
-        left: 2rem;
-        box-shadow: 0 4px 12px rgba(37, 112, 169, 0.3);
-      }
-      
-      .step h3 {
-        margin-top: 1.5rem; /* Reduziert von 2rem */
-        margin-bottom: 1.2rem; /* Reduziert von 2rem */
-        font-size: 1.6em; /* Größere Überschriften */
-        color: var(--secondary-color);
-        font-weight: 600;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid #e8f2f7;
-      }
-      
-      .step p, .step li {
-        font-size: 1.1em; /* Größere Schrift */
-        line-height: 1.8; /* Mehr Zeilenabstand */
-        margin-bottom: 0.8rem; /* Reduziert von 1rem */
-      }
-      
-      .step ul {
-        padding-left: 2rem; /* Mehr Einrückung für bessere Struktur */
-      }
-      
-      .step li {
-        margin-bottom: 0.8rem; /* Reduziert von 1.2rem */
-        display: flex;
-        align-items: flex-start;
-      }
-      
-      .step-icon {
-        color: var(--primary-color);
-        margin-right: 15px;
-        margin-top: 2px; /* Leichte Ausrichtung mit Text */
-        font-size: 1.1em;
-        flex-shrink: 0; /* Icon bleibt in der Größe */
-      }
-      
-      .back-to-home {
-        display: block;
-        margin: 3rem auto; /* auto für Zentrierung */
-        padding: 15px 25px; /* Größere Klickfläche */
-        background-color: var(--primary-color);
-        color: white;
-        text-decoration: none;
-        border-radius: 8px;
-        font-size: 1.1em;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 12px rgba(37, 112, 169, 0.2);
-        max-width: 800px; /* Gleiche Breite wie Container */
-        text-align: center; /* Text zentrieren */
-        width: calc(100% - 60px); /* Volle Breite minus Container-Padding */
-      }
-      
-      .back-to-home:hover {
-        background-color: #1A4F8F;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 18px rgba(37, 112, 169, 0.3);
-        color: white;
-      }
-      
-      .tip-box {
-        background-color: #f0f8ff;
-        border-left: 6px solid var(--primary-color);
-        padding: 1.5rem; /* Reduziert von 2rem */
-        margin: 1.5rem 0; /* Reduziert von 2rem 0 */
-        border-radius: 0 12px 12px 0;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-      }
-      
-      .tip-box h4 {
-        margin-top: 0;
-        margin-bottom: 1rem;
-        color: var(--primary-color);
-        font-size: 1.3em;
-        font-weight: 600;
-      }
-      
-      .tip-box p {
-        margin-bottom: 0;
-        font-size: 1.05em;
-        line-height: 1.7;
-      }
-      
-      /* Stile für das Inhaltsverzeichnis - optimiert für 50+ */
-      .toc {
-        background-color: var(--card-bg);
-        border-radius: 15px;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-        padding: 2.5rem;
-        margin: 3rem auto; /* auto für Zentrierung */
-        border: 2px solid #e8f2f7;
-        max-width: 800px; /* Gleiche Breite wie Container */
-      }
-      
-      .toc h2 {
-        margin-top: 0;
-        color: var(--secondary-color);
-        font-size: 1.8em;
-        margin-bottom: 2rem;
-        border-bottom: 3px solid var(--primary-color);
-        padding-bottom: 1rem;
-        text-align: center;
-        font-weight: 600;
-      }
-      
-      .toc-list {
-        list-style: none;
-        padding: 0;
+
+      body {
+        font-family: 'Open Sans', sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+        overflow-x: hidden;
+        background: var(--background-modern);
+        color: var(--text-color);
         margin: 0;
       }
       
-      .toc-item {
-        margin-bottom: 1.5rem; /* Mehr Abstand zwischen den Elementen */
+      .guide-container {
+        max-width: 680px;
+        padding: 0 1.5rem;
+        width: 100%;
+        margin: 0 auto;
       }
       
-      .toc-link {
-        display: flex;
-        align-items: center;
-        padding: 18px 20px; /* Größere Klickfläche */
-        background-color: #f8fbff;
-        border-radius: 12px;
-        text-decoration: none;
-        color: var(--text-color);
+      /* Hero Section */
+      .guide-hero {
+        text-align: center;
+        padding: 3rem 0 1.5rem;
+      }
+      
+      .guide-hero .hero-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--accent-orange) 0%, var(--accent-orange-dark) 100%);
+        color: white;
+        font-size: 0.7rem;
         font-weight: 600;
-        font-size: 1.1em; /* Größere Schrift */
-        transition: all 0.3s ease;
-        border-left: 5px solid var(--primary-color);
-        border: 2px solid transparent;
-        min-height: 60px; /* Mindesthöhe für Touch-Freundlichkeit */
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        padding: 6px 14px;
+        border-radius: 50px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 1rem;
       }
       
-      .toc-link:hover, .toc-link:focus {
-        background-color: #e8f4fd;
-        transform: translateX(8px);
-        border-color: var(--primary-color);
-        box-shadow: 0 6px 20px rgba(37, 112, 169, 0.15);
+      .guide-hero h1 {
+        font-size: 2.25rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: var(--secondary-color);
+        margin: 0 0 0.5rem;
+        line-height: 1.2;
       }
       
-      .toc-number {
+      .guide-hero .subtitle {
+        font-size: 1.05rem;
+        color: var(--dark-gray);
+        margin: 0;
+        font-weight: 400;
+      }
+
+      /* Back Link - Inside hero */
+      .guide-hero .guide-back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--dark-gray);
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 500;
+        padding: 8px 16px;
+        margin-top: 1.5rem;
+        border-radius: 50px;
+        background: #fff;
+        border: 1px solid #e8e8e8;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      }
+
+      .guide-hero .guide-back-link:hover {
+        color: var(--secondary-color);
+        border-color: #d0d0d0;
+      }
+
+      .guide-hero .guide-back-link i {
+        font-size: 0.8rem;
+      }
+      
+      /* Step Container */
+      .steps-container {
+        display: flex;
+        flex-direction: column;
+        gap: 2.5rem;
+        margin: 5.5rem 0 8.5rem;
+      }
+      
+      /* Step Cards */
+      .step-card {
+        background: white;
+        padding: 1.75rem 1.75rem 1.5rem;
+        border-radius: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        position: relative;
+        border: 1px solid #e8e8e8;
+        transition: box-shadow 0.3s ease, transform 0.3s ease;
+        text-align: left;
+        display: block !important;
+        flex-direction: unset !important;
+        flex-wrap: unset !important;
+      }
+
+      .step-card > * {
+        display: block;
+        width: 100%;
+      }
+      
+      .step-card:hover {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+      }
+      
+      .step-card .step-number {
         display: flex;
         align-items: center;
         justify-content: center;
         width: 40px;
         height: 40px;
-        background-color: var(--primary-color);
+        background: linear-gradient(135deg, var(--accent-orange) 0%, var(--accent-orange-dark) 100%);
         color: white;
         border-radius: 50%;
-        margin-right: 20px;
-        font-weight: bold;
-        font-size: 1.2em;
-        flex-shrink: 0;
+        font-weight: 700;
+        font-size: 1.1rem;
+        position: absolute;
+        top: -20px;
+        left: 1.75rem;
+        box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25);
       }
       
-      /* Akkordeon-Stile - verbessert für flüssige Animation */
-      .accordion-header {
-        cursor: pointer;
-        display: flex;
+      .step-card .step-header {
+        display: flex !important;
+        flex-direction: row !important;
         align-items: center;
-        justify-content: space-between;
-        padding: 10px 10px; /* Feste Padding verhindert Verschiebung */
-        margin: -10px -10px 0 -10px; /* Negative Margin kompensiert Padding */
+        gap: 0.75rem;
+        margin-top: 0.5rem;
+        margin-bottom: 0.75rem;
+        width: auto;
+      }
+
+      .step-card .step-icon {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
         border-radius: 8px;
-        transition: background-color 0.2s ease;
-        position: relative;
-      }
-      
-      .accordion-header:hover {
-        background-color: rgba(37, 112, 169, 0.05);
-        /* Padding bleibt gleich - keine Verschiebung */
-      }
-      
-      .accordion-icon {
-        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        color: var(--primary-color);
-        font-size: 1.4em;
-        padding: 8px;
-        flex-shrink: 0;
-      }
-      
-      .accordion-content {
-        overflow: hidden;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        opacity: 0;
-        transform: translateY(-10px);
-        max-height: 0;
-        padding-top: 0;
-        padding-bottom: 0;
-      }
-      
-      .accordion-content.active {
-        opacity: 1;
-        transform: translateY(0);
-        max-height: none; /* Entfernt die feste max-height Beschränkung */
-        padding-top: 0.8rem; /* Reduziert von 1rem */
-        padding-bottom: 0.3rem; /* Reduziert von 0.5rem */
-      }
-      
-      .rotate-icon {
-        transform: rotate(180deg);
-      }
-      
-      /* Bessere Performance für Animationen */
-      .accordion-content {
-        will-change: max-height, opacity, transform;
-        backface-visibility: hidden;
-      }
-      
-      .accordion-icon {
-        will-change: transform;
-        backface-visibility: hidden;
-      }
-      
-      /* Support-Team Karten Stile */
-      .support-team {
-        display: flex;
-        gap: 1.5rem;
-        margin: 2rem 0;
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-      
-      .support-person {
-        background-color: #f8fbff;
-        border-radius: 20px;
-        padding: 1.5rem;
-        text-align: center;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-        border: 2px solid #e8f2f7;
-        flex: 1;
-        min-width: 240px;
-        max-width: 300px;
-      }
-      
-      .support-person:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 30px rgba(37, 112, 169, 0.15);
-        border-color: var(--primary-color);
-      }
-      
-      .support-avatar {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        margin: 0 auto 1.2rem;
-        background-color: #ddd;
-        background-size: cover;
-        background-position: center;
-        border: 4px solid var(--primary-color);
-        box-shadow: 0 4px 15px rgba(37, 112, 169, 0.2);
-        position: relative;
-        overflow: hidden;
-      }
-      
-      .support-name {
-        font-size: 1.3em;
-        font-weight: 600;
-        color: var(--secondary-color);
-        margin-bottom: 0.4rem;
-      }
-      
-      .support-role {
-        color: var(--primary-color);
-        font-weight: 500;
-        margin-bottom: 0.8rem;
-        font-size: 1em;
-      }
-      
-      .support-description {
-        color: var(--text-color);
-        line-height: 1.5;
-        margin-bottom: 1.2rem;
-        font-size: 0.9rem;
-      }
-      
-      .support-contact {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        font-size: 0.95em;
-      }
-      
-      .support-contact span {
-        display: flex;
+        display: flex !important;
         align-items: center;
         justify-content: center;
-        gap: 8px;
-        color: var(--text-color);
-      }
-      
-      .support-contact i {
-        color: var(--primary-color);
-        width: 18px;
-      }
-      
-      /* Info-Sektion Styling */
-      .info-section {
-        background-color: var(--card-bg);
-        padding: 2.5rem;
-        border-radius: 15px;
-        margin: 3rem auto; /* auto für Zentrierung */
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-        border: 2px solid #e8f2f7;
-        max-width: 800px; /* Gleiche Breite wie Container */
-      }
-      
-      .info-section h2 {
-        color: var(--secondary-color);
-        font-size: 1.7em;
-        margin-bottom: 1.5rem;
-        font-weight: 600;
-        border-bottom: 2px solid var(--primary-color);
-        padding-bottom: 0.5rem;
-      }
-      
-      .info-section p {
-        font-size: 1.1em;
-        line-height: 1.8;
-        margin-bottom: 1.5rem;
-      }
-      
-      .info-section ul {
-        padding-left: 2rem;
-      }
-      
-      .info-section li {
-        font-size: 1.1em;
-        line-height: 1.8;
-        margin-bottom: 1rem;
-        display: flex;
-        align-items: flex-start;
-      }
-      
-      .info-section li i {
-        margin-right: 15px;
-        margin-top: 2px;
-        color: var(--primary-color);
         flex-shrink: 0;
       }
+
+      .step-card .step-icon.orange {
+        background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+        color: var(--accent-orange);
+      }
+
+      .step-card .step-icon.blue {
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        color: #3b82f6;
+      }
+
+      .step-card .step-icon.green {
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        color: #22c55e;
+      }
+
+      .step-card .step-icon.purple {
+        background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+        color: #a855f7;
+      }
+
+      .step-card .step-icon i {
+        font-size: 1rem;
+      }
       
-      .info-section a {
+      .step-card h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        color: var(--secondary-color);
+        font-weight: 700;
+      }
+      
+      .step-card p {
+        font-size: 0.95rem;
+        line-height: 1.65;
+        margin: 0 0 0.5rem;
+        color: #4a5568;
+        text-align: left;
+      }
+
+      .step-card p:last-child {
+        margin-bottom: 0;
+      }
+
+      .step-card .section-label {
+        font-weight: 600;
+        color: var(--secondary-color);
+        font-size: 0.9rem;
+        margin-top: 1rem;
+        margin-bottom: 0.4rem;
+        text-align: left;
+      }
+      
+      .step-card ul {
+        padding-left: 0;
+        margin: 0;
+        list-style: none;
+        text-align: left;
+      }
+      
+      .step-card li {
+        margin-bottom: 0.35rem;
+        line-height: 1.55;
+        padding-left: 1.25rem;
+        position: relative;
+        font-size: 0.95rem;
+        color: #4a5568;
+        text-align: left;
+      }
+
+      .step-card li:last-child {
+        margin-bottom: 0;
+      }
+
+      .step-card li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.55rem;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--accent-orange);
+      }
+
+      .step-card .link {
         color: var(--primary-color);
         text-decoration: none;
         font-weight: 500;
         border-bottom: 1px solid transparent;
-        transition: border-bottom 0.2s ease;
+        transition: border-color 0.2s ease;
       }
-      
-      .info-section a:hover {
+
+      .step-card .link:hover {
         border-bottom-color: var(--primary-color);
       }
       
-      .toc-list {
-        list-style: none;
-        padding: 0;
+      /* Info Boxes */
+      .info-box {
+        padding: 0.9rem 1rem;
+        margin: 1rem 0 0;
+        border-radius: 10px;
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 0.65rem;
+        align-items: flex-start;
+        text-align: left;
+        width: auto !important;
+      }
+
+      .info-box.tip {
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+      }
+
+      .info-box.tip .info-icon {
+        color: #f59e0b;
+      }
+
+      .info-box.info {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+      }
+
+      .info-box.info .info-icon {
+        color: #3b82f6;
+      }
+
+      .info-box.success {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+      }
+
+      .info-box.success .info-icon {
+        color: #22c55e;
+      }
+
+      .info-box.warning {
+        background: #fef3c7;
+        border: 1px solid #fde68a;
+      }
+
+      .info-box.warning .info-icon {
+        color: #d97706;
+      }
+
+      .info-box .info-icon {
+        font-size: 0.95rem;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      .info-box .info-content {
+        flex: 1;
+      }
+
+      .info-box .info-title {
+        font-weight: 600;
+        font-size: 0.85rem;
+        margin: 0 0 0.15rem;
+        color: var(--secondary-color);
+      }
+
+      .info-box p {
+        font-size: 0.85rem;
+        margin: 0;
+        color: #4a5568;
+        line-height: 1.5;
+      }
+
+      /* Support Card */
+      .support-card {
+        background: white;
+        border: 1px solid #e8e8e8;
+        border-radius: 14px;
+        padding: 1.25rem 1.5rem;
+        margin: 2rem 0;
+        text-align: center;
+      }
+
+      .support-card h4 {
+        margin: 0 0 0.35rem;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+
+      .support-card h4 i {
+        color: var(--primary-color);
+      }
+
+      .support-card p {
+        margin: 0 0 0.75rem;
+        color: var(--dark-gray);
+        font-size: 0.85rem;
+      }
+
+      .support-contacts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        justify-content: center;
+      }
+
+      .support-contact {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.4rem 0.85rem;
+        background: #f8fafc;
+        border-radius: 6px;
+        font-size: 0.85rem;
+      }
+
+      .support-contact strong {
+        color: var(--secondary-color);
+      }
+
+      .support-contact a {
+        color: var(--primary-color);
+        text-decoration: none;
+      }
+
+      .support-contact a:hover {
+        text-decoration: underline;
+      }
+
+      /* CTA Section */
+      .cta-section {
+        text-align: center;
+        padding: 1.5rem 0;
+      }
+
+      .cta-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 12px 24px;
+        background: var(--secondary-color);
+        color: white;
+        text-decoration: none;
+        border-radius: 50px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 8px rgba(44, 62, 80, 0.12);
+      }
+
+      .cta-button:hover {
+        background: #1a2a3a;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(44, 62, 80, 0.18);
+      }
+      
+      /* Admin Link */
+      .admin-section {
+        text-align: center;
+        padding: 1.5rem 0;
+        border-top: 1px solid #eee;
+        margin-top: 0.5rem;
+      }
+      
+      .admin-section p {
+        color: var(--dark-gray);
+        font-size: 0.85rem;
+        margin: 0 0 0.5rem;
+      }
+      
+      .admin-section a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.85rem;
+        transition: color 0.2s ease;
+      }
+      
+      .admin-section a:hover {
+        color: var(--secondary-color);
+      }
+
+      /* Footer */
+      .guide-footer {
+        background: transparent;
+        text-align: center;
+        padding: 1rem 0 1.5rem;
+        color: var(--dark-gray);
+        font-size: 0.8rem;
+      }
+
+      .guide-footer p {
         margin: 0;
       }
       
-      .toc-item {
-        margin-bottom: 1.5rem; /* Mehr Abstand zwischen den Elementen */
-      }
-
       /* Mobile Optimierungen */
       @media (max-width: 768px) {
-        .container {
-          padding: 0 20px; /* Weniger Padding auf mobilen Geräten */
+        .guide-container {
+          padding: 0 1rem;
         }
         
-        .step {
-          padding: 1.5rem; /* Noch kompakter auf Mobile */
-          margin-bottom: 2rem;
+        .guide-hero {
+          padding: 2.5rem 0 1rem;
         }
         
-        .step-number {
-          width: 50px;
-          height: 50px;
-          font-size: 1.5em;
-          top: -25px;
-          left: 1.5rem;
+        .guide-hero .hero-badge {
+          font-size: 0.65rem;
+          padding: 5px 12px;
+          margin-bottom: 0.75rem;
         }
         
-        .step h3 {
-          font-size: 1.4em;
-          margin-top: 1.2rem;
+        .guide-hero h1 {
+          font-size: 1.75rem;
         }
         
-        .toc, .info-section, .step-container {
+        .guide-hero .subtitle {
+          font-size: 0.9rem;
+        }
+
+        .back-link {
+          font-size: 0.8rem;
+          padding: 6px 14px;
+        }
+
+        .steps-container {
+          gap: 2rem;
+          margin: 4rem 0 2rem;
+        }
+        
+        /* Override global style.css flex display on mobile */
+        .step-card {
+          display: block !important;
+          flex-direction: unset !important;
+          padding: 1.5rem 1.15rem 1.25rem;
+          border-radius: 14px;
+          text-align: left !important;
+        }
+
+        .step-card > * {
+          display: block;
           width: 100%;
-          max-width: none;
-          margin-left: 0;
-          margin-right: 0;
         }
         
-        .support-team {
+        .step-card .step-number {
+          display: flex !important;
+          position: absolute !important;
+          width: 34px;
+          height: 34px;
+          font-size: 0.95rem;
+          top: -17px;
+          left: 1.15rem;
+          margin: 0 !important;
+        }
+
+        .step-card .step-header {
+          display: flex !important;
+          flex-direction: row !important;
+          margin-top: 0.35rem;
+          width: auto !important;
+        }
+
+        .step-card .step-icon {
+          width: 32px;
+          height: 32px;
+          min-width: 32px;
+        }
+
+        .step-card .step-icon i {
+          font-size: 0.9rem;
+        }
+        
+        .step-card h3 {
+          font-size: 1rem;
+          margin-bottom: 0 !important;
+        }
+
+        .step-card p,
+        .step-card li {
+          font-size: 0.9rem;
+        }
+
+        .step-card .section-label {
+          font-size: 0.85rem;
+          margin-top: 0.85rem;
+        }
+
+        .step-card li {
+          padding-left: 1rem;
+          margin-bottom: 0.3rem;
+        }
+
+        .step-card li::before {
+          width: 4px;
+          height: 4px;
+          top: 0.5rem;
+        }
+
+        .info-box {
+          display: flex !important;
+          flex-direction: row !important;
+          padding: 0.75rem 0.85rem;
+          border-radius: 8px;
+          margin-top: 0.85rem;
+          width: auto !important;
+        }
+
+        .info-box .info-icon {
+          font-size: 0.85rem;
+        }
+
+        .info-box .info-title {
+          font-size: 0.8rem;
+        }
+
+        .info-box p {
+          font-size: 0.8rem;
+          line-height: 1.45;
+        }
+
+        .support-card {
+          padding: 1rem 1rem;
+          border-radius: 12px;
+          margin: 1.5rem 0;
+        }
+
+        .support-card h4 {
+          font-size: 0.9rem;
+        }
+
+        .support-card p {
+          font-size: 0.8rem;
+        }
+
+        .support-contacts {
           flex-direction: column;
-          align-items: center;
+          align-items: stretch;
+          gap: 0.5rem;
         }
-        
-        .support-person {
-          max-width: 100%;
-          margin-bottom: 1rem;
+
+        .support-contact {
+          justify-content: center;
+          font-size: 0.8rem;
+          padding: 0.5rem 0.75rem;
+        }
+
+        .cta-section {
+          padding: 1rem 0;
+        }
+
+        .cta-button {
+          padding: 11px 20px;
+          font-size: 0.9rem;
+          width: 100%;
+          justify-content: center;
+        }
+
+        .admin-section {
+          padding: 1.25rem 0;
+        }
+
+        .admin-section p {
+          font-size: 0.8rem;
+        }
+
+        .admin-section a {
+          font-size: 0.8rem;
+        }
+
+        .guide-footer {
+          padding: 0.75rem 0 1rem;
+          font-size: 0.75rem;
         }
       }
 
-      /* Zusätzliche Sicherheit für sehr kleine Bildschirme */
-      @media (max-width: 480px) {
-        .container {
-          padding: 0 15px;
+      @media (max-width: 400px) {
+        .guide-container {
+          padding: 0 0.85rem;
+        }
+
+        .guide-hero {
+          padding: 0rem 0 0.75rem;
         }
         
-        body {
-          font-size: 18px;
+        .guide-hero h1 {
+          font-size: 1.5rem;
+        }
+
+        .guide-hero .subtitle {
+          font-size: 0.85rem;
+        }
+
+        .steps-container {
+          gap: 1.75rem;
+          margin: 3.5rem 0 1.75rem;
         }
         
-        h1 {
-          font-size: 1.8em;
+        .step-card {
+          display: block !important;
+          padding: 1.25rem 1rem 1.1rem;
+          border-radius: 12px;
         }
-        
-        .step {
-          padding: 1.2rem;
+
+        .step-card .step-number {
+          width: 32px;
+          height: 32px;
+          font-size: 0.9rem;
+          top: -16px;
+          left: 1rem;
+        }
+
+        .step-card h3 {
+          font-size: 0.95rem;
+        }
+
+        .step-card p,
+        .step-card li {
+          font-size: 0.85rem;
+        }
+
+        .info-box {
+          flex-direction: column !important;
+          gap: 0.4rem;
+        }
+
+        .support-contact {
+          flex-direction: column;
+          gap: 0.2rem;
+        }
+
+        .support-contact a {
+          word-break: break-all;
+          font-size: 0.75rem;
         }
       }
-
     </style>
   </head>
-  <body class="einrichtungsanleitung">
-    <header>
+  <body>
+    <header class="header-dashboard" role="banner">
       <div class="container">
         <a href="index.html">
-          <img src="images/logo_savekey_text_white.svg" alt="SaveKey Logo" class="logo">
+          <img src="images/logo_savekey_text.svg" alt="SaveKey Logo" class="logo">
         </a>
-        <nav role="navigation" aria-label="Hauptnavigation">
+        
+        <button id="mobileMenuToggle" class="mobile-menu-toggle" aria-label="Menü öffnen">
+          <i class="fas fa-bars"></i>
+        </button>
+
+        <nav id="navigation" role="navigation" aria-label="Hauptnavigation">
           <ul>
-            <li><a href="login.html">Login</a></li>
-            <li><a href="register.html">Registrieren</a></li>
+            <li><a href="login.html" class="nav-link" data-text="Login">Login</a></li>
+            <li><a href="register.html" class="nav-link" data-text="Registrieren">Registrieren</a></li>
           </ul>
         </nav>
       </div>
     </header>
 
     <main>
-      <div class="container">
-        <h1><i class="fas fa-cogs" style="color: var(--primary-color); margin-right: 15px;" aria-hidden="true"></i>Schritt-für-Schritt Anleitung zur Einrichtung Ihrer SaveKey Schlüsselbox</h1>
-        
-        <a href="index.html" class="back-to-home">
-          <i class="fas fa-arrow-left" style="margin-right: 10px;" aria-hidden="true"></i> Zurück zur Startseite
-        </a>
-        
-        <section class="info-section" aria-labelledby="welcome-heading">
-          <h2 id="welcome-heading"><i class="fas fa-info-circle" style="color: var(--primary-color); margin-right: 10px;" aria-hidden="true"></i>Willkommen bei Ihrer SaveKey Schlüsselbox Einrichtung</h2>
-          <p><strong>Herzlich willkommen!</strong> Auf dieser Seite finden Sie eine einfach zu befolgende Anleitung, die Sie Schritt für Schritt durch die gesamte Einrichtung Ihrer SaveKey Schlüsselbox führt.</p>
-          <p>Wir haben die Anleitung in <strong>7 übersichtliche Schritte</strong> unterteilt, damit Sie ohne Probleme starten können. Jeder Schritt ist ausführlich erklärt und enthält hilfreiche Symbole zur besseren Orientierung.</p>
-          <div class="tip-box">
-            <h4><i class="fas fa-lightbulb"></i> So nutzen Sie diese Anleitung am besten:</h4>
-            <ul style="margin: 0; padding-left: 1.5rem;">
-              <li>Arbeiten Sie die Schritte nacheinander durch</li>
-              <li>Klicken Sie auf einen Schritt im Inhaltsverzeichnis, um direkt dorthin zu springen</li>
-              <li>Bei Fragen steht Ihnen unser Support-Team jederzeit zur Verfügung</li>
-            </ul>
-          </div>
+      <div class="guide-container">
+        <!-- Hero Section -->
+        <div class="guide-hero">
+          <span class="hero-badge">VR-Igloo</span>
+          <h1>So verwendest du die Box</h1>
+          <p class="subtitle">Alles was du wissen musst – in 4 einfachen Schritten.</p>
+          <a href="index.html" class="guide-back-link">
+            <i class="fas fa-arrow-left" aria-hidden="true"></i> Zurück zur Startseite
+          </a>
         </div>
-        
-        <!-- Inhaltsverzeichnis -->
-        <nav class="toc" id="inhaltsverzeichnis" aria-labelledby="toc-heading">
-          <h2 id="toc-heading"><i class="fas fa-list-ol" style="color: var(--primary-color); margin-right: 10px;" aria-hidden="true"></i>Die 7 Einrichtungsschritte im Überblick</h2>
-          <ul class="toc-list" role="list">
-            <li class="toc-item">
-              <a href="#schritt1" class="toc-link" onclick="scrollToStep('schritt1'); return false;">
-                <span class="toc-number">1</span>
-                <span>QR-Code scannen und Admin-Konto erstellen</span>
-              </a>
-            </li>
-            <li class="toc-item">
-              <a href="#schritt2" class="toc-link" onclick="scrollToStep('schritt2'); return false;">
-                <span class="toc-number">2</span>
-                <span>Hardware einrichten</span>
-              </a>
-            </li>
-            <li class="toc-item">
-              <a href="#schritt3" class="toc-link" onclick="scrollToStep('schritt3'); return false;">
-                <span class="toc-number">3</span>
-                <span>Erste Anmeldung als Administrator</span>
-              </a>
-            </li>
-            <li class="toc-item">
-              <a href="#schritt4" class="toc-link" onclick="scrollToStep('schritt4'); return false;">
-                <span class="toc-number">4</span>
-                <span>Verifizierung an der Schlüsselbox</span>
-              </a>
-            </li>
-            <li class="toc-item">
-              <a href="#schritt5" class="toc-link" onclick="scrollToStep('schritt5'); return false;">
-                <span class="toc-number">5</span>
-                <span>Push-Benachrichtigungen einrichten</span>
-              </a>
-            </li>
-            <li class="toc-item">
-              <a href="#schritt6" class="toc-link" onclick="scrollToStep('schritt6'); return false;">
-                <span class="toc-number">6</span>
-                <span>Weitere Benutzer hinzufügen</span>
-              </a>
-            </li>
-            <li class="toc-item">
-              <a href="#schritt7" class="toc-link" onclick="scrollToStep('schritt7'); return false;">
-                <span class="toc-number">7</span>
-                <span>System testen</span>
-              </a>
-            </li>
-          </ul>
-        </nav>
         
         <!-- Schritt-für-Schritt Anleitung -->
-        <div class="step-container">
-          <!-- Schritt 1 -->
-          <div id="schritt1" class="step">
-            <div class="step-number">1</div>
-            <div class="accordion-header" onclick="toggleAccordion('schritt1-content')" role="button" tabindex="0" aria-expanded="true" aria-controls="schritt1-content">
-              <h3><i class="fas fa-user-plus" style="color: var(--primary-color); margin-right: 10px;" aria-hidden="true"></i>QR-Code scannen und Admin-Konto erstellen</h3>
-              <i class="fas fa-chevron-down accordion-icon" id="schritt1-icon" aria-hidden="true"></i>
+        <div class="steps-container">
+          <!-- Schritt 1: Registrieren -->
+          <article id="schritt1" class="step-card">
+            <div class="step-number" aria-label="Schritt 1">1</div>
+            <div class="step-header">
+              <div class="step-icon orange">
+                <i class="fas fa-user-plus" aria-hidden="true"></i>
+              </div>
+              <h3>Registrieren</h3>
             </div>
-            <div id="schritt1-content" class="accordion-content active">
-              <p><strong>Starten Sie hier:</strong> Der erste Schritt ist das Einrichten Ihres Administrator-Kontos. Als Administrator haben Sie die volle Kontrolle über Ihre Schlüsselbox.</p>
-              
-              <p><strong>QR-Code scannen:</strong> Scannen Sie den QR-Code, der mit Ihrer Schlüsselbox geliefert wurde. Dieser Code enthält die einmalige Seriennummer Ihrer Box.</p>
-              
-              <p><strong>Alternative:</strong> Sie können auch den beiliegenden Link direkt in Ihrem Webbrowser öffnen.</p>
-              
-              <p><strong>Registrierung durchführen:</strong> Führen Sie die Registrierung durch, indem Sie alle erforderlichen Daten eingeben (Name, E-Mail, Passwort).</p>
-              
-              <p><strong>Wichtiger Hinweis:</strong> Bewahren Sie Ihre Zugangsdaten sicher auf! Sie werden sie benötigen, um als Administrator auf das System zuzugreifen.</p>
-              <div class="tip-box">
-                <h4><i class="fas fa-info-circle"></i> Gut zu wissen:</h4>
-                <p>Als Administrator können Sie später weitere Benutzer hinzufügen und das gesamte System verwalten. Sie haben als einzige Person die vollständigen Verwaltungsrechte.</p>
+            <p>Erstelle deinen Account auf der <a href="register.html" class="link">Registrierungs-Seite</a>.</p>
+            
+            <p class="section-label">Das brauchst du:</p>
+            <ul>
+              <li>Deinen Namen</li>
+              <li>E-Mail-Adresse</li>
+              <li>Ein sicheres Passwort</li>
+              <li>Die Seriennummer der Box</li>
+            </ul>
+
+            <div class="info-box tip">
+              <i class="fas fa-lightbulb info-icon" aria-hidden="true"></i>
+              <div class="info-content">
+                <p class="info-title">Tipp</p>
+                <p>Die Seriennummer findest du auf einem Aufkleber an der Box oder bekommst sie vom Administrator.</p>
               </div>
             </div>
-          </div>
+          </article>
           
-          <!-- Schritt 2 -->
-          <div id="schritt2" class="step">
-            <div class="step-number">2</div>
-            <div class="accordion-header" onclick="toggleAccordion('schritt2-content')" role="button" tabindex="0" aria-expanded="false" aria-controls="schritt2-content">
-              <h3>Hardware einrichten</h3>
-              <i class="fas fa-chevron-down accordion-icon" id="schritt2-icon" aria-hidden="true"></i>
+          <!-- Schritt 2: Karte zuweisen -->
+          <article id="schritt2" class="step-card">
+            <div class="step-number" aria-label="Schritt 2">2</div>
+            <div class="step-header">
+              <div class="step-icon blue">
+                <i class="fas fa-id-card" aria-hidden="true"></i>
+              </div>
+              <h3>Karte zuweisen</h3>
             </div>
-            <div id="schritt2-content" class="accordion-content">
-              <p>Sobald Sie Ihr Admin-Konto erstellt haben, können Sie die Schlüsselbox einrichten:</p>
-              <ul>
-                <li><i class="fas fa-plug step-icon"></i> Verbinden Sie die Schlüsselbox mit einer Stromquelle.</li>
-                <li><i class="fas fa-wifi step-icon"></i> Stellen Sie sicher, dass WLAN in der Nähe verfügbar ist.</li>
-              </ul>
-            </div>
-          </div>
-          
-          <!-- Schritt 3 -->
-          <div id="schritt3" class="step">
-            <div class="step-number">3</div>
-            <div class="accordion-header" onclick="toggleAccordion('schritt3-content')" role="button" tabindex="0" aria-expanded="false" aria-controls="schritt3-content">
-              <h3>Erste Anmeldung als Administrator</h3>
-              <i class="fas fa-chevron-down accordion-icon" id="schritt3-icon" aria-hidden="true"></i>
-            </div>
-            <div id="schritt3-content" class="accordion-content">
-              <p>Jetzt können Sie sich zum ersten Mal anmelden und Ihr System konfigurieren:</p>
-              <ul>
-                <li><i class="fas fa-sign-in-alt step-icon"></i> Öffnen Sie die SaveKey-Webseite und klicken Sie auf "Login".</li>
-                <li><i class="fas fa-user-shield step-icon"></i> Melden Sie sich mit Ihren bei der Registrierung erstellten Admin-Zugangsdaten an.</li>
-                <li><i class="fas fa-tachometer-alt step-icon"></i> Nach der Anmeldung werden Sie zum Admin-Dashboard weitergeleitet.</li>
-              </ul>
-            </div>
-          </div>
-          
-          <!-- Schritt 4 -->
-          <div id="schritt4" class="step">
-            <div class="step-number">4</div>
-            <div class="accordion-header" onclick="toggleAccordion('schritt4-content')" role="button" tabindex="0" aria-expanded="false" aria-controls="schritt4-content">
-              <h3>Verifizierung an der Schlüsselbox einrichten</h3>
-              <i class="fas fa-chevron-down accordion-icon" id="schritt4-icon" aria-hidden="true"></i>
-            </div>
-            <div id="schritt4-content" class="accordion-content">
-              <p><strong>Wichtiger Sicherheitsschritt:</strong> Alle Benutzer der Schlüsselbox müssen sich mit einer Karte oder einem Badge verifizieren. Diese Verifizierung ist jedes Mal notwendig, wenn ein Schlüssel entnommen werden soll.</p>
-              
-              <h4 style="color: var(--secondary-color); margin-top: 1.5rem; margin-bottom: 0.8rem;">Welche Karten können Sie verwenden?</h4>
-              <p><strong>Sie können fast jede Karte mit RFID/NFC-Chip verwenden:</strong> SwissPass (sehr häufig verwendet), Kredit- oder Debitkarte (kontaktlose Zahlung), Mitarbeiterausweis mit RFID-Chip oder öffentliche Verkehrskarten.</p>
-              
-              <h4 style="color: var(--secondary-color); margin-top: 1.5rem; margin-bottom: 0.8rem;">So richten Sie Ihre Karte ein:</h4>
-              <p><strong>Schritt 1:</strong> Gehen Sie im Benutzerbereich zum Menüpunkt "Mein Profil"</p>
-              <p><strong>Schritt 2:</strong> Wählen Sie die Option "Karte zuweisen"</p>
-              <p><strong>Schritt 3:</strong> Halten Sie Ihre Karte an das Lesegerät der Box, wenn Sie dazu aufgefordert werden</p>
-              <p><strong>Schritt 4:</strong> Bestätigen Sie die Zuweisung im System</p>
-              
-              <div class="tip-box" style="background-color: #fff3cd; border-left-color: #ffc107;">
-                <h4>Wichtig zu beachten:</h4>
-                <p><strong>Bei jeder Schlüsselentnahme</strong> müssen Sie Ihre zugewiesene Karte an das Lesegerät halten, um sich zu verifizieren. Ohne diese Verifizierung öffnet sich die Box nicht.</p>
+            <p>Verbinde deine Karte mit deinem Account. <strong>Die Box öffnet sich nur mit deiner zugewiesenen Karte!</strong></p>
+            
+            <p class="section-label">So geht's:</p>
+            <ul>
+              <li>Melde dich an und gehe zu «Mein Profil»</li>
+              <li>Halte deine Karte an den Reader</li>
+              <li>Klicke auf «Karte zuweisen»</li>
+              <li>Bestätige die Zuweisung</li>
+            </ul>
+
+            <div class="info-box info">
+              <i class="fas fa-info-circle info-icon" aria-hidden="true"></i>
+              <div class="info-content">
+                <p class="info-title">Welche Karten funktionieren?</p>
+                <p>Studentenausweis, SwissPass, kontaktlose Kredit-/Debitkarten – fast jede Karte mit RFID/NFC-Chip funktioniert!</p>
               </div>
             </div>
-          </div>
+          </article>
           
-          <!-- Schritt 5 -->
-          <div id="schritt5" class="step">
-            <div class="step-number">5</div>
-            <div class="accordion-header" onclick="toggleAccordion('schritt5-content')" role="button" tabindex="0" aria-expanded="false" aria-controls="schritt5-content">
-              <h3><i class="fas fa-bell" style="color: var(--primary-color); margin-right: 10px;" aria-hidden="true"></i>Push-Benachrichtigungen einrichten</h3>
-              <i class="fas fa-chevron-down accordion-icon" id="schritt5-icon" aria-hidden="true"></i>
-            </div>
-            <div id="schritt5-content" class="accordion-content">
-              <p><strong>Bleiben Sie immer informiert:</strong> Push-Benachrichtigungen informieren Sie sofort über wichtige Ereignisse an Ihrer Schlüsselbox, wie zum Beispiel Schlüsselentnahmen oder Warnungen.</p>
-              
-              <h4 style="color: var(--secondary-color); margin-top: 1.5rem; margin-bottom: 0.8rem;">📱 Für Android-Geräte (Samsung, Huawei, etc.):</h4>
-              <p><strong>Ganz einfach:</strong> Öffnen Sie die SaveKey-Website in Ihrem Browser und klicken Sie auf den Button "Push-Benachrichtigungen aktivieren". Das war's schon! Ihr Android-Gerät wird Sie um Erlaubnis fragen – bestätigen Sie diese.</p>
-              
-              <h4 style="color: var(--secondary-color); margin-top: 1.5rem; margin-bottom: 0.8rem;">🍎 Für iPhone/iPad:</h4>
-              <p><strong>Wichtiger Hinweis für iPhone-Benutzer:</strong> Bei Apple-Geräten sind ein paar zusätzliche Schritte nötig:</p>
-              <ul style="padding-left: 2rem; margin-top: 1rem;">
-                <li><strong>1.</strong> Öffnen Sie die SaveKey-Website in Safari</li>
-                <li><strong>2.</strong> Tippen Sie unten auf das "Teilen"-Symbol (Rechteck mit Pfeil nach oben)</li>
-                <li><strong>3.</strong> Wählen Sie "Zum Home-Bildschirm hinzufügen"</li>
-                <li><strong>4.</strong> Bestätigen Sie mit "Hinzufügen"</li>
-                <li><strong>5.</strong> Öffnen Sie SaveKey nun über das neue Symbol auf Ihrem Home-Bildschirm</li>
-                <li><strong>6.</strong> Erst jetzt können Sie auf "Push-Benachrichtigungen aktivieren" klicken</li>
-              </ul>
-              
-              <div class="tip-box">
-                <h4><i class="fas fa-info-circle"></i> Warum ist das bei iPhones komplizierter?</h4>
-                <p>Apple erlaubt Push-Benachrichtigungen für Websites nur, wenn diese als "Web-App" auf dem Home-Bildschirm gespeichert sind. Deshalb sind diese zusätzlichen Schritte nötig. Keine Sorge – Sie müssen das nur einmal machen!</p>
+          <!-- Schritt 3: Push-Benachrichtigungen -->
+          <article id="schritt3" class="step-card">
+            <div class="step-number" aria-label="Schritt 3">3</div>
+            <div class="step-header">
+              <div class="step-icon purple">
+                <i class="fas fa-bell" aria-hidden="true"></i>
               </div>
-              
-              <div class="tip-box" style="background-color: #e8f5e8; border-left-color: #28a745;">
-                <h4><i class="fas fa-check-circle" style="color: #28a745;"></i> So wissen Sie, dass es funktioniert:</h4>
-                <p>Nach der erfolgreichen Aktivierung erhalten Sie eine Bestätigungsnachricht. Zusätzlich können Sie die Benachrichtigungen jederzeit in den Einstellungen Ihres Geräts verwalten.</p>
+              <h3>Push-Benachrichtigungen <span style="font-weight: 400; color: var(--dark-gray); font-size: 0.9rem;">(optional)</span></h3>
+            </div>
+            <p>Bleib informiert über alle Aktivitäten an der Box – direkt auf dein Handy.</p>
+            
+            <p class="section-label">📱 Für Android:</p>
+            <ul>
+              <li>Klicke auf «Push-Benachrichtigungen aktivieren»</li>
+              <li>Erlaube die Benachrichtigungen im Browser</li>
+              <li>Fertig! ✅</li>
+            </ul>
+
+            <p class="section-label">🍎 Für iPhone/iPad:</p>
+            <ul>
+              <li>Öffne SaveKey in Safari</li>
+              <li>Tippe auf das «Teilen»-Symbol</li>
+              <li>Wähle «Zum Home-Bildschirm»</li>
+              <li>Öffne die App über das neue Icon</li>
+              <li>Aktiviere Push-Benachrichtigungen</li>
+            </ul>
+
+            <div class="info-box success">
+              <i class="fas fa-check-circle info-icon" aria-hidden="true"></i>
+              <div class="info-content">
+                <p class="info-title">Warum dieser Umweg bei iPhones?</p>
+                <p>Apple erlaubt Push-Benachrichtigungen nur für Web-Apps auf dem Home-Bildschirm. Das ist einmalig nötig.</p>
               </div>
             </div>
-          </div>
+          </article>
           
-          <!-- Schritt 6 -->
-          <div id="schritt6" class="step">
-            <div class="step-number">6</div>
-            <div class="accordion-header" onclick="toggleAccordion('schritt6-content')" role="button" tabindex="0" aria-expanded="false" aria-controls="schritt6-content">
-              <h3>Weitere Benutzer hinzufügen</h3>
-              <i class="fas fa-chevron-down accordion-icon" id="schritt6-icon" aria-hidden="true"></i>
-            </div>
-            <div id="schritt6-content" class="accordion-content">
-              <p>Weitere Benutzer müssen sich selbst registrieren, um Zugriff auf die Schlüsselbox zu erhalten:</p>
-              <ul>
-                <li><i class="fas fa-share-alt step-icon"></i> Teilen Sie die Seriennummer der Schlüsselbox mit den Personen, die Zugriff haben sollen.</li>
-                <li><i class="fas fa-info-circle step-icon"></i> Informieren Sie die Benutzer, dass sie sich auf der SaveKey-Website unter "Registrieren" anmelden müssen.</li>
-                <li><i class="fas fa-exclamation-triangle step-icon"></i> Wichtig: Jeder Benutzer muss bei der Registrierung die korrekte Seriennummer der Schlüsselbox eingeben.</li>
-                <li><i class="fas fa-user-check step-icon"></i> Nach erfolgreicher Registrierung können die Benutzer ihren eigenen RFID/NFC-Chip zuweisen.</li>
-              </ul>
-            </div>
-          </div>
-          
-          <!-- Schritt 7 -->
-          <div id="schritt7" class="step">
-            <div class="step-number">7</div>
-            <div class="accordion-header" onclick="toggleAccordion('schritt7-content')" role="button" tabindex="0" aria-expanded="false" aria-controls="schritt7-content">
-              <h3>System testen</h3>
-              <i class="fas fa-chevron-down accordion-icon" id="schritt7-icon" aria-hidden="true"></i>
-            </div>
-            <div id="schritt7-content" class="accordion-content">
-              <p>Zum Abschluss sollten Sie das System testen:</p>
-              <ul>
-                <li><i class="fas fa-vial step-icon"></i> Testen Sie die Entnahme und Rückgabe des Schlüssels mit Ihrem registrierten RFID/NFC-Chip.</li>
-                <li><i class="fas fa-mobile-alt step-icon"></i> Überprüfen Sie, ob die konfigurierten Push-Benachrichtigungen korrekt auf Ihrem Smartphone ankommen.</li>
-                <li><i class="fas fa-user-check step-icon"></i> Prüfen Sie, ob der Zugriff nur mit registriertem RFID/NFC-Chip möglich ist.</li>
-                <li><i class="fas fa-clipboard-check step-icon"></i> Überprüfen Sie, ob alle Aktivitäten korrekt im Protokoll angezeigt werden.</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        
-        <div class="info-section">
-          <h2><i class="fas fa-headset" style="color: var(--primary-color); margin-right: 10px;"></i>Unterstützung und Hilfe</h2>
-          <p><strong>Haben Sie Fragen oder benötigen Sie Hilfe?</strong> Sollten Sie während der Einrichtung auf Probleme stoßen oder weitere Fragen haben, zögern Sie nicht, unseren Support zu kontaktieren. Wir helfen Ihnen gerne weiter!</p>
-          
-          <div class="support-team">
-            <div class="support-person">
-              <div class="support-avatar" style="background-image: url('/images/Profilbilder/claudio_savekey.png');"></div>
-              <div class="support-name">Claudio Riz</div>
-              <div class="support-role">Senior Support Spezialist</div>
-              <div class="support-description">
-                Claudio ist seit 5 Jahren bei SaveKey und kennt jede Funktion des Systems. Er hilft besonders gerne bei der ersten Einrichtung und komplexeren technischen Fragen.
+          <!-- Schritt 4: Los geht's -->
+          <article id="schritt4" class="step-card">
+            <div class="step-number" aria-label="Schritt 4">4</div>
+            <div class="step-header">
+              <div class="step-icon green">
+                <i class="fas fa-key" aria-hidden="true"></i>
               </div>
-              <div class="support-contact">
-                <span><i class="fas fa-envelope"></i> claudio.riz@stud.fhgr.ch</span>
-                <span><i class="fas fa-clock"></i> Mo-Fr, 8:00-17:00</span>
-              </div>
+              <h3>Box verwenden</h3>
             </div>
             
-            <div class="support-person">
-              <div class="support-avatar" style="background-image: url('/images/Profilbilder/aaron_savekey.png');"></div>
-              <div class="support-name">Aaron Täschler</div>
-              <div class="support-role">Hardware Support Experte</div>
-              <div class="support-description">
-                Aaron ist unser Experte für alle Hardware-Fragen. Ob Verbindungsprobleme, RFID-Setup oder technische Installationen - er findet immer eine Lösung.
-              </div>
-              <div class="support-contact">
-                <span><i class="fas fa-envelope"></i> aaron.taeschler@stud.fhgr.ch</span>
-                <span><i class="fas fa-clock"></i> Mo-Fr, 9:00-18:00</span>
+            <p class="section-label">🔓 Schlüssel nehmen:</p>
+            <ul>
+              <li>Halte deine Karte an den Reader</li>
+              <li>Die Box öffnet sich automatisch</li>
+              <li>Nimm den Schlüssel heraus</li>
+              <li>Verifiziere dich am Reader aussen an der Box</li>
+              <li>Schliesse die Box wieder, sie wird nach 2 Minuten automatisch verriegelt</li>
+            </ul>
+
+            <p class="section-label">🔐 Schlüssel zurückgeben:</p>
+            <ul>
+              <li>Öffne die Box mit deiner Karte</li>
+              <li>Lege den Schlüssel zurück</li>
+              <li>Schliesse die Box wieder, sie wird nach 2 Minuten automatisch verriegelt</li>
+            </ul>
+
+            <div class="info-box warning">
+              <i class="fas fa-exclamation-triangle info-icon" aria-hidden="true"></i>
+              <div class="info-content">
+                <p class="info-title">Wichtig!</p>
+                <p>Verifiziere dich immer mit deiner Karte – wenn du den Schlüssel entnimmst. Sonst schlägt das System Alarm!</p>
               </div>
             </div>
-          </div>
-          
-          <div class="tip-box">
-            <h4><i class="fas fa-heart" style="color: #e74c3c;"></i> Unser Versprechen:</h4>
-            <p>Unser Team steht Ihnen gerne zur Verfügung, um sicherzustellen, dass Ihre SaveKey Schlüsselbox optimal eingerichtet ist. Wir lassen Sie nicht allein!</p>
-          </div>
+          </article>
         </div>
         
-        <a href="index.html" class="back-to-home">
-          <i class="fas fa-arrow-left"></i> Zurück zur Startseite
-        </a>
+        <!-- Support Card -->
+        <div class="support-card">
+          <h4><i class="fas fa-headset" aria-hidden="true"></i> Fragen oder Probleme?</h4>
+          <p>Wenn etwas nicht klappt, melde dich bei uns:</p>
+          <div class="support-contacts">
+            <div class="support-contact">
+              <strong>Claudio:</strong>
+              <a href="mailto:claudio.riz@stud.fhgr.ch">claudio.riz@stud.fhgr.ch</a>
+            </div>
+            <div class="support-contact">
+              <strong>Aaron:</strong>
+              <a href="mailto:aaron.taeschler@stud.fhgr.ch">aaron.taeschler@stud.fhgr.ch</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="cta-section">
+          <a href="register.html" class="cta-button">
+            Jetzt registrieren <i class="fas fa-arrow-right" aria-hidden="true"></i>
+          </a>
+        </div>
+        
+        <!-- Admin Link -->
+        <div class="admin-section">
+          <p>Du bist Administrator und suchst technische Infos?</p>
+          <a href="admin_anleitung.php" id="adminAnleitungLink"><i class="fas fa-cog" aria-hidden="true"></i> Zur Admin-Anleitung</a>
+          
+          <div id="adminAccessDenied" class="info-box warning" style="display: none; margin-top: 1.5rem; animation: fadeIn 0.3s ease;">
+            <i class="fas fa-lock info-icon" aria-hidden="true"></i>
+            <div class="info-content">
+              <p class="info-title">Zugriff eingeschränkt</p>
+              <p>Dieser Bereich ist ausschliesslich für Administratoren reserviert. Bitte melde dich mit einem Admin-Konto an.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
 
-    <footer>
-      <div class="container">
-        <p>&copy; 2025 savekey-Systems - Ihre vertrauensvolle Schlüsselverwaltung</p>
-      </div>
-    </footer>
-    
-    <!-- JavaScript für Akkordeon-Funktionalität -->
     <script>
-      // Initial ersten Abschnitt öffnen und andere schließen
-      document.addEventListener('DOMContentLoaded', function() {
-        // Alle Akkordeon-Inhalte schließen außer dem ersten
-        var contents = document.querySelectorAll('.accordion-content');
-        for (var i = 1; i < contents.length; i++) {
-          contents[i].classList.remove('active');
-        }
-        
-        // Alle Icons initial richtig setzen
-        updateAllIcons();
-        
-        // Smooth Scroll für alle internen Links hinzufügen
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-          anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-              target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-              });
+      document.addEventListener('DOMContentLoaded', () => {
+        const adminLink = document.getElementById('adminAnleitungLink');
+        const accessDenied = document.getElementById('adminAccessDenied');
+
+        if (adminLink && accessDenied) {
+          adminLink.addEventListener('click', (e) => {
+            const user = window.globalAuth.getCurrentUser();
+            const isAdmin = window.globalAuth.isLoggedIn() && user && user.is_admin;
+
+            if (!isAdmin) {
+              e.preventDefault();
+              accessDenied.style.display = 'flex';
+              accessDenied.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              
+              // Optional: Nach 5 Sekunden wieder ausblenden
+              setTimeout(() => {
+                // accessDenied.style.display = 'none'; // Oder lassen
+              }, 5000);
             }
           });
-        });
-      });
-      
-      // Funktion zum Umschalten eines Akkordeon-Elements mit verbesserter Animation
-      function toggleAccordion(contentId) {
-        var content = document.getElementById(contentId);
-        var iconId = contentId.replace('content', 'icon');
-        var icon = document.getElementById(iconId);
-        var headerId = contentId.replace('-content', '');
-        var header = document.querySelector(`[aria-controls="${contentId}"]`);
-        
-        if (content.classList.contains('active')) {
-          // Schließen: Erst Höhe messen, dann animieren
-          var contentHeight = content.scrollHeight;
-          content.style.maxHeight = contentHeight + 'px';
-          
-          // Force reflow
-          content.offsetHeight;
-          
-          // Animate to closed
-          setTimeout(function() {
-            content.style.maxHeight = '0px';
-            content.style.opacity = '0';
-            content.style.transform = 'translateY(-10px)';
-          }, 10);
-          
-          // Clean up after animation
-          setTimeout(function() {
-            content.classList.remove('active');
-            content.style.maxHeight = '';
-            content.style.opacity = '';
-            content.style.transform = '';
-          }, 260);
-          
-          icon.classList.remove('rotate-icon');
-          if (header) header.setAttribute('aria-expanded', 'false');
-        } else {
-          // Öffnen: CSS-Klasse setzen und Höhe berechnen
-          content.classList.add('active');
-          var contentHeight = content.scrollHeight;
-          
-          // Start from closed state
-          content.style.maxHeight = '0px';
-          content.style.opacity = '0';
-          content.style.transform = 'translateY(-10px)';
-          
-          // Force reflow
-          content.offsetHeight;
-          
-          // Animate to open
-          setTimeout(function() {
-            content.style.maxHeight = contentHeight + 'px';
-            content.style.opacity = '1';
-            content.style.transform = 'translateY(0)';
-          }, 10);
-          
-          // Clean up after animation - remove inline styles to let CSS take over
-          setTimeout(function() {
-            content.style.maxHeight = '';
-            content.style.opacity = '';
-            content.style.transform = '';
-          }, 260);
-          
-          icon.classList.add('rotate-icon');
-          if (header) header.setAttribute('aria-expanded', 'true');
         }
-      }
-      
-      // Funktion zum Scrollen zu einem bestimmten Schritt und Öffnen des Inhalts
-      function scrollToStep(stepId) {
-        var element = document.getElementById(stepId);
-        var contentId = stepId + '-content';
-        var content = document.getElementById(contentId);
-        var iconId = contentId.replace('content', 'icon');
-        var icon = document.getElementById(iconId);
-        
-        // Zum Element scrollen mit etwas Offset für bessere Sichtbarkeit
-        window.scrollTo({
-          top: element.offsetTop - 80, // Mehr Offset für bessere Sichtbarkeit
-          behavior: 'smooth'
-        });
-        
-        // Kleine Verzögerung vor dem Öffnen für bessere UX
-        setTimeout(function() {
-          // Inhalt öffnen, falls geschlossen
-          if (!content.classList.contains('active')) {
-            content.classList.add('active');
-            icon.classList.add('rotate-icon');
-            
-            // Accordion-Header für ARIA-Attribute finden und aktualisieren
-            var accordionHeader = element.querySelector('.accordion-header');
-            if (accordionHeader) {
-              accordionHeader.setAttribute('aria-expanded', 'true');
-            }
-          }
-          
-          // Visuelles Feedback: kurzes Highlighting des Schritts
-          element.style.transform = 'scale(1.02)';
-          element.style.transition = 'transform 0.3s ease';
-          
-          // Fokus auf den Accordion-Header setzen für bessere Accessibility
-          var accordionHeader = element.querySelector('.accordion-header');
-          if (accordionHeader) {
-            accordionHeader.focus();
-          }
-          
-          setTimeout(function() {
-            element.style.transform = 'scale(1)';
-          }, 300);
-        }, 300);
-      }
-      
-      // Funktion zum Aktualisieren aller Icons basierend auf dem Zustand der Inhalte
-      function updateAllIcons() {
-        var contents = document.querySelectorAll('.accordion-content');
-        for (var i = 0; i < contents.length; i++) {
-          var contentId = contents[i].id;
-          var iconId = contentId.replace('content', 'icon');
-          var icon = document.getElementById(iconId);
-          
-          if (contents[i].classList.contains('active')) {
-            icon.classList.add('rotate-icon');
-          } else {
-            icon.classList.remove('rotate-icon');
-          }
-        }
-      }
-      
-      // Keyboard Navigation Support für bessere Zugänglichkeit
-      document.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' || e.key === ' ') {
-          if (e.target.classList.contains('accordion-header') || e.target.closest('.accordion-header')) {
-            e.preventDefault();
-            const header = e.target.classList.contains('accordion-header') ? e.target : e.target.closest('.accordion-header');
-            if (header.onclick) {
-              header.onclick();
-            }
-          }
-        }
-      });
-      
-      // Mache Accordion Headers fokussierbar für Keyboard Navigation und setze ARIA-Attribute
-      document.querySelectorAll('.accordion-header').forEach(header => {
-        // Prüfe, ob bereits tabindex und role gesetzt sind
-        if (!header.hasAttribute('tabindex')) {
-          header.setAttribute('tabindex', '0');
-        }
-        if (!header.hasAttribute('role')) {
-          header.setAttribute('role', 'button');
-        }
-        
-        // Finde das zugehörige content Element
-        const onclick = header.getAttribute('onclick');
-        if (onclick) {
-          const contentId = onclick.match(/'([^']+)'/)[1];
-          const content = document.getElementById(contentId);
-          
-          // Setze aria-controls
-          header.setAttribute('aria-controls', contentId);
-          
-          // Setze aria-expanded basierend auf dem aktuellen Status
-          const isExpanded = content && content.classList.contains('active');
-          header.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
-        }
-        
-        // Füge aria-hidden zu allen Icons hinzu
-        const icons = header.querySelectorAll('i');
-        icons.forEach(icon => {
-          if (!icon.hasAttribute('aria-hidden')) {
-            icon.setAttribute('aria-hidden', 'true');
-          }
-        });
       });
     </script>
+
+    <footer class="guide-footer">
+      <div class="guide-container">
+        <p>© 2025 SaveKey</p>
+      </div>
+    </footer>
   </body>
 </html>

@@ -1,97 +1,101 @@
 // Mobile Navigation Handler
-// Dieses Script wird nur geladen wenn der Nutzer nicht eingeloggt ist
+// Kompaktes Dropdown-Menü für nicht eingeloggte Nutzer
 
 document.addEventListener('DOMContentLoaded', function() {
     const mobileMenuToggle = document.getElementById('mobileMenuToggle');
     const navigation = document.getElementById('navigation');
+    const header = document.querySelector('header');
     
     // Funktion um zu prüfen ob wir in mobiler Ansicht sind
     function isMobileView() {
         return window.innerWidth <= 767;
     }
     
+    // Menü schliessen
+    function closeMenu() {
+        if (navigation) {
+            navigation.classList.remove('active');
+        }
+        if (mobileMenuToggle) {
+            mobileMenuToggle.setAttribute('aria-expanded', 'false');
+        }
+    }
+    
+    // Menü öffnen
+    function openMenu() {
+        if (navigation) {
+            navigation.classList.add('active');
+        }
+        if (mobileMenuToggle) {
+            mobileMenuToggle.setAttribute('aria-expanded', 'true');
+        }
+    }
+    
+    // Menü toggle
+    function toggleMenu() {
+        if (navigation && navigation.classList.contains('active')) {
+            closeMenu();
+        } else {
+            openMenu();
+        }
+    }
+    
     // Hamburger-Menü nur bei mobiler Ansicht anzeigen
     function updateMenuVisibility() {
         if (mobileMenuToggle) {
-            const header = document.querySelector('header'); // Header-Element holen
-            // Prüfen, ob der Benutzer eingeloggt ist (anhand der Klasse am Header)
             if (header && header.classList.contains('user-logged-in')) {
                 mobileMenuToggle.style.display = 'none';
-                // Sicherstellen, dass das Menü geschlossen ist, wenn der Benutzer eingeloggt ist
-                if (navigation) {
-                    navigation.classList.remove('active');
-                    const icon = mobileMenuToggle.querySelector('i');
-                    if (icon) {
-                        icon.classList.remove('fa-times');
-                        icon.classList.add('fa-bars');
-                    }
-                    mobileMenuToggle.setAttribute('aria-label', 'Menü öffnen');
-                    mobileMenuToggle.setAttribute('aria-expanded', 'false');
-                }
-                return; // Funktion beenden, da der eingeloggte Status Vorrang hat
+                closeMenu();
+                return;
             }
 
             if (isMobileView()) {
-                mobileMenuToggle.style.display = 'block';
+                mobileMenuToggle.style.display = 'flex';
             } else {
                 mobileMenuToggle.style.display = 'none';
-                // Menü schließen wenn zu Desktop gewechselt wird
-                if (navigation) {
-                    navigation.classList.remove('active');
-                    const icon = mobileMenuToggle.querySelector('i');
-                    if (icon) {
-                        icon.classList.remove('fa-times');
-                        icon.classList.add('fa-bars');
-                    }
-                    mobileMenuToggle.setAttribute('aria-label', 'Menü öffnen');
-                    mobileMenuToggle.setAttribute('aria-expanded', 'false');
-                }
+                closeMenu();
             }
         }
     }
     
-    // Initial die Sichtbarkeit setzen
+    // Initial
     updateMenuVisibility();
     
     if (mobileMenuToggle && navigation) {
-        mobileMenuToggle.addEventListener('click', function() {
-            // Nur funktionieren wenn wir in mobiler Ansicht sind
+        // Toggle-Button
+        mobileMenuToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
             if (!isMobileView()) return;
-            
-            navigation.classList.toggle('active');
-            
-            // Icon zwischen Hamburger und X wechseln
-            const icon = this.querySelector('i');
-            if (navigation.classList.contains('active')) {
-                icon.classList.remove('fa-bars');
-                icon.classList.add('fa-times');
-                this.setAttribute('aria-label', 'Menü schließen');
-                this.setAttribute('aria-expanded', 'true');
-            } else {
-                icon.classList.remove('fa-times');
-                icon.classList.add('fa-bars');
-                this.setAttribute('aria-label', 'Menü öffnen');
-                this.setAttribute('aria-expanded', 'false');
-            }
+            toggleMenu();
         });
         
-        // Menü schließen beim Klick außerhalb (nur mobil)
+        // Klick ausserhalb schliesst Menü
         document.addEventListener('click', function(event) {
             if (!isMobileView()) return;
+            if (!navigation.classList.contains('active')) return;
             
-            if (!mobileMenuToggle.contains(event.target) && !navigation.contains(event.target)) {
-                navigation.classList.remove('active');
-                const icon = mobileMenuToggle.querySelector('i');
-                icon.classList.remove('fa-times');
-                icon.classList.add('fa-bars');
-                mobileMenuToggle.setAttribute('aria-label', 'Menü öffnen');
-                mobileMenuToggle.setAttribute('aria-expanded', 'false');
+            if (!navigation.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
+                closeMenu();
             }
         });
         
-        // Menü-Sichtbarkeit bei Fenstergröße-Änderung aktualisieren
-        window.addEventListener('resize', function() {
-            updateMenuVisibility();
+        // Menü-Links schliessen Menü
+        navigation.querySelectorAll('a').forEach(function(link) {
+            link.addEventListener('click', function() {
+                if (isMobileView()) {
+                    closeMenu();
+                }
+            });
         });
+        
+        // Escape-Taste
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && navigation.classList.contains('active')) {
+                closeMenu();
+            }
+        });
+        
+        // Resize-Handler
+        window.addEventListener('resize', updateMenuVisibility);
     }
 });

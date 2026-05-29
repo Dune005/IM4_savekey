@@ -11,6 +11,82 @@ function announceToScreenReader(message) {
   }
 }
 
+// Neue Funktion für moderne Modals
+function showModal({ title, message, type = 'info', confirmText = 'OK', cancelText = null, onConfirm = null }) {
+  // Entferne existierende Modals
+  const existingModal = document.querySelector('.custom-modal-overlay');
+  if (existingModal) {
+    existingModal.remove();
+  }
+
+  // Icon basierend auf Typ
+  let iconClass = 'fa-info-circle';
+  let iconType = 'info';
+  
+  if (type === 'success') {
+    iconClass = 'fa-check-circle';
+    iconType = 'success';
+  } else if (type === 'warning') {
+    iconClass = 'fa-exclamation-triangle';
+    iconType = 'warning';
+  } else if (type === 'danger') {
+    iconClass = 'fa-exclamation-circle';
+    iconType = 'danger';
+  }
+
+  // Modal HTML erstellen
+  const modalHTML = `
+    <div class="custom-modal-overlay" id="customModalOverlay">
+      <div class="custom-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="custom-modal-header">
+          <div class="custom-modal-icon ${iconType}">
+            <i class="fas ${iconClass}"></i>
+          </div>
+          <h3 class="custom-modal-title" id="modalTitle">${title}</h3>
+        </div>
+        <div class="custom-modal-body">
+          <p>${message}</p>
+        </div>
+        <div class="custom-modal-footer">
+          ${cancelText ? `<button class="custom-modal-btn secondary" id="modalCancelBtn">${cancelText}</button>` : ''}
+          <button class="custom-modal-btn ${type === 'danger' ? 'danger' : 'primary'}" id="modalConfirmBtn">${confirmText}</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Modal zum Body hinzufügen
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+  const overlay = document.getElementById('customModalOverlay');
+  const confirmBtn = document.getElementById('modalConfirmBtn');
+  const cancelBtn = document.getElementById('modalCancelBtn');
+
+  // Animation starten
+  requestAnimationFrame(() => {
+    overlay.classList.add('active');
+  });
+
+  // Event Listener
+  const closeModal = () => {
+    overlay.classList.remove('active');
+    setTimeout(() => {
+      overlay.remove();
+    }, 300);
+  };
+
+  confirmBtn.addEventListener('click', () => {
+    closeModal();
+    if (onConfirm) onConfirm();
+  });
+
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+      closeModal();
+    });
+  }
+}
+
 async function checkAuth() {
   try {
     const response = await fetch("/api/protected.php", {
@@ -36,102 +112,111 @@ async function checkAuth() {
     // Prüfen, ob der Benutzer ein Administrator ist
     const isAdmin = result.is_admin === true;
 
-    // Zeige das Dashboard mit prominenter Statusanzeige an
+    // Zeige das Dashboard im VR-Igloo Stil an (IDs/Klassen bleiben stabil für JS)
     protectedContent.innerHTML = `
-      <div class="dashboard-welcome">
-        <div class="welcome-message">
-          <h2>Willkommen zurück, ${result.vorname}!</h2>
-          <p class="welcome-subtitle">Hier ist der aktuelle Status Ihrer Schlüsselbox <strong>${seriennummer}</strong></p>
-        </div>
+      <div class="dashboard-hero modern">
+        <span class="hero-badge">VR-Igloo</span>
+        <h1>Hi ${result.vorname}!</h1>
+        <p class="subtitle">Schlüsselbox <span class="dashboard-chip">${seriennummer}</span> – Status, Historie und Verifizierung auf einen Blick.</p>
       </div>
 
-      <div class="key-status-container prominent">
-        <div class="status-header">
-          <div class="status-title">
-            <h2>Schlüsselstatus</h2>
-            <p class="status-subtitle">Aktueller Zustand Ihres Schlüssels</p>
+      <div class="dashboard-grid">
+        <section class="key-status-container prominent dashboard-card" aria-label="Schlüsselstatus">
+          <div id="keyStatus" class="key-status" aria-live="polite" aria-atomic="true">Lade Status...</div>
+          ${isAdmin ? `
+          <div class="key-actions" aria-label="Aktionen">
+            <button id="takeKeyBtn" class="action-btn take-btn" aria-label="Schlüssel aus der Box entnehmen">
+              <i class="fas fa-hand" aria-hidden="true"></i>
+              <span class="btn-text">Entnehmen</span>
+            </button>
+            <button id="returnKeyBtn" class="action-btn return-btn" aria-label="Schlüssel in die Box zurückgeben">
+              <i class="fas fa-box" aria-hidden="true"></i>
+              <span class="btn-text">Zurückgeben</span>
+            </button>
           </div>
-        </div>
-        <div id="keyStatus" class="key-status" aria-live="polite" aria-atomic="true">Lade Status...</div>
-        ${isAdmin ? `
-        <div class="key-actions">
-          <button id="takeKeyBtn" class="action-btn take-btn" aria-label="Schlüssel aus der Box entnehmen">
-            <span class="btn-text">Schlüssel<br>entnehmen</span>
-          </button>
-          <button id="returnKeyBtn" class="action-btn return-btn" aria-label="Schlüssel in die Box zurückgeben">
-            <span class="btn-text">Schlüssel<br>zurückgeben</span>
-          </button>
-        </div>
-        <div class="admin-actions">
-          <button id="resetDeviceBtn" class="action-btn reset-btn" aria-label="Schlüsselbox neu starten">
-            <i class="fas fa-sync-alt" aria-hidden="true"></i>
-            <span class="btn-text">Box neu starten</span>
-          </button>
-          <div id="resetStatus" class="reset-status" style="display: none;" aria-live="polite"></div>
-        </div>
-        ` : ''}
-      </div>
+          <div class="admin-actions">
+            <button id="resetDeviceBtn" class="action-btn reset-btn" aria-label="Schlüsselbox neu starten">
+              <i class="fas fa-sync-alt" aria-hidden="true"></i>
+              <span class="btn-text">Box neu starten</span>
+            </button>
+            <div id="resetStatus" class="reset-status" style="display: none;" aria-live="polite"></div>
+          </div>
+          ` : ''}
+        </section>
 
-      <div class="key-history-container">
-        <div class="history-header" id="historyToggle" role="button" tabindex="0" aria-expanded="false" aria-controls="keyHistory" aria-label="Schlüsselhistorie anzeigen">
-          <h3>Schlüsselhistorie</h3>
-          <i class="fas fa-chevron-down history-arrow" aria-hidden="true"></i>
-        </div>
-        <div id="keyHistory" class="key-history collapsed">Lade Historie...</div>
-      </div>
-
-      <div class="rfid-management-container">
-        <div class="rfid-header" id="rfidToggle" role="button" tabindex="0" aria-expanded="false" aria-controls="rfidContent" aria-label="RFID-Verwaltung anzeigen">
-          <h3><i class="fas fa-credit-card" aria-hidden="true"></i> Meine Verifizierungsmethode</h3>
-          <i class="fas fa-chevron-down rfid-arrow" aria-hidden="true"></i>
-        </div>
-        
-        <div id="rfidContent" class="rfid-content collapsed">
-          <div id="rfidStatus" class="rfid-status">Lade Status Ihrer Zutrittskarte...</div>
-          
-          <div id="lastScannedRfid" class="last-scanned-rfid" style="display: none;" aria-live="polite">
-            <div class="scanned-card-info">
-              <h4><i class="fas fa-check-circle" aria-hidden="true"></i> Neue Karte erkannt!</h4>
-              <p>Karten-ID: <code id="lastScannedRfidUid"></code></p>
-              <button id="useScannedRfidBtn" class="action-btn use-card-btn" aria-label="Diese erkannte Karte als Zutrittskarte verwenden">
-                <i class="fas fa-plus-circle" aria-hidden="true"></i> Diese Karte verwenden
-              </button>
+        <section class="key-history-container dashboard-card" aria-label="Schlüsselhistorie">
+          <div class="history-header" id="historyToggle" role="button" tabindex="0" aria-expanded="false" aria-controls="keyHistory" aria-label="Schlüsselhistorie anzeigen">
+            <div class="card-title-row">
+              <h3><i class="fas fa-clock-rotate-left" aria-hidden="true"></i> Historie</h3>
+              <p class="card-subtitle">Letzte Aktionen</p>
             </div>
+            <i class="fas fa-chevron-down history-arrow" aria-hidden="true"></i>
+          </div>
+          <div id="keyHistory" class="key-history collapsed">Lade Historie...</div>
+        </section>
+
+        <section class="rfid-management-container dashboard-card" aria-label="Verifizierung">
+          <div class="rfid-header" id="rfidToggle" role="button" tabindex="0" aria-expanded="false" aria-controls="rfidContent" aria-label="RFID-Verwaltung anzeigen">
+            <div class="card-title-row">
+              <h3><i class="fas fa-credit-card" aria-hidden="true"></i> Verifizierung</h3>
+              <p class="card-subtitle">Karte/Badge verwalten</p>
+            </div>
+            <i class="fas fa-chevron-down rfid-arrow" aria-hidden="true"></i>
           </div>
           
-          <div class="rfid-form-section">
-            <h4>Karte oder Badge zuweisen</h4>
-            <div class="rfid-form">
-              <input type="text" id="rfidUid" placeholder="Karten-ID eingeben (z.B. 04:A3:2B:1E)" class="rfid-input" />
-              <div class="button-group">
-                <button id="assignRfidBtn" class="action-btn rfid-btn" aria-label="Eingegebene Karten-ID zuweisen">
-                  <i class="fas fa-link" aria-hidden="true"></i> Zuweisen
-                </button>
-                <button id="removeRfidBtn" class="action-btn rfid-remove-btn" aria-label="Zugewiesene Karte entfernen">
-                  <i class="fas fa-unlink" aria-hidden="true"></i> Entfernen
+          <div id="rfidContent" class="rfid-content collapsed">
+            <div id="rfidStatus" class="rfid-status">Lade Status deiner Zutrittskarte...</div>
+            
+            <div id="lastScannedRfid" class="last-scanned-rfid" style="display: none;" aria-live="polite">
+              <div class="scanned-card-info">
+                <h4><i class="fas fa-check-circle" aria-hidden="true"></i> Neue Karte erkannt</h4>
+                <p>Karten-ID: <code id="lastScannedRfidUid"></code></p>
+                <button id="useScannedRfidBtn" class="action-btn use-card-btn" aria-label="Diese erkannte Karte als Zutrittskarte verwenden">
+                  <i class="fas fa-plus-circle" aria-hidden="true"></i> Diese Karte verwenden
                 </button>
               </div>
             </div>
-          </div>
+            
+            <div class="rfid-form-section">
+              <h4>Karte oder Badge zuweisen</h4>
+              <div class="rfid-form">
+                <input type="text" id="rfidUid" placeholder="Karten-ID (z.B. 04:A3:2B:1E)" class="rfid-input" />
+                <div class="button-group">
+                  <button id="assignRfidBtn" class="action-btn rfid-btn" aria-label="Eingegebene Karten-ID zuweisen">
+                    <i class="fas fa-link" aria-hidden="true"></i> Zuweisen
+                  </button>
+                  <button id="removeRfidBtn" class="action-btn rfid-remove-btn" aria-label="Zugewiesene Karte entfernen">
+                    <i class="fas fa-unlink" aria-hidden="true"></i> Entfernen
+                  </button>
+                </div>
+              </div>
+            </div>
 
-          <div class="rfid-instructions">
-            <h4><i class="fas fa-info-circle" aria-hidden="true"></i> So funktioniert es:</h4>
-            <ol class="instruction-steps">
-              <li>Halten Sie Ihre Karte an das Lesegerät der Schlüsselbox</li>
-              <li>Die Karten-ID erscheint automatisch hier im Dashboard</li>
-              <li>Klicken Sie auf "Diese Karte verwenden" um sie zu aktivieren</li>
-            </ol>
+            <div class="rfid-instructions">
+              <h4><i class="fas fa-info-circle" aria-hidden="true"></i> So klappt’s</h4>
+              <ol class="instruction-steps">
+                <li>Halte deine Karte ans Lesegerät der Schlüsselbox</li>
+                <li>Die Karten-ID erscheint automatisch hier im Dashboard</li>
+                <li>Klicke auf „Diese Karte verwenden“ und dann auf "Zuweisen", um sie zu aktivieren</li>
+              </ol>
+            </div>
           </div>
-        </div>
-      </div>
+        </section>
 
-      <div class="push-notification-container compact">
-        <div class="push-notification-controls">
-          <button id="subscribeButton" disabled>
-            <i class="fas fa-bell"></i> Push-Benachrichtigungen aktivieren
-          </button>
-          <p id="pushStatus">Initialisiere...</p>
-        </div>
+        <section class="push-notification-container compact dashboard-card" aria-label="Push-Benachrichtigungen">
+          <div class="card-header compact">
+            <div class="card-title">
+              <h3><i class="fas fa-bell" aria-hidden="true"></i> Push</h3>
+              <p class="card-subtitle">Updates direkt aufs Handy</p>
+            </div>
+          </div>
+          <div class="push-notification-controls">
+            <button id="subscribeButton" disabled>
+              Push-Benachrichtigungen aktivieren
+            </button>
+            <p id="pushStatus">Initialisiere...</p>
+          </div>
+        </section>
       </div>
 
       <!-- Reset Confirmation Modal -->
@@ -223,6 +308,37 @@ async function checkAuth() {
       }
     }
 
+    // Check for RFID onboarding (if user has no RFID card assigned)
+    if (result.has_rfid === false) {
+      setTimeout(() => {
+        showModal({
+          title: 'Verifizierung erforderlich',
+          message: 'Um die Schlüsselbox nutzen zu können, müssen Sie zuerst Ihre Studentenkarte (RFID/NFC) hinterlegen. Bitte weisen Sie diese jetzt unter "Verifizierung" zu.',
+          type: 'info',
+          confirmText: 'Jetzt einrichten',
+          cancelText: 'Später',
+          onConfirm: () => {
+            // Scroll to RFID section and open it
+            const rfidToggle = document.getElementById('rfidToggle');
+            const rfidContainer = document.querySelector('.rfid-management-container');
+            
+            if (rfidContainer) {
+              rfidContainer.scrollIntoView({ behavior: 'smooth' });
+              // Open if closed
+              if (rfidToggle && rfidToggle.getAttribute('aria-expanded') === 'false') {
+                rfidToggle.click();
+              }
+              // Focus input
+              setTimeout(() => {
+                const input = document.getElementById('rfidUid');
+                if(input) input.focus();
+              }, 800);
+            }
+          }
+        });
+      }, 1000); // Short delay to ensure UI is fully rendered
+    }
+
     return true;
   } catch (error) {
     console.error("Auth check failed:", error);
@@ -268,14 +384,20 @@ async function loadKeyStatus() {
       const returnKeyBtn = document.getElementById('returnKeyBtn');
 
       // Container-Element für die Farbänderung basierend auf dem Status
+      // WICHTIG: Keine komplette className-Zuweisung, sonst verlieren wir Layout-Klassen wie "dashboard-card".
       const keyStatusContainer = document.querySelector('.key-status-container.prominent');
+      const statusClasses = ['status-available', 'status-unavailable', 'status-pending', 'status-stolen'];
+
+      const setContainerStatus = (statusClass) => {
+        if (!keyStatusContainer) return;
+        keyStatusContainer.classList.remove(...statusClasses);
+        if (statusClass) keyStatusContainer.classList.add(statusClass);
+      };
 
       // Wenn der Schlüssel verfügbar ist
       if (isAvailable) {
         // Container-Klassen für Status-Styling setzen
-        if (keyStatusContainer) {
-          keyStatusContainer.className = 'key-status-container prominent status-available';
-        }
+        setContainerStatus('status-available');
 
         // Nur Button-Eigenschaften ändern, wenn die Buttons existieren (für Admins)
         if (takeKeyBtn) takeKeyBtn.disabled = false;
@@ -305,9 +427,7 @@ async function loadKeyStatus() {
       // Wenn es eine ausstehende Entnahme gibt
       else if (pendingRemoval) {
         // Container-Klassen für Status-Styling setzen
-        if (keyStatusContainer) {
-          keyStatusContainer.className = 'key-status-container prominent status-pending';
-        }
+        setContainerStatus('status-pending');
 
         // Nur Button-Eigenschaften ändern, wenn die Buttons existieren (für Admins)
         if (takeKeyBtn) takeKeyBtn.disabled = true;
@@ -350,9 +470,7 @@ async function loadKeyStatus() {
       // Wenn es eine abgelaufene, nicht verifizierte Entnahme gibt
       else if (unverifiedRemoval) {
         // Container-Klassen für Status-Styling setzen
-        if (keyStatusContainer) {
-          keyStatusContainer.className = 'key-status-container prominent status-stolen';
-        }
+        setContainerStatus('status-stolen');
 
         // Nur Button-Eigenschaften ändern, wenn die Buttons existieren (für Admins)
         if (takeKeyBtn) takeKeyBtn.disabled = true;
@@ -388,9 +506,7 @@ async function loadKeyStatus() {
       // Wenn der Schlüssel von jemandem entnommen wurde
       else {
         // Container-Klassen für Status-Styling setzen
-        if (keyStatusContainer) {
-          keyStatusContainer.className = 'key-status-container prominent status-unavailable';
-        }
+        setContainerStatus('status-unavailable');
 
         // Nur Button-Eigenschaften ändern, wenn die Buttons existieren (für Admins)
         if (takeKeyBtn) takeKeyBtn.disabled = true;
@@ -590,120 +706,182 @@ async function loadKeyHistory() {
 
 // Funktion zum Entnehmen des Schlüssels
 async function takeKey() {
-  try {
-    // Bestätigungsdialog anzeigen
-    if (!confirm("Möchten Sie den Schlüssel wirklich entnehmen?")) {
-      return;
+  showModal({
+    title: 'Schlüssel entnehmen',
+    message: 'Möchten Sie den Schlüssel wirklich entnehmen?',
+    type: 'info',
+    confirmText: 'Ja, entnehmen',
+    cancelText: 'Abbrechen',
+    onConfirm: async () => {
+      try {
+        // Button deaktivieren, um mehrfache Klicks zu verhindern
+        const takeKeyBtn = document.getElementById('takeKeyBtn');
+        takeKeyBtn.disabled = true;
+        const takeKeyBtnText = takeKeyBtn.querySelector('.btn-text');
+        if (takeKeyBtnText) {
+          takeKeyBtnText.textContent = 'Wird verarbeitet...';
+        } else {
+          takeKeyBtn.textContent = 'Wird verarbeitet...';
+        }
+
+        // API-Anfrage senden, um den Schlüssel zu entnehmen
+        console.log('Sende Anfrage zum Entnehmen des Schlüssels...');
+
+        const response = await fetch('api/key_action.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+            action: 'take'
+          }),
+          credentials: "include"
+        });
+
+        // Prüfen, ob die Antwort ein gültiges JSON-Format hat
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          // Wenn die Antwort kein JSON ist, den Text der Antwort anzeigen
+          const text = await response.text();
+          console.error('Ungültige Antwort vom Server:', text);
+          throw new Error('Ungültige Antwort vom Server: ' + text);
+        }
+
+        const data = await response.json();
+        console.log('Antwort vom Server:', data);
+
+        if (data.status === "success") {
+          // Status und Historie neu laden
+          loadKeyStatus();
+          loadKeyHistory();
+          showModal({
+            title: 'Erfolg',
+            message: 'Schlüssel erfolgreich entnommen!',
+            type: 'success'
+          });
+        } else {
+          showModal({
+            title: 'Fehler',
+            message: data.message || "Fehler beim Entnehmen des Schlüssels",
+            type: 'danger'
+          });
+          takeKeyBtn.disabled = false;
+          const takeKeyBtnTextReset = takeKeyBtn.querySelector('.btn-text');
+          if (takeKeyBtnTextReset) {
+            takeKeyBtnTextReset.textContent = 'Entnehmen';
+          } else {
+            takeKeyBtn.textContent = 'Schlüssel entnehmen';
+          }
+        }
+      } catch (error) {
+        console.error("Fehler beim Entnehmen des Schlüssels:", error);
+        showModal({
+          title: 'Fehler',
+          message: "Fehler beim Entnehmen des Schlüssels: " + error.message,
+          type: 'danger'
+        });
+
+        const takeKeyBtn = document.getElementById('takeKeyBtn');
+        takeKeyBtn.disabled = false;
+        const takeKeyBtnTextReset = takeKeyBtn.querySelector('.btn-text');
+        if (takeKeyBtnTextReset) {
+          takeKeyBtnTextReset.textContent = 'Entnehmen';
+        } else {
+          takeKeyBtn.textContent = 'Schlüssel entnehmen';
+        }
+      }
     }
-
-    // Button deaktivieren, um mehrfache Klicks zu verhindern
-    const takeKeyBtn = document.getElementById('takeKeyBtn');
-    takeKeyBtn.disabled = true;
-    takeKeyBtn.textContent = "Wird verarbeitet...";
-
-    // API-Anfrage senden, um den Schlüssel zu entnehmen
-    console.log('Sende Anfrage zum Entnehmen des Schlüssels...');
-
-    const response = await fetch('api/key_action.php', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        action: 'take'
-      }),
-      credentials: "include"
-    });
-
-    // Prüfen, ob die Antwort ein gültiges JSON-Format hat
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
-      // Wenn die Antwort kein JSON ist, den Text der Antwort anzeigen
-      const text = await response.text();
-      console.error('Ungültige Antwort vom Server:', text);
-      throw new Error('Ungültige Antwort vom Server: ' + text);
-    }
-
-    const data = await response.json();
-    console.log('Antwort vom Server:', data);
-
-    if (data.status === "success") {
-      // Status und Historie neu laden
-      loadKeyStatus();
-      loadKeyHistory();
-      alert("Schlüssel erfolgreich entnommen!");
-    } else {
-      alert(data.message || "Fehler beim Entnehmen des Schlüssels");
-      takeKeyBtn.disabled = false;
-      takeKeyBtn.textContent = "Schlüssel entnehmen";
-    }
-  } catch (error) {
-    console.error("Fehler beim Entnehmen des Schlüssels:", error);
-    alert("Fehler beim Entnehmen des Schlüssels: " + error.message);
-
-    const takeKeyBtn = document.getElementById('takeKeyBtn');
-    takeKeyBtn.disabled = false;
-    takeKeyBtn.textContent = "Schlüssel entnehmen";
-  }
+  });
 }
 
 // Funktion zum Zurückgeben des Schlüssels
 async function returnKey() {
-  try {
-    // Bestätigungsdialog anzeigen
-    if (!confirm("Möchten Sie den Schlüssel wirklich zurückgeben?")) {
-      return;
+  showModal({
+    title: 'Schlüssel zurückgeben',
+    message: 'Möchten Sie den Schlüssel wirklich zurückgeben?',
+    type: 'info',
+    confirmText: 'Ja, zurückgeben',
+    cancelText: 'Abbrechen',
+    onConfirm: async () => {
+      try {
+        // Button deaktivieren, um mehrfache Klicks zu verhindern
+        const returnKeyBtn = document.getElementById('returnKeyBtn');
+        returnKeyBtn.disabled = true;
+        const returnKeyBtnText = returnKeyBtn.querySelector('.btn-text');
+        if (returnKeyBtnText) {
+          returnKeyBtnText.textContent = 'Wird verarbeitet...';
+        } else {
+          returnKeyBtn.textContent = 'Wird verarbeitet...';
+        }
+
+        // API-Anfrage senden, um den Schlüssel zurückzugeben
+        console.log('Sende Anfrage zum Zurückgeben des Schlüssels...');
+
+        const response = await fetch('api/key_action.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+            action: 'return'
+          }),
+          credentials: "include"
+        });
+
+        // Prüfen, ob die Antwort ein gültiges JSON-Format hat
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          // Wenn die Antwort kein JSON ist, den Text der Antwort anzeigen
+          const text = await response.text();
+          console.error('Ungültige Antwort vom Server:', text);
+          throw new Error('Ungültige Antwort vom Server: ' + text);
+        }
+
+        const data = await response.json();
+        console.log('Antwort vom Server:', data);
+
+        if (data.status === "success") {
+          // Status und Historie neu laden
+          loadKeyStatus();
+          loadKeyHistory();
+          showModal({
+            title: 'Erfolg',
+            message: 'Schlüssel erfolgreich zurückgegeben!',
+            type: 'success'
+          });
+        } else {
+          showModal({
+            title: 'Fehler',
+            message: data.message || "Fehler beim Zurückgeben des Schlüssels",
+            type: 'danger'
+          });
+          returnKeyBtn.disabled = false;
+          const returnKeyBtnTextReset = returnKeyBtn.querySelector('.btn-text');
+          if (returnKeyBtnTextReset) {
+            returnKeyBtnTextReset.textContent = 'Zurückgeben';
+          } else {
+            returnKeyBtn.textContent = 'Schlüssel zurückgeben';
+          }
+        }
+      } catch (error) {
+        console.error("Fehler beim Zurückgeben des Schlüssels:", error);
+        showModal({
+          title: 'Fehler',
+          message: "Fehler beim Zurückgeben des Schlüssels: " + error.message,
+          type: 'danger'
+        });
+
+        const returnKeyBtn = document.getElementById('returnKeyBtn');
+        returnKeyBtn.disabled = false;
+        const returnKeyBtnTextReset = returnKeyBtn.querySelector('.btn-text');
+        if (returnKeyBtnTextReset) {
+          returnKeyBtnTextReset.textContent = 'Zurückgeben';
+        } else {
+          returnKeyBtn.textContent = 'Schlüssel zurückgeben';
+        }
+      }
     }
-
-    // Button deaktivieren, um mehrfache Klicks zu verhindern
-    const returnKeyBtn = document.getElementById('returnKeyBtn');
-    returnKeyBtn.disabled = true;
-    returnKeyBtn.textContent = "Wird verarbeitet...";
-
-    // API-Anfrage senden, um den Schlüssel zurückzugeben
-    console.log('Sende Anfrage zum Zurückgeben des Schlüssels...');
-
-    const response = await fetch('api/key_action.php', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        action: 'return'
-      }),
-      credentials: "include"
-    });
-
-    // Prüfen, ob die Antwort ein gültiges JSON-Format hat
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
-      // Wenn die Antwort kein JSON ist, den Text der Antwort anzeigen
-      const text = await response.text();
-      console.error('Ungültige Antwort vom Server:', text);
-      throw new Error('Ungültige Antwort vom Server: ' + text);
-    }
-
-    const data = await response.json();
-    console.log('Antwort vom Server:', data);
-
-    if (data.status === "success") {
-      // Status und Historie neu laden
-      loadKeyStatus();
-      loadKeyHistory();
-      alert("Schlüssel erfolgreich zurückgegeben!");
-    } else {
-      alert(data.message || "Fehler beim Zurückgeben des Schlüssels");
-      returnKeyBtn.disabled = false;
-      returnKeyBtn.textContent = "Schlüssel zurückgeben";
-    }
-  } catch (error) {
-    console.error("Fehler beim Zurückgeben des Schlüssels:", error);
-    alert("Fehler beim Zurückgeben des Schlüssels: " + error.message);
-
-    const returnKeyBtn = document.getElementById('returnKeyBtn');
-    returnKeyBtn.disabled = false;
-    returnKeyBtn.textContent = "Schlüssel zurückgeben";
-  }
+  });
 }
 
 // Funktion zum Laden des RFID/NFC-Status
@@ -774,105 +952,141 @@ async function loadRfidStatus() {
 
 // Funktion zum Zuweisen eines RFID/NFC-Chips
 async function assignRfid() {
-  try {
-    const rfidUid = document.getElementById('rfidUid').value.trim();
+  const rfidUid = document.getElementById('rfidUid').value.trim();
 
-    if (!rfidUid) {
-      alert("Bitte geben Sie eine RFID/NFC-UID ein.");
-      return;
-    }
-
-    // Bestätigungsdialog anzeigen
-    if (!confirm(`Möchten Sie den RFID/NFC-Chip mit der UID "${rfidUid}" wirklich Ihrem Konto zuweisen?`)) {
-      return;
-    }
-
-    // Button deaktivieren, um mehrfache Klicks zu verhindern
-    const assignRfidBtn = document.getElementById('assignRfidBtn');
-    assignRfidBtn.disabled = true;
-    assignRfidBtn.textContent = "Wird verarbeitet...";
-
-    // API-Anfrage senden, um den RFID/NFC-Chip zuzuweisen
-    const response = await fetch('api/rfid_management.php', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        action: 'assign_rfid',
-        rfid_uid: rfidUid
-      }),
-      credentials: "include"
+  if (!rfidUid) {
+    showModal({
+      title: 'Eingabe erforderlich',
+      message: 'Bitte geben Sie eine RFID/NFC-UID ein.',
+      type: 'warning'
     });
-
-    const data = await response.json();
-
-    if (data.status === "success") {
-      // RFID/NFC-Status neu laden
-      loadRfidStatus();
-      alert("RFID/NFC-Chip erfolgreich zugewiesen!");
-      document.getElementById('rfidUid').value = '';
-    } else {
-      alert(data.message || "Fehler beim Zuweisen des RFID/NFC-Chips");
-    }
-
-    // Button zurücksetzen
-    assignRfidBtn.disabled = false;
-    assignRfidBtn.textContent = "RFID/NFC zuweisen";
-  } catch (error) {
-    console.error("Fehler beim Zuweisen des RFID/NFC-Chips:", error);
-    alert("Fehler beim Zuweisen des RFID/NFC-Chips: " + error.message);
-
-    const assignRfidBtn = document.getElementById('assignRfidBtn');
-    assignRfidBtn.disabled = false;
-    assignRfidBtn.textContent = "RFID/NFC zuweisen";
+    return;
   }
+
+  showModal({
+    title: 'RFID/NFC zuweisen',
+    message: `Möchten Sie den RFID/NFC-Chip mit der UID "${rfidUid}" wirklich Ihrem Konto zuweisen?`,
+    type: 'info',
+    confirmText: 'Ja, zuweisen',
+    cancelText: 'Abbrechen',
+    onConfirm: async () => {
+      try {
+        // Button deaktivieren, um mehrfache Klicks zu verhindern
+        const assignRfidBtn = document.getElementById('assignRfidBtn');
+        assignRfidBtn.disabled = true;
+        assignRfidBtn.textContent = "Wird verarbeitet...";
+
+        // API-Anfrage senden, um den RFID/NFC-Chip zuzuweisen
+        const response = await fetch('api/rfid_management.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+            action: 'assign_rfid',
+            rfid_uid: rfidUid
+          }),
+          credentials: "include"
+        });
+
+        const data = await response.json();
+
+        if (data.status === "success") {
+          // RFID/NFC-Status neu laden
+          loadRfidStatus();
+          showModal({
+            title: 'Erfolg',
+            message: 'RFID/NFC-Chip erfolgreich zugewiesen!',
+            type: 'success'
+          });
+          document.getElementById('rfidUid').value = '';
+        } else {
+          showModal({
+            title: 'Fehler',
+            message: data.message || "Fehler beim Zuweisen des RFID/NFC-Chips",
+            type: 'danger'
+          });
+        }
+
+        // Button zurücksetzen
+        assignRfidBtn.disabled = false;
+        assignRfidBtn.textContent = "RFID/NFC zuweisen";
+      } catch (error) {
+        console.error("Fehler beim Zuweisen des RFID/NFC-Chips:", error);
+        showModal({
+          title: 'Fehler',
+          message: "Fehler beim Zuweisen des RFID/NFC-Chips: " + error.message,
+          type: 'danger'
+        });
+
+        const assignRfidBtn = document.getElementById('assignRfidBtn');
+        assignRfidBtn.disabled = false;
+        assignRfidBtn.textContent = "RFID/NFC zuweisen";
+      }
+    }
+  });
 }
 
 // Funktion zum Entfernen eines RFID/NFC-Chips
 async function removeRfid() {
-  try {
-    // Bestätigungsdialog anzeigen
-    if (!confirm("Möchten Sie den RFID/NFC-Chip wirklich von Ihrem Konto entfernen?")) {
-      return;
+  showModal({
+    title: 'RFID/NFC entfernen',
+    message: 'Möchten Sie den RFID/NFC-Chip wirklich von Ihrem Konto entfernen?',
+    type: 'warning',
+    confirmText: 'Ja, entfernen',
+    cancelText: 'Abbrechen',
+    onConfirm: async () => {
+      try {
+        // Button deaktivieren, um mehrfache Klicks zu verhindern
+        const removeRfidBtn = document.getElementById('removeRfidBtn');
+        removeRfidBtn.disabled = true;
+        removeRfidBtn.textContent = "Wird verarbeitet...";
+
+        // API-Anfrage senden, um den RFID/NFC-Chip zu entfernen
+        const response = await fetch('api/rfid_management.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+            action: 'remove_rfid'
+          }),
+          credentials: "include"
+        });
+
+        const data = await response.json();
+
+        if (data.status === "success") {
+          // RFID/NFC-Status neu laden
+          loadRfidStatus();
+          showModal({
+            title: 'Erfolg',
+            message: 'RFID/NFC-Chip erfolgreich entfernt!',
+            type: 'success'
+          });
+        } else {
+          showModal({
+            title: 'Fehler',
+            message: data.message || "Fehler beim Entfernen des RFID/NFC-Chips",
+            type: 'danger'
+          });
+          removeRfidBtn.disabled = false;
+          removeRfidBtn.textContent = "RFID/NFC entfernen";
+        }
+      } catch (error) {
+        console.error("Fehler beim Entfernen des RFID/NFC-Chips:", error);
+        showModal({
+          title: 'Fehler',
+          message: "Fehler beim Entfernen des RFID/NFC-Chips: " + error.message,
+          type: 'danger'
+        });
+
+        const removeRfidBtn = document.getElementById('removeRfidBtn');
+        removeRfidBtn.disabled = false;
+        removeRfidBtn.textContent = "RFID/NFC entfernen";
+      }
     }
-
-    // Button deaktivieren, um mehrfache Klicks zu verhindern
-    const removeRfidBtn = document.getElementById('removeRfidBtn');
-    removeRfidBtn.disabled = true;
-    removeRfidBtn.textContent = "Wird verarbeitet...";
-
-    // API-Anfrage senden, um den RFID/NFC-Chip zu entfernen
-    const response = await fetch('api/rfid_management.php', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        action: 'remove_rfid'
-      }),
-      credentials: "include"
-    });
-
-    const data = await response.json();
-
-    if (data.status === "success") {
-      // RFID/NFC-Status neu laden
-      loadRfidStatus();
-      alert("RFID/NFC-Chip erfolgreich entfernt!");
-    } else {
-      alert(data.message || "Fehler beim Entfernen des RFID/NFC-Chips");
-      removeRfidBtn.disabled = false;
-      removeRfidBtn.textContent = "RFID/NFC entfernen";
-    }
-  } catch (error) {
-    console.error("Fehler beim Entfernen des RFID/NFC-Chips:", error);
-    alert("Fehler beim Entfernen des RFID/NFC-Chips: " + error.message);
-
-    const removeRfidBtn = document.getElementById('removeRfidBtn');
-    removeRfidBtn.disabled = false;
-    removeRfidBtn.textContent = "RFID/NFC entfernen";
-  }
+  });
 }
 
 // Hash-Link Handling für externe Navigation

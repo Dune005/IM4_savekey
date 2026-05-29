@@ -207,6 +207,7 @@ function sendPushNotificationsForSeriennummer($pdo, $seriennummer, $payload) {
 function handleRfidAuthRequest($pdo, $data) {
     $seriennummer = $data['seriennummer'];
     $rfidUid = $data['rfid_uid'] ?? '';
+    $timestamp = date('Y-m-d H:i:s');
 
     if (empty($rfidUid)) {
         echo json_encode([
@@ -216,6 +217,37 @@ function handleRfidAuthRequest($pdo, $data) {
         ]);
         return;
     }
+
+    // --- NEU: Scan sofort speichern, damit er im Frontend erscheint ---
+    try {
+        // Prüfen, ob die Tabelle last_rfid_scans existiert
+        $tableCheckStmt = $pdo->prepare("
+            SELECT 1 FROM information_schema.tables
+            WHERE table_schema = DATABASE()
+            AND table_name = 'last_rfid_scans'
+        ");
+        $tableCheckStmt->execute();
+
+        if ($tableCheckStmt->fetch()) {
+            // Tabelle existiert, RFID-UID speichern
+            $saveRfidStmt = $pdo->prepare("
+                INSERT INTO last_rfid_scans
+                (seriennummer, rfid_uid, timestamp)
+                VALUES
+                (:seriennummer, :rfid_uid, :timestamp)
+            ");
+
+            $saveRfidStmt->execute([
+                ':seriennummer' => $seriennummer,
+                ':rfid_uid' => $rfidUid,
+                ':timestamp' => $timestamp
+            ]);
+        }
+    } catch (Exception $e) {
+        // Fehler beim Speichern ignorieren, Auth-Prozess nicht stören
+        error_log("Fehler beim Speichern der RFID-UID: " . $e->getMessage());
+    }
+    // --- ENDE NEU ---
 
     // Find user with this RFID UID and matching serial number
     $stmt = $pdo->prepare("
